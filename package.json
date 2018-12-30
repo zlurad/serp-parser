@@ -1,0 +1,33 @@
+{
+  "name": "serp-parser",
+  "version": "0.0.1",
+  "description": "SERP Parser for Google",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zlurad/serp-parser.git"
+  },
+  "keywords": ["SERP", "Google", "Parser"],
+  "author": "Zlurad",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zlurad/serp-parser/issues"
+  },
+  "homepage": "https://github.com/zlurad/serp-parser#readme",
+  "devDependencies": {
+    "prettier": "^1.15.3",
+    "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
+    "typescript": "^3.2.2"
+  }
+}
