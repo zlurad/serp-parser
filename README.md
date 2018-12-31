@@ -1,5 +1,7 @@
 # SERP Parser
 
+[![Build Status](https://travis-ci.org/zlurad/serp-parser.svg?branch=master)](https://travis-ci.org/zlurad/serp-parser) [![codecov](https://codecov.io/gh/zlurad/serp-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/zlurad/serp-parser)
+
 serp-parser is small lib writen in typescript used to extract search engine rank position from the html. 
 
 ## Instalation
