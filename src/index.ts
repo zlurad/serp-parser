@@ -8,9 +8,9 @@ export interface Result {
 }
 
 export const GoogleSERP = (html: string) => {
-  const $ = cheerio.load(html, { 
+  const $ = cheerio.load(html, {
     normalizeWhitespace: true, // all whitespace should be replaced with single spaces
-    xmlMode: true // normalizeWhitespace seems to only work with this prop set to true
+    xmlMode: true, // normalizeWhitespace seems to only work with this prop set to true
   });
   const results: Result[] = [];
 
@@ -18,11 +18,13 @@ export const GoogleSERP = (html: string) => {
     $('.rc .r > a').each((index, element) => {
       const position = index + 1;
       const url = $(element).prop('href');
-      const title = $(element).find('h3').text();
+      const title = $(element)
+        .find('h3')
+        .text();
       const result: Result = {
         position,
         title,
-        url
+        url,
       };
       results.push(result);
     });
@@ -40,7 +42,7 @@ export const GoogleSERP = (html: string) => {
         position: index + 1,
         // if there is no q parameter, page is related to google search and we will return whole href for it
         title,
-        url: searchParams.get('q') || $(element).prop('href')
+        url: searchParams.get('q') || $(element).prop('href'),
       };
 
       results.push(result);
