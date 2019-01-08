@@ -21,6 +21,9 @@ describe('Parsing Google page with 10 resuts', () => {
   test('3rd result should have url https://domains.google/', () => {
     expect(serp[2].url).toBe('https://domains.google/');
   });
+  test('3rd result should have title "Google Domains - Google"', () => {
+    expect(serp[2].title).toBe('Google Domains - Google');
+  });
 });
 
 describe('Parsing Google page with 100 resuts', () => {
@@ -38,6 +41,9 @@ describe('Parsing Google page with 100 resuts', () => {
 
   test('2nd result should have url https://domains.google/', () => {
     expect(serp[1].url).toBe('https://domains.google/');
+  });
+  test('2nd result should have title "Google Domains - Google"', () => {
+    expect(serp[1].title).toBe('Google Domains - Google');
   });
 });
 
@@ -57,6 +63,9 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   test('5th result should have url https://domains.google/', () => {
     expect(serp[4].url).toBe('https://domains.google/');
   });
+  test('5th result should have title "Google Domains - Google"', () => {
+    expect(serp[4].title).toBe('Google Domains - Google');
+  });
 });
 
 describe('Parsing nojs Google page with 100 resuts', () => {
@@ -74,5 +83,8 @@ describe('Parsing nojs Google page with 100 resuts', () => {
 
   test('4th result should have url https://domains.google/', () => {
     expect(serp[3].url).toBe('https://domains.google/');
+  });
+  test('4th result should have title "Google Domains - Google"', () => {
+    expect(serp[3].title).toBe('Google Domains - Google');
   });
 });
