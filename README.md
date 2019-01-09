@@ -36,21 +36,23 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return array of results with position, title and url
+It will return serp object with array of results with position, title and url
 ```
-[
-  {
-    "position": 1,
-    "title": "Google",
-    "url": "https://www.google.com/"
-  },
-  {
-    "position": 2,
-    "title": "Google.org: Home",
-    "url": "https://www.google.org/"
-  },
-  ...
-]
+{
+  "organic": [
+    {
+      "position": 1,
+      "title": "Google",
+      "url": "https://www.google.com/"
+    },
+    {
+      "position": 2,
+      "title": "Google.org: Home",
+      "url": "https://www.google.org/"
+    },
+    ...
+  ]
+}
 ```
 
 ## Roadmap

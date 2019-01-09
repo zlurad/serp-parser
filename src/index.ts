@@ -1,5 +1,4 @@
 import * as cheerio from 'cheerio';
-import * as fs from 'fs-extra';
 
 export interface Result {
   position: number;
@@ -7,7 +6,11 @@ export interface Result {
   title: string;
 }
 
-export const GoogleSERP = (html: string) => {
+export interface Serp {
+  organic: Result[];
+}
+
+export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
     normalizeWhitespace: true, // all whitespace should be replaced with single spaces
     xmlMode: true, // normalizeWhitespace seems to only work with this prop set to true
@@ -49,5 +52,8 @@ export const GoogleSERP = (html: string) => {
     });
   }
 
-  return results;
+  const serp: Serp = {
+    organic: results
+  }
+  return serp;
 };
