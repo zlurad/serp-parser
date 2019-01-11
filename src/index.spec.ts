@@ -21,7 +21,7 @@ describe('Parsing Google page with 10 resuts', () => {
   test('3rd result should have url https://domains.google/', () => {
     expect(serp.organic[2].url).toBe('https://domains.google/');
   });
-  
+
   test('3rd result should have title "Google Domains - Google"', () => {
     expect(serp.organic[2].title).toBe('Google Domains - Google');
   });
