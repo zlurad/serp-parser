@@ -7,6 +7,7 @@ export interface Result {
 }
 
 export interface Serp {
+  keyword: string;
   organic: Result[];
 }
 
@@ -15,9 +16,14 @@ export const GoogleSERP = (html: string): Serp => {
     normalizeWhitespace: true, // all whitespace should be replaced with single spaces
     xmlMode: true, // normalizeWhitespace seems to only work with this prop set to true
   });
-  const results: Result[] = [];
+  const serp: Serp = {
+    keyword: '',
+    organic: [],
+  };
 
+  // normal serp page have .srp class on body
   if ($('body').hasClass('srp')) {
+    serp.keyword = $('input[aria-label="Search"]').val();
     $('.rc .r > a').each((index, element) => {
       const position = index + 1;
       const url = $(element).prop('href');
@@ -29,10 +35,11 @@ export const GoogleSERP = (html: string): Serp => {
         title,
         url,
       };
-      results.push(result);
+      serp.organic.push(result);
     });
   } else if ($('body').hasClass('hsrp')) {
     // nojs google html
+    serp.keyword = $('#sbhost').val();
     $('#ires ol .g .r a:not(.sla)').each((index, element) => {
       const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
       const searchParams = new URLSearchParams(
@@ -48,12 +55,9 @@ export const GoogleSERP = (html: string): Serp => {
         url: searchParams.get('q') || $(element).prop('href'),
       };
 
-      results.push(result);
+      serp.organic.push(result);
     });
   }
 
-  const serp: Serp = {
-    organic: results
-  }
   return serp;
 };

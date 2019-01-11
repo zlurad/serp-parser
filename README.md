@@ -39,6 +39,7 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 It will return serp object with array of results with position, title and url
 ```
 {
+  "keyword: "google",
   "organic": [
     {
       "position": 1,
