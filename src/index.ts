@@ -1,7 +1,13 @@
 import * as cheerio from 'cheerio';
 
+export interface Sitelink {
+  sitelinkTitle: string;
+  snippet: string;
+}
+
 export interface Result {
   position: number;
+  sitelinks: Sitelink[];
   url: string;
   title: string;
 }
@@ -26,22 +32,58 @@ export const GoogleSERP = (html: string): Serp => {
     serp.keyword = $('input[aria-label="Search"]').val();
     $('.rc .r > a').each((index, element) => {
       const position = index + 1;
+      const sitelinks: Sitelink[] = [];
+
+      const cardSitelinks = $(element).closest('div.g').find('.sld.vsc');
+
+      if (cardSitelinks) {
+        cardSitelinks.each((i,el) => {
+        const sitelinkTitle = $(el).find('h3 a.l').text();
+        const snippet = $(el).find('.s .st').text();
+        const sitelink: Sitelink = {
+          sitelinkTitle,
+          snippet
+        }
+        sitelinks.push(sitelink);
+        });
+      } else if (false) {
+        // if inlineSitelinks exist
+      }
       const url = $(element).prop('href');
-      const title = $(element)
-        .find('h3')
-        .text();
+      const title = $(element).find('h3').text();
       const result: Result = {
         position,
+        sitelinks,
         title,
         url,
-      };
+      }
       serp.organic.push(result);
     });
+    /* $(el).find('a.l').each((index, element) => {
+      console.log($(element).text());
+  }); */
+    //
   } else if ($('body').hasClass('hsrp')) {
     // nojs google html
     serp.keyword = $('#sbhost').val();
     $('#ires ol .g .r a:not(.sla)').each((index, element) => {
       const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
+      const sitelinks: Sitelink[] = [];
+
+      const cardSitelinks = $(element).closest('div.g').find('.sld');
+      if (cardSitelinks) {
+        cardSitelinks.each((i,el) => {
+          const sitelinkTitle = $(el).find('h3 a.sla').text();
+          const snippet = $(el).find('.s.st').text();
+          const sitelink = {
+            sitelinkTitle,
+            snippet
+          }
+          sitelinks.push(sitelink);
+        });
+      } else if (false) {
+        // if inlineSitelinks exist
+      }
       const searchParams = new URLSearchParams(
         $(element)
           .prop('href')
@@ -51,6 +93,7 @@ export const GoogleSERP = (html: string): Serp => {
       const result: Result = {
         position: index + 1,
         // if there is no q parameter, page is related to google search and we will return whole href for it
+        sitelinks,
         title,
         url: searchParams.get('q') || $(element).prop('href'),
       };
