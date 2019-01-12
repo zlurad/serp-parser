@@ -26,6 +26,10 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[2].title).toBe('Google Domains - Google');
   });
 
+  test('3rd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
+    expect(serp.organic[2].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
   });
@@ -50,6 +54,10 @@ describe('Parsing Google page with 100 resuts', () => {
 
   test('2nd result should have title "Google Domains - Google"', () => {
     expect(serp.organic[1].title).toBe('Google Domains - Google');
+  });
+
+  test('2nd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
+    expect(serp.organic[1].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
   });
 
   test('Keyword should be google', () => {
@@ -78,6 +86,10 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp.organic[4].title).toBe('Google Domains - Google');
   });
 
+  test('5th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+    expect(serp.organic[4].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
   });
@@ -104,6 +116,10 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     expect(serp.organic[3].title).toBe('Google Domains - Google');
   });
 
+  test('4th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+    expect(serp.organic[3].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
   });
@@ -120,6 +136,10 @@ describe('Parsing nojs "The Matrix" search page', () => {
 
   test('serp should have 10 results', () => {
     expect(serp.organic).toHaveLength(10);
+  });
+
+  test('1th result should have snippet start with "Gloria Foster in The Matrix (1999) Carrie-Anne Moss..."', () => {
+    expect(serp.organic[0].snippet).toBe('Gloria Foster in The Matrix (1999) Carrie-Anne Moss in The Matrix (1999) Laurence Fishburne in The Matrix (1999) Joe Pantoliano in The Matrix (1999) Keanu ...');
   });
 
   test('Keyword should be "The Matrix"', () => {

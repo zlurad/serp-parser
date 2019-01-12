@@ -2,8 +2,9 @@ import * as cheerio from 'cheerio';
 
 export interface Result {
   position: number;
-  url: string;
+  snippet: string;
   title: string;
+  url: string;
 }
 
 export interface Serp {
@@ -30,8 +31,14 @@ export const GoogleSERP = (html: string): Serp => {
       const title = $(element)
         .find('h3')
         .text();
+      const snippet = $(element)
+        .parent('.r')
+        .next()
+        .find('.st')
+        .text();
       const result: Result = {
         position,
+        snippet,
         title,
         url,
       };
@@ -47,11 +54,19 @@ export const GoogleSERP = (html: string): Serp => {
           .prop('href')
           .replace('/url?', ''),
       );
+      const snippet = $(element)
+        .parent('.r')
+        .next()
+        .find('.st')
+        .text()
+        .replace(/(&nbsp;)/g, ' ')
+        .replace(/ +(?= )/g, '');
 
       const result: Result = {
         position: index + 1,
-        // if there is no q parameter, page is related to google search and we will return whole href for it
+        snippet,
         title,
+        // if there is no q parameter, page is related to google search and we will return whole href for it
         url: searchParams.get('q') || $(element).prop('href'),
       };
 
