@@ -36,7 +36,7 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with position, title and url
+It will return serp object with array of results with position, title, url and snippet
 ```
 {
   "keyword: "google",
@@ -44,12 +44,14 @@ It will return serp object with array of results with position, title and url
     {
       "position": 1,
       "title": "Google",
-      "url": "https://www.google.com/"
+      "url": "https://www.google.com/",
+      "snippet": "Settings Your data in Search Help Send feedback. AllImages. Account · Assistant · Search · Maps · YouTube · Play · News · Gmail · Contacts · Drive · Calendar."
     },
     {
       "position": 2,
       "title": "Google.org: Home",
-      "url": "https://www.google.org/"
+      "url": "https://www.google.org/",
+      "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
   ]
