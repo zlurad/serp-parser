@@ -201,4 +201,12 @@ describe('Parsing nojs "The Matrix" search page', () => {
   test('Keyword should be "The Matrix"', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
+
+  test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
+    expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
+  });
+  test('1st result should have sitelinks and first sitelink should have type "inline"', () => {
+    expect(serp.organic[0].sitelinks[0].type).toBe('inline');
+  });
+  
 });

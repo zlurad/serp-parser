@@ -38,7 +38,6 @@ export const GoogleSERP = (html: string): Serp => {
       const cardSitelinks = $(element)
         .closest('div.g')
         .find('.sld.vsc');
-
       const inlineSitelinks = $(element)
         .closest('.rc')
         .find('.s .osl a.fl');
@@ -89,6 +88,10 @@ export const GoogleSERP = (html: string): Serp => {
       const cardSitelinks = $(element)
         .closest('div.g')
         .find('.sld');
+      const inlineSitelinks = $(element)
+        .closest('div.g')
+        .find('.s .osl a');
+
       cardSitelinks.each((i, el) => {
         const sitelinkTitle = $(el)
           .find('h3 a.sla')
@@ -100,6 +103,15 @@ export const GoogleSERP = (html: string): Serp => {
           snippet,
           title: sitelinkTitle,
           type: 'card',
+        };
+        sitelinks.push(sitelink);
+      });
+
+      inlineSitelinks.each((i, el) => {
+        const sitelinkTitle = $(el).text();
+        const sitelink: Sitelink = {
+          title: sitelinkTitle,
+          type: 'inline',
         };
         sitelinks.push(sitelink);
       });
