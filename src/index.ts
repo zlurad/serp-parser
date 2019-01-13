@@ -1,8 +1,9 @@
 import * as cheerio from 'cheerio';
 
 export interface Sitelink {
-  sitelinkTitle: string;
+  title: string;
   snippet?: string;
+  type: string;
 }
 
 export interface Result {
@@ -34,7 +35,7 @@ export const GoogleSERP = (html: string): Serp => {
       const position = index + 1;
       const sitelinks: Sitelink[] = [];
 
-      const cardSitelinks = $(element) // This should be an empty array if nothing found?
+      const cardSitelinks = $(element)
         .closest('div.g')
         .find('.sld.vsc');
 
@@ -42,29 +43,30 @@ export const GoogleSERP = (html: string): Serp => {
         .closest('.rc')
         .find('.s .osl a.fl');
 
-      if ($(cardSitelinks).length!==0) { // Should check if cardSitelinks and inlineSitelinks can both exist
-        cardSitelinks.each((i, el) => {
-          const sitelinkTitle = $(el)
-            .find('h3 a.l')
-            .text();
-          const snippet = $(el)
-            .find('.s .st')
-            .text();
-          const sitelink: Sitelink = {
-            sitelinkTitle,
-            snippet,
-          };
-          sitelinks.push(sitelink);
-        });
-      } else if ($(inlineSitelinks).length!==0) {
-        inlineSitelinks.each((i, el) => {
-          const sitelinkTitle = $(el).text();
-          const sitelink = {
-            sitelinkTitle,
-          };
-          sitelinks.push(sitelink);
-        });
-      }
+      cardSitelinks.each((i, el) => {
+        const sitelinkTitle = $(el)
+          .find('h3 a.l')
+          .text();
+        const snippet = $(el)
+          .find('.s .st')
+          .text();
+        const sitelink: Sitelink = {
+          snippet,
+          title: sitelinkTitle,
+          type: 'card',
+        };
+        sitelinks.push(sitelink);
+      });
+
+      inlineSitelinks.each((i, el) => {
+        const sitelinkTitle = $(el).text();
+        const sitelink: Sitelink = {
+          title: sitelinkTitle,
+          type: 'inline',
+        };
+        sitelinks.push(sitelink);
+      });
+
       const url = $(element).prop('href');
       const title = $(element)
         .find('h3')
@@ -87,23 +89,21 @@ export const GoogleSERP = (html: string): Serp => {
       const cardSitelinks = $(element)
         .closest('div.g')
         .find('.sld');
-      if (cardSitelinks) {
-        cardSitelinks.each((i, el) => {
-          const sitelinkTitle = $(el)
-            .find('h3 a.sla')
-            .text();
-          const snippet = $(el)
-            .find('.s.st')
-            .text();
-          const sitelink = {
-            sitelinkTitle,
-            snippet,
-          };
-          sitelinks.push(sitelink);
-        });
-      } else if (false) {
-        // if inlineSitelinks exist
-      }
+      cardSitelinks.each((i, el) => {
+        const sitelinkTitle = $(el)
+          .find('h3 a.sla')
+          .text();
+        const snippet = $(el)
+          .find('.s.st')
+          .text();
+        const sitelink: Sitelink = {
+          snippet,
+          title: sitelinkTitle,
+          type: 'card',
+        };
+        sitelinks.push(sitelink);
+      });
+
       const searchParams = new URLSearchParams(
         $(element)
           .prop('href')
