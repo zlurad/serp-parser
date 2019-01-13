@@ -74,6 +74,28 @@ describe('Parsing Google page with 100 resuts', () => {
   });
 });
 
+describe('Parsing "The Matrix" search page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/matrix.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('serp should have 9 results', () => { // 9 results?
+    expect(serp.organic).toHaveLength(9);
+  });
+
+  test('Keyword should be "The Matrix"', () => {
+    expect(serp.keyword).toBe('The Matrix');
+  });
+
+  test('1st result should have sitelinks and first sitelink should have sitelinkTitle "Plot Summary"', () => {
+    expect(serp.organic[0].sitelinks[0].sitelinkTitle).toBe('Plot Summary');
+  });
+});
+
 describe('Parsing nojs Google page with 10 resuts', () => {
   let html: string;
   let serp: Serp;

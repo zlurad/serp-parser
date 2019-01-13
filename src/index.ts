@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 
 export interface Sitelink {
   sitelinkTitle: string;
-  snippet: string;
+  snippet?: string;
 }
 
 export interface Result {
@@ -34,35 +34,49 @@ export const GoogleSERP = (html: string): Serp => {
       const position = index + 1;
       const sitelinks: Sitelink[] = [];
 
-      const cardSitelinks = $(element).closest('div.g').find('.sld.vsc');
+      const cardSitelinks = $(element) // This should be an empty array if nothing found?
+        .closest('div.g')
+        .find('.sld.vsc');
 
-      if (cardSitelinks) {
-        cardSitelinks.each((i,el) => {
-        const sitelinkTitle = $(el).find('h3 a.l').text();
-        const snippet = $(el).find('.s .st').text();
-        const sitelink: Sitelink = {
-          sitelinkTitle,
-          snippet
-        }
-        sitelinks.push(sitelink);
+      const inlineSitelinks = $(element)
+        .closest('.rc')
+        .find('.s .osl a.fl');
+
+      if ($(cardSitelinks).length!==0) { // Should check if cardSitelinks and inlineSitelinks can both exist
+        cardSitelinks.each((i, el) => {
+          const sitelinkTitle = $(el)
+            .find('h3 a.l')
+            .text();
+          const snippet = $(el)
+            .find('.s .st')
+            .text();
+          const sitelink: Sitelink = {
+            sitelinkTitle,
+            snippet,
+          };
+          sitelinks.push(sitelink);
         });
-      } else if (false) {
-        // if inlineSitelinks exist
+      } else if ($(inlineSitelinks).length!==0) {
+        inlineSitelinks.each((i, el) => {
+          const sitelinkTitle = $(el).text();
+          const sitelink = {
+            sitelinkTitle,
+          };
+          sitelinks.push(sitelink);
+        });
       }
       const url = $(element).prop('href');
-      const title = $(element).find('h3').text();
+      const title = $(element)
+        .find('h3')
+        .text();
       const result: Result = {
         position,
         sitelinks,
         title,
         url,
-      }
+      };
       serp.organic.push(result);
     });
-    /* $(el).find('a.l').each((index, element) => {
-      console.log($(element).text());
-  }); */
-    //
   } else if ($('body').hasClass('hsrp')) {
     // nojs google html
     serp.keyword = $('#sbhost').val();
@@ -70,15 +84,21 @@ export const GoogleSERP = (html: string): Serp => {
       const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
       const sitelinks: Sitelink[] = [];
 
-      const cardSitelinks = $(element).closest('div.g').find('.sld');
+      const cardSitelinks = $(element)
+        .closest('div.g')
+        .find('.sld');
       if (cardSitelinks) {
-        cardSitelinks.each((i,el) => {
-          const sitelinkTitle = $(el).find('h3 a.sla').text();
-          const snippet = $(el).find('.s.st').text();
+        cardSitelinks.each((i, el) => {
+          const sitelinkTitle = $(el)
+            .find('h3 a.sla')
+            .text();
+          const snippet = $(el)
+            .find('.s.st')
+            .text();
           const sitelink = {
             sitelinkTitle,
-            snippet
-          }
+            snippet,
+          };
           sitelinks.push(sitelink);
         });
       } else if (false) {
