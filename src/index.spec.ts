@@ -26,6 +26,10 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[2].title).toBe('Google Domains - Google');
   });
 
+  test('3rd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
+    expect(serp.organic[2].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('1st result should have sitelinks and first sitelink should have title "Google Docs"', () => {
     expect(serp.organic[0].sitelinks[0].title).toBe('Google Docs');
   });
@@ -34,12 +38,7 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[0].sitelinks[0].snippet).toBe('Google Docs brings your documents to life with smart ...');
   });
   test('1st result should have sitelinks and first sitelink should have title type "card"', () => {
-    expect(serp.organic[0].sitelinks[0].type).toBe('card');
-  });
-
-  test('Keyword should be google', () => {
-    expect(serp.keyword).toBe('google');
-  });
+    expect(serp.organic[0].sitelinks[0].type).toBe('card'); });
 });
 
 describe('Parsing Google page with 100 resuts', () => {
@@ -63,18 +62,24 @@ describe('Parsing Google page with 100 resuts', () => {
     expect(serp.organic[1].title).toBe('Google Domains - Google');
   });
 
-  test('1st result should have sitelinks and 4th sitelink should have title "Google Translate"', () => {
-    expect(serp.organic[0].sitelinks[3].title).toBe('Google Translate');
+  test('2nd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
+    expect(serp.organic[1].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
   });
+
   test(`1st result should have sitelinks and 4th sitelink should have snippet
    "Google\'s free service instantly translates words, phrases, and ..."`, () => {
     expect(serp.organic[0].sitelinks[3].snippet).toBe(
       "Google's free service instantly translates words, phrases, and ...",
     );
   });
-  test('1st result should have sitelinks and 4th sitelink should have type "card"', () => {
-    expect(serp.organic[0].sitelinks[3].type).toBe('card');
+
+  test('1st result should have sitelinks and 4th sitelink should have title "Google Translate"', () => {
+    expect(serp.organic[0].sitelinks[3].title).toBe('Google Translate');
   });
+  
+  test('1st result should have sitelinks and 4th sitelink should have type "card"', () => {
+    expect(serp.organic[0].sitelinks[3].type).toBe('card'); });
+  
 
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
@@ -102,6 +107,10 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp.organic[4].title).toBe('Google Domains - Google');
   });
 
+  test('5th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+    expect(serp.organic[4].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('1st result should have sitelinks and first sitelink should have title "Images"', () => {
     expect(serp.organic[0].sitelinks[0].title).toBe('Images');
   });
@@ -112,8 +121,8 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     );
   });
   test('1st result should have sitelinks and first sitelink should have type "card"', () => {
-    expect(serp.organic[0].sitelinks[0].type).toBe('card');
-  });
+    expect(serp.organic[0].sitelinks[0].type).toBe('card'); });
+  
 
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
@@ -141,6 +150,10 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     expect(serp.organic[3].title).toBe('Google Domains - Google');
   });
 
+  test('4th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+    expect(serp.organic[3].snippet).toBe('Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.');
+  });
+
   test('1st result should have sitelinks and 4th sitelink should have title "Google Translate"', () => {
     expect(serp.organic[0].sitelinks[3].title).toBe('Google Translate');
   });
@@ -151,8 +164,8 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     );
   });
   test('1st result should have sitelinks and 4th sitelink should have type "card"', () => {
-    expect(serp.organic[0].sitelinks[3].type).toBe('card');
-  });
+    expect(serp.organic[0].sitelinks[3].type).toBe('card'); });
+  
 
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
@@ -196,6 +209,10 @@ describe('Parsing nojs "The Matrix" search page', () => {
 
   test('serp should have 10 results', () => {
     expect(serp.organic).toHaveLength(10);
+  });
+
+  test('1th result should have snippet start with "Gloria Foster in The Matrix (1999) Carrie-Anne Moss..."', () => {
+    expect(serp.organic[0].snippet).toBe('Gloria Foster in The Matrix (1999) Carrie-Anne Moss in The Matrix (1999) Laurence Fishburne in The Matrix (1999) Joe Pantoliano in The Matrix (1999) Keanu ...');
   });
 
   test('Keyword should be "The Matrix"', () => {

@@ -36,7 +36,7 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with position, title, url and sitelinks
+It will return serp object with array of results with position, title, url, snippet and sitelinks
 ```
 {
   "keyword: "google",
@@ -53,13 +53,15 @@ It will return serp object with array of results with position, title, url and s
           "snippet": "Comprehensive up-to-date news coverage, aggregated from ...",
           "type": "card" },
         ...
-      ]
+      ],
+      "snippet": "Settings Your data in Search Help Send feedback. AllImages. Account · Assistant · Search · Maps · YouTube · Play · News · Gmail · Contacts · Drive · Calendar."
     },
     {
       "position": 2,
       "title": "Google.org: Home",
       "url": "https://www.google.org/",
-      "sitelinks": []
+      "sitelinks": [],
+      "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
   ]
