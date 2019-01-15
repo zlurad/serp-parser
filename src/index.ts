@@ -140,9 +140,9 @@ export const GoogleSERP = (html: string): Serp => {
 
       const result: Result = {
               position: index + 1,
-              // if there is no q parameter, page is related to google search and we will return whole href for it
               snippet,
               title,
+              // if there is no q parameter, page is related to google search and we will return whole href for it
               url: searchParams.get('q') || $(element).prop('href'),
             };
             if (sitelinks.length > 0) {
