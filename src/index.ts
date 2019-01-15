@@ -8,7 +8,7 @@ export interface Sitelink {
 
 export interface Result {
   position: number;
-  sitelinks: Sitelink[];
+  sitelinks?: Sitelink[];
   snippet: string;
   title: string;
   url: string;
@@ -78,11 +78,13 @@ export const GoogleSERP = (html: string): Serp => {
         .text();
       const result: Result = {
         position,
-        sitelinks,
         snippet,
         title,
         url,
       };
+      if (sitelinks.length > 0) {
+        result.sitelinks = sitelinks;
+      }
       serp.organic.push(result);
     });
   } else if ($('body').hasClass('hsrp')) {
@@ -137,15 +139,15 @@ export const GoogleSERP = (html: string): Serp => {
         .replace(/ +(?= )/g, '');
 
       const result: Result = {
-        position: index + 1,
-        // if there is no q parameter, page is related to google search and we will return whole href for it
-        sitelinks,
-        snippet,
-        title,
-        // if there is no q parameter, page is related to google search and we will return whole href for it
-        url: searchParams.get('q') || $(element).prop('href'),
-      };
-
+              position: index + 1,
+              // if there is no q parameter, page is related to google search and we will return whole href for it
+              snippet,
+              title,
+              url: searchParams.get('q') || $(element).prop('href'),
+            };
+            if (sitelinks.length > 0) {
+              result.sitelinks = sitelinks;
+            }
       serp.organic.push(result);
     });
   }

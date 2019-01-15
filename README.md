@@ -60,7 +60,6 @@ It will return serp object with array of results with position, title, url, snip
       "position": 2,
       "title": "Google.org: Home",
       "url": "https://www.google.org/",
-      "sitelinks": [],
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
