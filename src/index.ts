@@ -7,6 +7,7 @@ export interface Sitelink {
 }
 
 export interface Result {
+  domain: string;
   position: number;
   sitelinks?: Sitelink[];
   snippet: string;
@@ -68,6 +69,8 @@ export const GoogleSERP = (html: string): Serp => {
       });
 
       const url = $(element).prop('href');
+      const domains = url.match(/[a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/g);
+      const domain = domains[0];
       const title = $(element)
         .find('h3')
         .text();
@@ -77,6 +80,7 @@ export const GoogleSERP = (html: string): Serp => {
         .find('.st')
         .text();
       const result: Result = {
+        domain,
         position,
         snippet,
         title,
@@ -130,6 +134,10 @@ export const GoogleSERP = (html: string): Serp => {
           .prop('href')
           .replace('/url?', ''),
       );
+       // if there is no q parameter, page is related to google search and we will return whole href for it
+      const url = searchParams.get('q') || "https://google.com" + $(element).prop('href');
+      const domains = url.match(/[a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/g) || [''];
+      const domain = domains[0];
       const snippet = $(element)
         .parent('.r')
         .next()
@@ -138,16 +146,17 @@ export const GoogleSERP = (html: string): Serp => {
         .replace(/(&nbsp;)/g, ' ')
         .replace(/ +(?= )/g, '');
 
+
       const result: Result = {
-              position: index + 1,
-              snippet,
-              title,
-              // if there is no q parameter, page is related to google search and we will return whole href for it
-              url: searchParams.get('q') || $(element).prop('href'),
-            };
-            if (sitelinks.length > 0) {
-              result.sitelinks = sitelinks;
-            }
+        domain,
+        position: index + 1,
+        snippet,
+        title,
+        url,
+      };
+      if (sitelinks.length > 0) {
+        result.sitelinks = sitelinks;
+      }
       serp.organic.push(result);
     });
   }
