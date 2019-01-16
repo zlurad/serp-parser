@@ -36,7 +36,7 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with position, title, url, snippet and sitelinks
+It will return serp object with array of results with position, title, url, domain, snippet and sitelinks
 ```
 {
   "keyword: "google",
@@ -45,6 +45,7 @@ It will return serp object with array of results with position, title, url, snip
       "position": 1,
       "title": "Google",
       "url": "https://www.google.com/",
+      "domain": "www.google.com",
       "sitelinks": [
         { "title": "Google Docs", 
           "snippet": "Google Docs brings your documents to life with smart ...",
@@ -60,6 +61,7 @@ It will return serp object with array of results with position, title, url, snip
       "position": 2,
       "title": "Google.org: Home",
       "url": "https://www.google.org/",
+      "domain": "www.google.org",
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
