@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
-import { GoogleSERP, Serp } from './index';
+import { GoogleSERP } from './index';
+import { Serp } from './models';
 
 test('GoogleSERP should return empty organic array on empty html string', () => {
   expect(GoogleSERP('').organic).toEqual([]);
@@ -55,8 +56,6 @@ describe('Parsing Google page with 100 results', () => {
   beforeAll(() => {
     html = fs.readFileSync('test/google100.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
-    // console.dir(serp);
-
   });
 
   test('serp should have 98 results', () => {
@@ -64,7 +63,7 @@ describe('Parsing Google page with 100 results', () => {
   });
 
   test('all results should have domain domains.google', () => {
-    expect(serp.organic.filter(x => x.url.match(/[a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/g) == null)).toEqual([]);
+    expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
   test('2nd result should have url https://domains.google/', () => {
@@ -150,7 +149,7 @@ describe('Parsing nojs Google page with 100 resuts', () => {
   });
 
   test('all results should have domain domains.google', () => {
-    expect(serp.organic.filter(x => x.url.match(/[a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/g) == null)).toEqual([]);
+    expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
   test('4th result should have url https://domains.google/', () => {
