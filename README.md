@@ -36,16 +36,16 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with position, title, url, domain, snippet and sitelinks
+It will return serp object with array of results with domain, position, title, url, sitelinks and snippet 
 ```
 {
   "keyword: "google",
   "organic": [
     {
+      "domain": "www.google.com",
       "position": 1,
       "title": "Google",
       "url": "https://www.google.com/",
-      "domain": "www.google.com",
       "sitelinks": [
         { "title": "Google Docs", 
           "snippet": "Google Docs brings your documents to life with smart ...",
@@ -58,10 +58,10 @@ It will return serp object with array of results with position, title, url, doma
       "snippet": "Settings Your data in Search Help Send feedback. AllImages. Account · Assistant · Search · Maps · YouTube · Play · News · Gmail · Contacts · Drive · Calendar."
     },
     {
+      "domain": "www.google.org",
       "position": 2,
       "title": "Google.org: Home",
       "url": "https://www.google.org/",
-      "domain": "www.google.org",
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
