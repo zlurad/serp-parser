@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getUrlFromQuery } from "./utils";
+import { getDomain, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -49,7 +49,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
-    const url = getUrlFromQuery($(element).prop('href'))
+    const url = getUrlFromQuery($(element).prop('href'));
     const domain = getDomain(url);
     const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
     const snippet = getSnippet($, element)
