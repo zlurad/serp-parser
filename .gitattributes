@@ -1,2 +1,2 @@
 # Mark test html files as documentation to not inflate github repo language stats
-test/* linguist-documentation
+test/* linguist-generated
