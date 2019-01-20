@@ -64,6 +64,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
       url,
     };
     parseSitelinks($, element, result, true);
+    parseCachedAndSimilarUrlsNojs($, element, result);
     serp.organic.push(result);
   });
 };
@@ -130,6 +131,26 @@ const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, re
   $(element)
     .closest('.r')
     .find('span ol > li.action-menu-item > a')
+    .each((i, el) => {
+      if ($(el).text() === 'Cached') {
+        cachedUrl = $(el).prop('href');
+      } else if ($(el).text() === 'Similar') {
+        similarUrl = $(el).prop('href');
+      }
+    });
+  if (cachedUrl !== '') {
+    result.cachedUrl = cachedUrl;
+  }
+  if (similarUrl !== '') {
+    result.similarUrl = similarUrl;
+  }
+};
+const parseCachedAndSimilarUrlsNojs = ($: CheerioStatic, element: CheerioElement, result: Result) => {
+  let cachedUrl = '';
+  let similarUrl = '';
+  $(element)
+    .closest('.g')
+    .find('cite + .Pj9hGd ul .mUpfKd > a')
     .each((i, el) => {
       if ($(el).text() === 'Cached') {
         cachedUrl = $(el).prop('href');
