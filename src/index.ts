@@ -40,7 +40,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
       url,
     };
     parseSitelinks($, element, result, false);
-    parseCachedAndSimilarUrls($, element, result);
+    parseCachedAndSimilarUrls($, element, result, false);
     serp.organic.push(result);
   });
 };
@@ -64,7 +64,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
       url,
     };
     parseSitelinks($, element, result, true);
-    parseCachedAndSimilarUrlsNojs($, element, result);
+    parseCachedAndSimilarUrls($, element, result, true);
     serp.organic.push(result);
   });
 };
@@ -125,32 +125,12 @@ const parseGoogleInlineSitelinks = (
   });
 };
 
-const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, result: Result) => {
+const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, result: Result, nojs: boolean) => {
   let cachedUrl = '';
   let similarUrl = '';
   $(element)
-    .closest('.r')
-    .find('span ol > li.action-menu-item > a')
-    .each((i, el) => {
-      if ($(el).text() === 'Cached') {
-        cachedUrl = $(el).prop('href');
-      } else if ($(el).text() === 'Similar') {
-        similarUrl = $(el).prop('href');
-      }
-    });
-  if (cachedUrl !== '') {
-    result.cachedUrl = cachedUrl;
-  }
-  if (similarUrl !== '') {
-    result.similarUrl = similarUrl;
-  }
-};
-const parseCachedAndSimilarUrlsNojs = ($: CheerioStatic, element: CheerioElement, result: Result) => {
-  let cachedUrl = '';
-  let similarUrl = '';
-  $(element)
-    .closest('.g')
-    .find('cite + .Pj9hGd ul .mUpfKd > a')
+    .closest(nojs ? '.g' : '.r')
+    .find(nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a')
     .each((i, el) => {
       if ($(el).text() === 'Cached') {
         cachedUrl = $(el).prop('href');
