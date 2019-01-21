@@ -36,7 +36,7 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with domain, position, title, url, sitelinks and snippet 
+It will return serp object with array of results with domain, position, title, url, cached url, similar url, sitelinks and snippet 
 ```
 {
   "keyword: "google",
@@ -46,6 +46,8 @@ It will return serp object with array of results with domain, position, title, u
       "position": 1,
       "title": "Google",
       "url": "https://www.google.com/",
+      "cachedUrl": "https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us",
+      "similarUrl": "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAAegQIARAG",
       "sitelinks": [
         { "title": "Google Docs", 
           "snippet": "Google Docs brings your documents to life with smart ...",
@@ -62,6 +64,8 @@ It will return serp object with array of results with domain, position, title, u
       "position": 2,
       "title": "Google.org: Home",
       "url": "https://www.google.org/",
+      "cachedUrl": "https://webcache.googleusercontent.com/search?q=cache:Nm9ycLj-SKoJ:https://www.google.org/+&cd=24&hl=en&ct=clnk&gl=us",
+      "similarUrl": "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.org/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAXegQIDBAF",
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...

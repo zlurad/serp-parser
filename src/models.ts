@@ -5,6 +5,8 @@ export interface Serp {
 
 export interface Result {
   domain: string;
+  cachedUrl?: string;
+  similarUrl?: string;
   position: number;
   sitelinks?: Sitelink[];
   snippet: string;
