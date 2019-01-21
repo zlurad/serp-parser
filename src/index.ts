@@ -126,22 +126,17 @@ const parseGoogleInlineSitelinks = (
 };
 
 const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, result: Result, nojs: boolean) => {
-  let cachedUrl = '';
-  let similarUrl = '';
   $(element)
     .closest(nojs ? '.g' : '.r')
     .find(nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a')
     .each((i, el) => {
-      if ($(el).text() === 'Cached') {
-        cachedUrl = $(el).prop('href');
-      } else if ($(el).text() === 'Similar') {
-        similarUrl = $(el).prop('href');
+      switch ($(el).text()) {
+        case 'Cached':
+          result.cachedUrl = $(el).prop('href');
+          break;
+        case 'Similar':
+          result.similarUrl = $(el).prop('href');
+          break;
       }
     });
-  if (cachedUrl !== '') {
-    result.cachedUrl = cachedUrl;
-  }
-  if (similarUrl !== '') {
-    result.similarUrl = similarUrl;
-  }
 };
