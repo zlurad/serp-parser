@@ -15,6 +15,13 @@ describe('Parsing Google page with 10 resuts', () => {
     serp = GoogleSERP(html);
   });
 
+  test('Page should have 15,860,000,000 results', () => {
+    expect(serp.totalResults).toBe(15860000000);
+  });
+  test('Search should be done in 0.61 seconds', () => {
+    expect(serp.timeTaken).toBe(0.61);
+  });
+
   test('serp should have 7 results', () => {
     expect(serp.organic).toHaveLength(7);
   });
@@ -107,6 +114,10 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   beforeAll(() => {
     html = fs.readFileSync('test/google-nojs.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
+  });
+
+  test('Page should have 16,370,000,000 results', () => {
+    expect(serp.totalResults).toBe(16370000000);
   });
 
   test('serp should have 7 results', () => {

@@ -10,6 +10,7 @@ export const GoogleSERP = (html: string): Serp => {
   const serp: Serp = {
     keyword: '',
     organic: [],
+    totalResults: 0,
   };
 
   if ($('body').hasClass('srp')) {
@@ -23,6 +24,8 @@ export const GoogleSERP = (html: string): Serp => {
 
 const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('input[aria-label="Search"]').val();
+  serp.totalResults = getResults($);
+  serp.timeTaken = getTime($);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -47,6 +50,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('#sbhost').val();
+  serp.totalResults = getResults($);
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -139,4 +143,26 @@ const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, re
           break;
       }
     });
+};
+
+const getResults = ($: CheerioStatic) => {
+  const resultStats = $('#resultStats').text();
+  const resultsRegex = /[\d,]+(?= results)/g;
+
+  // Need next line ===> tslint doesn't allow resultStats.match(resultsRegex)[0] because resultStats.match(resultsRegex) is possibly null?
+  const resultsMatched: any = resultStats.match(resultsRegex)/* cant put [0] here because of tslint */;
+  const resultsFormatted: string = resultsMatched[0].replace(/,/g, '');
+  const totalResults: number = parseInt(resultsFormatted, 10);
+
+  return totalResults;
+};
+
+const getTime = ($: CheerioStatic) => {
+  const resultStats = $('#resultStats').text();
+  const timeRegex = /[\d.]+(?= seconds)/g;
+
+  const timeMatched: any = resultStats.match(timeRegex);
+  const timeTaken: number = parseFloat(timeMatched[0]);
+
+  return timeTaken;
 };
