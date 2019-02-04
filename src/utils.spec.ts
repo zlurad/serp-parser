@@ -1,4 +1,4 @@
-import { getDomain, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getUrlFromQuery } from './utils';
 
 describe('Testing getDomain utility', () => {
   // test('for empty input it should return empty string', () => {
@@ -30,3 +30,15 @@ describe('Testing getUrlFromSearchString utility', () => {
     );
   });
 });
+
+describe('Testing getFirstMatch utility', () => {
+
+  test('for provided string input that has matches with provided regex it should return only the first match', () => {
+    expect(getFirstMatch('abcdefg', /cde/)).toBe('cde');
+    expect(getFirstMatch('abcdefg', /cde/g)).toBe('cde'); // with global flag
+    expect(getFirstMatch('abcdefgcde', /cde/g)).toBe('cde'); // with multiple matches
+  });
+  test('for provided string that has no matches with the provided regex it should return empty string', () => {
+      expect(getFirstMatch('abcd', /efg/)).toBe('');
+  } );
+})
