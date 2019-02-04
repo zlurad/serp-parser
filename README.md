@@ -40,6 +40,8 @@ It will return serp object with array of results with domain, position, title, u
 ```
 {
   "keyword: "google",
+  "totalResults": 15860000000, 
+  "timeTaken": 0.61,
   "organic": [
     {
       "domain": "www.google.com",
