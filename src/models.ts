@@ -1,7 +1,7 @@
 export interface Serp {
   keyword: string;
   organic: Result[];
-  totalResults: number;
+  totalResults?: number;
   timeTaken?: number;
 }
 

@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getUrlFromQuery  } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -24,8 +24,8 @@ export const GoogleSERP = (html: string): Serp => {
 
 const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('input[aria-label="Search"]').val();
-  serp.totalResults = getResults($);
-  serp.timeTaken = getTime($);
+  getResults(serp,$);
+  getTime(serp, $);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -50,7 +50,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('#sbhost').val();
-  serp.totalResults = getResults($);
+  getResults(serp,$);
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -145,24 +145,27 @@ const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, re
     });
 };
 
-const getResults = ($: CheerioStatic) => {
+const getResults = (serp: Serp, $: CheerioStatic) => {
   const resultStats = $('#resultStats').text();
   const resultsRegex = /[\d,]+(?= results)/g;
 
-  // Need next line ===> tslint doesn't allow resultStats.match(resultsRegex)[0] because resultStats.match(resultsRegex) is possibly null?
-  const resultsMatched: any = resultStats.match(resultsRegex)/* cant put [0] here because of tslint */;
-  const resultsFormatted: string = resultsMatched[0].replace(/,/g, '');
+  const resultsMatched: string = getFirstMatch(resultStats, resultsRegex);
+  const resultsFormatted: string = resultsMatched.replace(/,/g, '');
   const totalResults: number = parseInt(resultsFormatted, 10);
 
-  return totalResults;
+  if (totalResults) {
+    serp.totalResults = totalResults;
+  }
 };
 
-const getTime = ($: CheerioStatic) => {
+const getTime = (serp: Serp, $: CheerioStatic) => {
   const resultStats = $('#resultStats').text();
   const timeRegex = /[\d.]+(?= seconds)/g;
 
-  const timeMatched: any = resultStats.match(timeRegex);
-  const timeTaken: number = parseFloat(timeMatched[0]);
+  const timeMatched: string = getFirstMatch(resultStats, timeRegex);
+  const timeTaken: number = parseFloat(timeMatched);
 
-  return timeTaken;
+  if (timeTaken) {
+    serp.timeTaken = timeTaken;
+  }
 };

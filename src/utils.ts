@@ -8,3 +8,8 @@ export const getUrlFromQuery = (query: string): string => {
   // if there is no q parameter, url is related to google search and we will return it in full
   return searchParams.get('q') || 'https://google.com' + query;
 };
+
+export const getFirstMatch = (str: string, reg: RegExp) => {
+  const matches = str.match(reg);
+  return matches ? matches[0] : '';
+};
