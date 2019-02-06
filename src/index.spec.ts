@@ -264,3 +264,16 @@ describe('Parsing nojs "The Matrix" search page', () => {
     }
   });
 });
+
+describe('Testing functions', () => {
+  let serp: Serp;
+
+  beforeAll(() => {
+    serp = GoogleSERP('<body class="srp"><div></div></body>');
+  });
+
+  test('testing getResults and getTime function for non existent results', () => {
+    expect(serp.totalResults).toBeUndefined();
+    expect(serp.timeTaken).toBeUndefined();
+  });
+});

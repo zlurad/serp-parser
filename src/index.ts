@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getFirstMatch, getUrlFromQuery  } from './utils';
+import { getDomain, getFirstMatch, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -10,7 +10,6 @@ export const GoogleSERP = (html: string): Serp => {
   const serp: Serp = {
     keyword: '',
     organic: [],
-    totalResults: 0,
   };
 
   if ($('body').hasClass('srp')) {
@@ -24,8 +23,9 @@ export const GoogleSERP = (html: string): Serp => {
 
 const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('input[aria-label="Search"]').val();
-  getResults(serp,$);
-  getTime(serp, $);
+  const resultText = $('#resultStats').text();
+  getResults(serp, resultText);
+  getTime(serp, resultText);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -50,7 +50,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('#sbhost').val();
-  getResults(serp,$);
+  getResults(serp, $('#resultStats').text());
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -145,27 +145,18 @@ const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, re
     });
 };
 
-const getResults = (serp: Serp, $: CheerioStatic) => {
-  const resultStats = $('#resultStats').text();
+const getResults = (serp: Serp, text: string) => {
   const resultsRegex = /[\d,]+(?= results)/g;
-
-  const resultsMatched: string = getFirstMatch(resultStats, resultsRegex);
-  const resultsFormatted: string = resultsMatched.replace(/,/g, '');
-  const totalResults: number = parseInt(resultsFormatted, 10);
-
-  if (totalResults) {
-    serp.totalResults = totalResults;
+  const resultsMatched: string = getFirstMatch(text, resultsRegex).replace(/,/g, '');
+  if (resultsMatched !== '') {
+    serp.totalResults = parseInt(resultsMatched, 10);
   }
 };
 
-const getTime = (serp: Serp, $: CheerioStatic) => {
-  const resultStats = $('#resultStats').text();
+const getTime = (serp: Serp, text: string) => {
   const timeRegex = /[\d.]+(?= seconds)/g;
-
-  const timeMatched: string = getFirstMatch(resultStats, timeRegex);
-  const timeTaken: number = parseFloat(timeMatched);
-
-  if (timeTaken) {
-    serp.timeTaken = timeTaken;
+  const timeMatched: string = getFirstMatch(text, timeRegex);
+  if (timeMatched !== '') {
+    serp.timeTaken = parseFloat(timeMatched);
   }
 };
