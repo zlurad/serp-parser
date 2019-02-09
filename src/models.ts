@@ -10,6 +10,7 @@ export interface Result {
   cachedUrl?: string;
   similarUrl?: string;
   position: number;
+  linkType: string;
   sitelinks?: Sitelink[];
   snippet: string;
   title: string;
