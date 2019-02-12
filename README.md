@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/zlurad/serp-parser.svg?branch=master)](https://travis-ci.org/zlurad/serp-parser) [![codecov](https://codecov.io/gh/zlurad/serp-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/zlurad/serp-parser)
 
-serp-parser is small lib writen in typescript used to extract search engine rank position from the html. 
+serp-parser is small lib writen in typescript used to extract search engine rank position from the html.
 
 ## Instalation
 
@@ -36,11 +36,12 @@ request('https://www.google.com/search?q=google', function (error, response, htm
 });
 ```
 
-It will return serp object with array of results with domain, position, title, url, cached url, similar url, sitelinks and snippet 
+It will return serp object with array of results with domain, position, title, url, cached url, similar url, link type, sitelinks and snippet
+
 ```
 {
   "keyword: "google",
-  "totalResults": 15860000000, 
+  "totalResults": 15860000000,
   "timeTaken": 0.61,
   "organic": [
     {
@@ -50,11 +51,12 @@ It will return serp object with array of results with domain, position, title, u
       "url": "https://www.google.com/",
       "cachedUrl": "https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us",
       "similarUrl": "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAAegQIARAG",
+      "linkType": "HOME",
       "sitelinks": [
-        { "title": "Google Docs", 
+        { "title": "Google Docs",
           "snippet": "Google Docs brings your documents to life with smart ...",
           "type": "card" },
-        { "title": "Google News", 
+        { "title": "Google News",
           "snippet": "Comprehensive up-to-date news coverage, aggregated from ...",
           "type": "card" },
         ...
@@ -68,6 +70,7 @@ It will return serp object with array of results with domain, position, title, u
       "url": "https://www.google.org/",
       "cachedUrl": "https://webcache.googleusercontent.com/search?q=cache:Nm9ycLj-SKoJ:https://www.google.org/+&cd=24&hl=en&ct=clnk&gl=us",
       "similarUrl": "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.org/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAXegQIDBAF",
+      "linkType": "HOME",
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
