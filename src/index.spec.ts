@@ -69,15 +69,6 @@ describe('Parsing Google page with 10 resuts', () => {
   test('2nd result should not have sitelinks', () => {
     expect(serp.organic[1].hasOwnProperty('sitelinks')).toBeFalsy();
   });
-
-  test('2nd result should have linktype "Home page"', () => {
-    expect(serp.organic[1].linkType).toMatch(/home page/i);
-    // expect toMatch instead of toBe because it allows more flexibility with linkType values: Home Page, home page, HOME PAGE etc
-  });
-  test('4th result should have linktype "Landing page"', () => {
-    expect(serp.organic[3].linkType).toMatch(/landing page/i);
-    // expect toMatch instead of toBe because it allows more flexibility with linkType values: Landing Page, landing page, LANDING PAGE etc
-  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -175,14 +166,6 @@ describe('Parsing nojs Google page with 10 resuts', () => {
 
   test('3rd result should not have sitelinks', () => {
     expect(serp.organic[2].hasOwnProperty('sitelinks')).toBeFalsy();
-  });
-
-  test('3rd result should have linkType "Home page"', () => {
-    expect(serp.organic[2].linkType).toMatch(/home page/i);
-  });
-
-  test('4th result should have linkType "Landing page"', () => {
-    expect(serp.organic[3].linkType).toMatch(/landing page/i);
   });
 
   test('Keyword should be google', () => {

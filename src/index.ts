@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getFirstMatch, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -35,7 +35,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
       .find('h3')
       .text();
     const snippet = getSnippet($, element);
-    const linkType = getLinkType(url, domain);
+    const linkType = getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -62,7 +62,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
     const snippet = getSnippet($, element)
       .replace(/(&nbsp;)/g, ' ')
       .replace(/ +(?= )/g, '');
-    const linkType = getLinkType(url, domain);
+    const linkType = getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -163,13 +163,4 @@ const getTime = (serp: Serp, text: string) => {
   if (timeMatched !== '') {
     serp.timeTaken = parseFloat(timeMatched);
   }
-};
-
-const getLinkType = (url: string, domain: string) => {
-  const landingPageRegex = new RegExp(`${domain}/.+`);
-  const isLandingPage = getFirstMatch(url, landingPageRegex);
-  if (isLandingPage !== '') {
-    return 'Landing page';
-  }
-  return 'Home page';
 };

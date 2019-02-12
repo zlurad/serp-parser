@@ -10,7 +10,7 @@ export interface Result {
   cachedUrl?: string;
   similarUrl?: string;
   position: number;
-  linkType: string;
+  linkType: LinkType;
   sitelinks?: Sitelink[];
   snippet: string;
   title: string;
@@ -21,4 +21,9 @@ export interface Sitelink {
   title: string;
   snippet?: string;
   type: string;
+}
+
+export enum LinkType {
+  landing = 'LANDING',
+  home = 'HOME'
 }
