@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getFirstMatch, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -35,8 +35,10 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
       .find('h3')
       .text();
     const snippet = getSnippet($, element);
+    const linkType = getLinkType(url);
     const result: Result = {
       domain,
+      linkType,
       position,
       snippet,
       title,
@@ -60,8 +62,10 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
     const snippet = getSnippet($, element)
       .replace(/(&nbsp;)/g, ' ')
       .replace(/ +(?= )/g, '');
+    const linkType = getLinkType(url);
     const result: Result = {
       domain,
+      linkType,
       position,
       snippet,
       title,
