@@ -21,6 +21,14 @@ describe('Parsing Google page with 10 resuts', () => {
   test('Search should be done in 0.61 seconds', () => {
     expect(serp.timeTaken).toBe(0.61);
   });
+  test('Current page should be 1', () => {
+    expect(serp.currentPage).toBe(1);
+  });
+  test(`Link to 2nd page should have path 
+  "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
+    expect(serp.pagination[1].path)
+    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB');
+  });
 
   test('serp should have 7 results', () => {
     expect(serp.organic).toHaveLength(7);
@@ -122,6 +130,15 @@ describe('Parsing nojs Google page with 10 resuts', () => {
 
   test('serp should have 7 results', () => {
     expect(serp.organic).toHaveLength(7);
+  });
+
+  test('Current page should be 1', () => {
+    expect(serp.currentPage).toBe(1);
+  });
+  test(`Link to 2nd page should have path 
+  "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N"`, () => {
+    expect(serp.pagination[1].path)
+    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N');
   });
 
   test('5th result should have domain domains.google', () => {

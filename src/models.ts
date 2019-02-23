@@ -3,6 +3,13 @@ export interface Serp {
   organic: Result[];
   totalResults?: number;
   timeTaken?: number;
+  currentPage: number;
+  pagination: PageNavigation[]
+}
+
+export interface PageNavigation {
+  page: number;
+  path: string;
 }
 
 export interface Result {
