@@ -106,8 +106,8 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
   var pageslinks:any = [];
   var paginationSitelinks;
   if(nojs){
-    var currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
-    var nextPage    = $('div#foot > table#nav > tr > td').find('a.fl').attr('href');
+    var currentPage = Number($('table#nav > tr > td:not(.b) > b').text());
+    var nextPage    = $('table#nav  > tr > td').last().find('a').attr('href');
     paginationSitelinks = $('div#foot > table#nav > tr');
     paginationSitelinks.each(function (i, el) {
         var td = $(el).find('td:not(.b)');
@@ -124,8 +124,8 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
     pagination.nextPage   = nextPage;
 
   } else {
-    var currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
-    var nextPage    = $('div#foot > table#nav > tr > td').find('a.pn').attr('href');
+    var currentPage = Number($('table#nav > tr > td:not(.b) > b').text());
+    var nextPage    = $('table#nav  > tr > td').last().find('a').attr('href');
     paginationSitelinks = $('table#nav > tr');
     paginationSitelinks.each(function (i, el) {
         var td = $(el).find('td:not(.cur)');
