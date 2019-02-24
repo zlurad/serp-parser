@@ -20,6 +20,7 @@ export interface Result {
 }
 export interface  Pagination {
   currentPage: number;
+  nextPage: string;
   pages: PageLink[];
 }
 
