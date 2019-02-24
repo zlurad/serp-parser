@@ -106,6 +106,7 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
   var pageslinks:any = [];
   var paginationSitelinks;
   if(nojs){
+    var currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
     paginationSitelinks = $('div#foot > table#nav > tr');
     paginationSitelinks.each(function (i, el) {
         var td = $(el).find('td:not(.b)');
@@ -113,12 +114,14 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
           let data: any = {};
           data.pageNo = Number($(el).text())
           data.pageLink   = $(el).find('a').attr('href') ? $(el).find('a').attr('href') : false;
-          pageslinks.push(data)
+          if(currentPage != data.pageNo){
+            pageslinks.push(data)
+          }
         });
     });
-    pagination.currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
+    pagination.currentPage = currentPage;
   } else {
-
+    var currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
     paginationSitelinks = $('table#nav > tr');
     paginationSitelinks.each(function (i, el) {
         var td = $(el).find('td:not(.cur)');
@@ -126,10 +129,12 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
           let data: any = {};
           data.pageNo = Number($(el).text())
           data.pageLink   = $(el).find('a').attr('href') ? $(el).find('a').attr('href') : false;
-          pageslinks.push(data)
+          if(currentPage != data.pageNo){
+            pageslinks.push(data)
+          }
         });
     });
-    pagination.currentPage = Number($('table#nav > tr > td.cur').text());
+    pagination.currentPage = currentPage;
   }
 
   pagination.pages = pageslinks;
