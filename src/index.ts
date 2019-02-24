@@ -143,7 +143,7 @@ const  parseRelatedKeywords = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
   var relatedlinks:any = [];
   var relatedSitelinks;
   if(nojs){
-    relatedSitelinks = $('#center_col > div:nth-child(3) > table > tr');
+    relatedSitelinks = $('#center_col > div > table > tr');
     relatedSitelinks.each(function (i, el) {
         var td = $(el).find('td');
         td.each(function (i, el) {
