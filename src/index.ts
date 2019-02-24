@@ -124,8 +124,8 @@ const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
     pagination.nextPage   = nextPage;
 
   } else {
-    var currentPage = Number($('table#nav > tr > td > b:not(:empty)').text())
-    var nextPage    = $('table#nav  > tr > td').last().find('a').attr('href');
+    var currentPage = Number($('table#nav > tbody > tr > td.cur').text());
+    var nextPage    =  $('table#nav  > tbody > tr > td').last().find('a').attr('href');
     paginationSitelinks = $('table#nav > tr');
     paginationSitelinks.each(function (i, el) {
         var td = $(el).find('td:not(.cur)');
