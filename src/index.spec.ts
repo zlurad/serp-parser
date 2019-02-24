@@ -30,14 +30,14 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[2].url).toBe('https://domains.google/');
   });
 
-  test(`1st result should have cachedUrl 
+  test(`1st result should have cachedUrl
   "https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us"
   `, () => {
     expect(serp.organic[0].cachedUrl).toBe(
       'https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us',
     );
   });
-  test(`1st result should have similarUrl 
+  test(`1st result should have similarUrl
   "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAAegQIARAG"
   `, () => {
     expect(serp.organic[0].similarUrl).toBe(

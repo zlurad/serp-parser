@@ -1,6 +1,8 @@
 export interface Serp {
   keyword: string;
   organic: Result[];
+  related?: Related[];
+  pagination?: Pagination[];
   totalResults?: number;
   timeTaken?: number;
 }
@@ -15,6 +17,21 @@ export interface Result {
   snippet: string;
   title: string;
   url: string;
+}
+export interface  Pagination {
+  currentPage: number;
+  pages: PageLink[];
+}
+
+export interface Related {
+  position?: number;
+  keyword?: string;
+  link?: string;
+}
+
+export interface PageLink {
+  pageNo: number;
+  pageLink: string;
 }
 
 export interface Sitelink {

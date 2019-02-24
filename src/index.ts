@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Result, Serp, Sitelink } from './models';
+import { Result, Serp, Sitelink, Related, Pagination, PageLink } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -10,6 +10,8 @@ export const GoogleSERP = (html: string): Serp => {
   const serp: Serp = {
     keyword: '',
     organic: [],
+    related: [],
+    pagination: []
   };
 
   if ($('body').hasClass('srp')) {
@@ -48,6 +50,8 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
     parseCachedAndSimilarUrls($, element, result, false);
     serp.organic.push(result);
   });
+  serp.related  = parseRelatedKeywords($, serp, false)
+  serp.pagination = parsePagination($, serp, false)
 };
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
@@ -75,6 +79,9 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
     parseCachedAndSimilarUrls($, element, result, true);
     serp.organic.push(result);
   });
+  serp.related  = parseRelatedKeywords($, serp, true)
+  serp.pagination = parsePagination($, serp, true)
+
 };
 
 const getSnippet = ($: CheerioStatic, element: CheerioElement): string => {
@@ -92,6 +99,78 @@ const parseSitelinks = ($: CheerioStatic, element: CheerioElement, result: Resul
   if (sitelinks.length > 0) {
     result.sitelinks = sitelinks;
   }
+};
+
+const  parsePagination = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
+  var pagination:any = {};
+  var pageslinks:any = [];
+  var paginationSitelinks;
+  if(nojs){
+    paginationSitelinks = $('div#foot > table#nav > tr');
+    paginationSitelinks.each(function (i, el) {
+        var td = $(el).find('td:not(.b)');
+        td.each(function (i, el) {
+          let data: any = {};
+          data.pageNo = Number($(el).text())
+          data.pageLink   = $(el).find('a').attr('href') ? $(el).find('a').attr('href') : false;
+          pageslinks.push(data)
+        });
+    });
+    pagination.currentPage = Number($('div#foot > table#nav > tr > td:not(.b) > b').text());
+  } else {
+
+    paginationSitelinks = $('table#nav > tr');
+    paginationSitelinks.each(function (i, el) {
+        var td = $(el).find('td:not(.cur)');
+        td.each(function (i, el) {
+          let data: any = {};
+          data.pageNo = Number($(el).text())
+          data.pageLink   = $(el).find('a').attr('href') ? $(el).find('a').attr('href') : false;
+          pageslinks.push(data)
+        });
+    });
+    pagination.currentPage = Number($('table#nav > tr > td.cur').text());
+  }
+
+  pagination.pages = pageslinks;
+
+  return pagination;
+
+};
+
+const  parseRelatedKeywords = ($: CheerioStatic, serp: Serp, nojs: boolean) => {
+  var index:number = 0;
+  var relatedlinks:any = [];
+  var relatedSitelinks;
+  if(nojs){
+    relatedSitelinks = $('#center_col > div:nth-child(3) > table > tr');
+    relatedSitelinks.each(function (i, el) {
+        var td = $(el).find('td');
+        td.each(function (i, el) {
+          let data: Related = {};
+          index++
+          data.position = index;
+          data.keyword = $(el).find('p').text();
+          data.link    = $(el).find('p').find('a').attr('href');
+          relatedlinks.push(data)
+
+        });
+    });
+  } else {
+    relatedSitelinks = $('#brs > g-section-with-header > div.card-section');
+    relatedSitelinks.each(function (i, el) {
+        var p = $(el).find('p');
+        p.each(function (i, el) {
+          let data: Related = {};
+          index++
+          data.position = index;
+          data.keyword = $(el).text();
+          data.link    = $(el).find('a').attr('href');
+          relatedlinks.push(data)
+        });
+    });
+  }
+  return relatedlinks
 };
 
 const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sitelinks: Sitelink[]) => {
