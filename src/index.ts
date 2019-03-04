@@ -177,7 +177,7 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
   const pagination = $('table#nav');
   serp.pagination.push({
     page: serp.currentPage,
-    path: '' // how to set the path of current page
+    path: ''
   });
   pagination.find('td:not(.b) a').each((index, element) => {
     serp.pagination.push({

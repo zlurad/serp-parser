@@ -4,10 +4,10 @@ export interface Serp {
   totalResults?: number;
   timeTaken?: number;
   currentPage: number;
-  pagination: PageNavigation[]
+  pagination: Pagination[]
 }
 
-export interface PageNavigation {
+export interface Pagination {
   page: number;
   path: string;
 }
