@@ -16,6 +16,7 @@ yarn add serp-parser
 GoogleSERP accepts both html that is extracted with any headless browser lib (`puppeteer`, `phantomjs`...) that have enabled javascript as well as html page structure from no-js-enabled requests from for example `request` lib.
 
 With html from headless browser
+
 ```
 import { GoogleSERP } from 'serp-parser'
 
@@ -25,6 +26,7 @@ console.log(results);
 ```
 
 Or on es5 with request lib
+
 ```
 var request = require("request")
 var sp = require("serp-parser")
@@ -43,6 +45,14 @@ It will return serp object with array of results with domain, position, title, u
   "keyword: "google",
   "totalResults": 15860000000,
   "timeTaken": 0.61,
+  "currentPage": 1,
+  "pagination": [
+    { page: 1,
+      path: "" },
+    { page: 2,
+      path: "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB" },
+    ...
+  ],
   "organic": [
     {
       "domain": "www.google.com",
