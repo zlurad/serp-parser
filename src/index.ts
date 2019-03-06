@@ -8,8 +8,10 @@ export const GoogleSERP = (html: string): Serp => {
     xmlMode: true,
   });
   const serp: Serp = {
+    currentPage: 1,
     keyword: '',
     organic: [],
+    pagination: []
   };
 
   if ($('body').hasClass('srp')) {
@@ -26,6 +28,9 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   const resultText = $('#resultStats').text();
   getResults(serp, resultText);
   getTime(serp, resultText);
+
+  serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
+  getPagination(serp, $);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -53,6 +58,9 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.keyword = $('#sbhost').val();
   getResults(serp, $('#resultStats').text());
+
+  serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
+  getPagination(serp, $);
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -163,4 +171,18 @@ const getTime = (serp: Serp, text: string) => {
   if (timeMatched !== '') {
     serp.timeTaken = parseFloat(timeMatched);
   }
+};
+
+const getPagination = (serp: Serp, $: CheerioStatic) => {
+  const pagination = $('table#nav');
+  serp.pagination.push({
+    page: serp.currentPage,
+    path: ''
+  });
+  pagination.find('td:not(.b) a').each((index, element) => {
+    serp.pagination.push({
+      page: parseInt($(element).text(), 10),
+      path: $(element).prop('href'),
+    });
+  });
 };
