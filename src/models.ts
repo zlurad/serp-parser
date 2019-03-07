@@ -15,8 +15,10 @@ export interface Pagination {
 export interface VideoCard {
   title: string;
   sitelink: string;
-  date: string;
+  date: Date;
   source: string;
+  channel: string;
+  videoDuration: string;
 }
 
 export interface Result {

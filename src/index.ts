@@ -201,14 +201,16 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
       .find('a')
       .attr('href');
     const source = $(element).find('.zECGdd:not(.RgAZAc) .cJzOGc').text();
-    /* const date = getDate($(element).find('.zECGdd:not(.RgAZAc)').text()); */
-    const videoCardFooter = $(element).find('.zECGdd:not(.RgAZAc)').text();
-    const date = getFirstMatch(videoCardFooter, new RegExp(`(?<=${source}( - )).+`));
+    const date = new Date($(element).find('.zECGdd:not(.RgAZAc)').text());
+    const channel = $(element).find('.zECGdd.RgAZAc').text();
+    const videoDuration = $(element).find('.k8B8Pc').text();
     const videoCard = {
+      channel,
       date,
       sitelink,
       source,
-      title
+      title,
+      videoDuration
     };
     if (serp.videos) {
       serp.videos.push(videoCard);

@@ -272,10 +272,20 @@ describe('Parsing "The Matrix" search page', () => {
       expect(serp.videos[0].source).toBe('YouTube');
     }
   });
-  test(`first videoCard in videos array should have date 
-  "Oct 29, 2018"`, () => {
+  test(`first videoCard in videos array should have string representation of date 
+  "Mon Oct 29 2018"`, () => {
     if (serp.videos) {
-      expect(serp.videos[0].date).toBe('Oct 29, 2018');
+      expect(serp.videos[0].date.toDateString()).toBe('Mon Oct 29 2018');
+    }
+  });
+  test('first videoCard in videos array should have channel "Warner Movies On Demand"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].channel).toBe('Warner Movies On Demand');
+    }
+  });
+  test('first videoCard in videos array should have videoDuration "2:23"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].videoDuration).toBe('2:23');
     }
   });
 });

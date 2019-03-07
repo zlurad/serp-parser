@@ -1,10 +1,5 @@
 import { LinkType } from './models';
 
-/* export const getDate = (str: string) => {
-  const dateObj = new Date(str);
-  return `${dateObj.getDate()} ${dateObj.getMonth()} ${dateObj.getFullYear()}`;
-} */
-
 export const getDomain = (url: string): string => {
   const href = new URL(url);
   return href.hostname;
