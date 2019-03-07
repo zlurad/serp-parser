@@ -77,6 +77,10 @@ describe('Parsing Google page with 10 resuts', () => {
   test('2nd result should not have sitelinks', () => {
     expect(serp.organic[1].hasOwnProperty('sitelinks')).toBeFalsy();
   });
+
+  test('testing videos property for non existent results', () => {
+    expect(serp.videos).toBeUndefined();
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -247,6 +251,25 @@ describe('Parsing "The Matrix" search page', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
+    }
+  });
+
+  test(`first videoCard in videos array should have title 
+  "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].title).toBe('The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99');
+    }
+  });
+  test(`first videoCard in videos array should have sitelink 
+  "https://www.youtube.com/watch?v=3DfOTKGvtOM"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=3DfOTKGvtOM');
+    }
+  });
+  test(`first videoCard in videos array should have date 
+  "29 9 2018"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].date).toBe('29 9 2018');
     }
   });
 });

@@ -4,12 +4,19 @@ export interface Serp {
   totalResults?: number;
   timeTaken?: number;
   currentPage: number;
-  pagination: Pagination[]
+  pagination: Pagination[],
+  videos?: VideoCard[]
 }
 
 export interface Pagination {
   page: number;
   path: string;
+}
+export interface VideoCard {
+  title: string;
+  sitelink: string;
+  date: string;
+  source?: string;
 }
 
 export interface Result {

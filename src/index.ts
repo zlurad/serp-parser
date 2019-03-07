@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
+import { getDate, getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -31,6 +31,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
   serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
   getPagination(serp, $);
+  getVideos(serp, $);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -184,5 +185,29 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
       page: parseInt($(element).text(), 10),
       path: $(element).prop('href'),
     });
+  });
+};
+
+const getVideos = (serp: Serp, $: CheerioStatic) => {
+  const videosCards = $('g-scrolling-carousel .BFJZOc g-inner-card');
+  if (videosCards.text()) {
+    serp.videos = [];
+  }
+  videosCards.each((index, element) => {
+    const title = $(element)
+      .find('div[role="heading"]')
+      .text();
+    const sitelink = $(element)
+      .find('a')
+      .attr('href');
+    const date = getDate($(element).find('.zECGdd:not(.RgAZAc)').text());
+    const videoCard = {
+      date,
+      sitelink,
+      title
+    };
+    if (serp.videos) {
+      serp.videos.push(videoCard);
+    }
   });
 };
