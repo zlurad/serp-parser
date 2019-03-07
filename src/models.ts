@@ -16,7 +16,7 @@ export interface VideoCard {
   title: string;
   sitelink: string;
   date: string;
-  source?: string;
+  source: string;
 }
 
 export interface Result {

@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { Result, Serp, Sitelink } from './models';
-import { getDate, getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -200,10 +200,14 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
     const sitelink = $(element)
       .find('a')
       .attr('href');
-    const date = getDate($(element).find('.zECGdd:not(.RgAZAc)').text());
+    const source = $(element).find('.zECGdd:not(.RgAZAc) .cJzOGc').text();
+    /* const date = getDate($(element).find('.zECGdd:not(.RgAZAc)').text()); */
+    const videoCardFooter = $(element).find('.zECGdd:not(.RgAZAc)').text();
+    const date = getFirstMatch(videoCardFooter, new RegExp(`(?<=${source}( - )).+`));
     const videoCard = {
       date,
       sitelink,
+      source,
       title
     };
     if (serp.videos) {

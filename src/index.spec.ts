@@ -266,10 +266,16 @@ describe('Parsing "The Matrix" search page', () => {
       expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=3DfOTKGvtOM');
     }
   });
-  test(`first videoCard in videos array should have date 
-  "29 9 2018"`, () => {
+  test(`first videoCard in videos array should have source 
+  "YouTube"`, () => {
     if (serp.videos) {
-      expect(serp.videos[0].date).toBe('29 9 2018');
+      expect(serp.videos[0].source).toBe('YouTube');
+    }
+  });
+  test(`first videoCard in videos array should have date 
+  "Oct 29, 2018"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].date).toBe('Oct 29, 2018');
     }
   });
 });
@@ -302,6 +308,10 @@ describe('Parsing nojs "The Matrix" search page', () => {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
     }
+  });
+
+  test('testing videos property for non existent results', () => {
+    expect(serp.videos).toBeUndefined();
   });
 });
 
