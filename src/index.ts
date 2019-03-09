@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Result, Serp, Sitelink } from './models';
+import { Result, Serp, Sitelink, RelatedKeyword } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -11,7 +11,8 @@ export const GoogleSERP = (html: string): Serp => {
     currentPage: 1,
     keyword: '',
     organic: [],
-    pagination: []
+    pagination: [],
+    relatedKeywords: []
   };
 
   if ($('body').hasClass('srp')) {
@@ -31,6 +32,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
   serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
   getPagination(serp, $);
+  getRelatedKeywords(serp, $, false);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -61,6 +63,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
 
   serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
   getPagination(serp, $);
+  getRelatedKeywords(serp, $, true);
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -91,6 +94,19 @@ const getSnippet = ($: CheerioStatic, element: CheerioElement): string => {
     .next()
     .find('.st')
     .text();
+};
+
+const getRelatedKeywords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
+  const relatedKeywords: RelatedKeyword[] = [];
+  const query = nojs ? 'p.aw5cc a' : 'p.nVcaUb a';
+  $(query).each(function(i, elem){
+    relatedKeywords.push({
+      keyword: $(elem).text(),
+      path: $(elem).prop('href')
+    });
+  });  
+
+  serp.relatedKeywords = relatedKeywords;
 };
 
 const parseSitelinks = ($: CheerioStatic, element: CheerioElement, result: Result, nojs: boolean) => {

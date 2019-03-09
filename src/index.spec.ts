@@ -24,6 +24,15 @@ describe('Parsing Google page with 10 resuts', () => {
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
   });
+  test('Page should have 8 related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(8);
+  });
+  test('1st related keyword should be "google search"', () => {
+    expect(serp.relatedKeywords[0].keyword).toBe('google search');
+  });
+  test('1st related keyword should have path', () => {
+    expect(serp.relatedKeywords[0].path).toBe('/search?safe=off&gl=US&pws=0&nfpr=1&q=google+search&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAHoECA0QAQ');
+  });
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
     expect(serp.pagination[1].path)
@@ -135,6 +144,17 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
   });
+
+  test('Page should have 8 related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(8);
+  });
+  test('1st related keyword should be "google search"', () => {
+    expect(serp.relatedKeywords[0].keyword).toBe('google search');
+  });
+  test('1st related keyword should have path', () => {
+    expect(serp.relatedKeywords[0].path).toBe('/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=google+search&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQ1QIIUCgA');
+  });
+
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N"`, () => {
     expect(serp.pagination[1].path)

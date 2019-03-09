@@ -84,6 +84,13 @@ It will return serp object with array of results with domain, position, title, u
       "snippet": "Data-driven, human-focused philanthropy powered by Google. We bring the best of Google to innovative nonprofits that are committed to creating a world that..."
     },
     ...
+  ],
+  "relatedKeywords": [
+    { keyword: google search,
+      path: "/search?safe=off&gl=US&pws=0&nfpr=1&q=google+search&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAHoECA0QAQ" },
+    { keyword: google account,
+      path: "/search?safe=off&gl=US&pws=0&nfpr=1&q=google+account&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAXoECA0QAg" },
+    ...
   ]
 }
 ```

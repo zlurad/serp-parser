@@ -4,11 +4,17 @@ export interface Serp {
   totalResults?: number;
   timeTaken?: number;
   currentPage: number;
-  pagination: Pagination[]
+  pagination: Pagination[];
+  relatedKeywords: RelatedKeyword[];
 }
 
 export interface Pagination {
   page: number;
+  path: string;
+}
+
+export interface RelatedKeyword {
+  keyword: string;
   path: string;
 }
 
