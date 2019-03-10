@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Result, Serp, Sitelink } from './models';
+import { Result, Serp, Sitelink, Thumbnail, ThumbnailGroup } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -11,7 +11,7 @@ export const GoogleSERP = (html: string): Serp => {
     currentPage: 1,
     keyword: '',
     organic: [],
-    pagination: []
+    pagination: [],
   };
 
   if ($('body').hasClass('srp')) {
@@ -31,6 +31,8 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
   serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
   getPagination(serp, $);
+  getVideos(serp, $);
+  getThumbnails(serp, $);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -177,12 +179,86 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
   const pagination = $('table#nav');
   serp.pagination.push({
     page: serp.currentPage,
-    path: ''
+    path: '',
   });
   pagination.find('td:not(.b) a').each((index, element) => {
     serp.pagination.push({
       page: parseInt($(element).text(), 10),
       path: $(element).prop('href'),
     });
+  });
+};
+
+const getVideos = (serp: Serp, $: CheerioStatic) => {
+  const videosCards = $('g-scrolling-carousel .BFJZOc g-inner-card');
+  if (videosCards.text()) {
+    // maybe change this to videosCards.length > 0 ?
+    serp.videos = [];
+  }
+  videosCards.each((index, element) => {
+    const title = $(element)
+      .find('div[role="heading"]')
+      .text();
+    const sitelink = $(element)
+      .find('a')
+      .attr('href');
+    const source = $(element)
+      .find('.zECGdd:not(.RgAZAc) .cJzOGc')
+      .text();
+    const date = new Date(
+      $(element)
+        .find('.zECGdd:not(.RgAZAc)')
+        .text(),
+    );
+    const channel = $(element)
+      .find('.zECGdd.RgAZAc')
+      .text();
+    const videoDuration = $(element)
+      .find('.k8B8Pc')
+      .text();
+    const videoCard = {
+      channel,
+      date,
+      sitelink,
+      source,
+      title,
+      videoDuration,
+    };
+    if (serp.videos) {
+      serp.videos.push(videoCard);
+    }
+  });
+};
+
+const getThumbnails = (serp: Serp, $: CheerioStatic) => {
+  const relatedGroup = $('#bres .xpdopen');
+  if (relatedGroup.length > 0) {
+    serp.thumbnailGroups = [];
+  }
+  relatedGroup.each((index, element) => {
+    const heading = $(element)
+      .find('[role="heading"]')
+      .text();
+    const thumbnailGroup: ThumbnailGroup = {
+      heading,
+      thumbnails: [],
+    };
+    const relatedThumbnail = $(element).find('.zVvuGd > div');
+    relatedThumbnail.each((ind, el) => {
+      const title = $(el)
+        .find('.fl')
+        .text();
+      const sitelink = $(el)
+        .find('a')
+        .attr('href');
+      const thumbnail: Thumbnail = {
+        sitelink,
+        title,
+      };
+      thumbnailGroup.thumbnails.push(thumbnail);
+    });
+    if (serp.thumbnailGroups) {
+      serp.thumbnailGroups.push(thumbnailGroup);
+    }
   });
 };

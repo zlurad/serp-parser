@@ -26,8 +26,9 @@ describe('Parsing Google page with 10 resuts', () => {
   });
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
-    expect(serp.pagination[1].path)
-    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB');
+    expect(serp.pagination[1].path).toBe(
+      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB',
+    );
   });
 
   test('serp should have 7 results', () => {
@@ -137,8 +138,9 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   });
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N"`, () => {
-    expect(serp.pagination[1].path)
-    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N');
+    expect(serp.pagination[1].path).toBe(
+      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N',
+    );
   });
 
   test('5th result should have domain domains.google', () => {
@@ -247,6 +249,64 @@ describe('Parsing "The Matrix" search page', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
+    }
+  });
+
+  test(`first videoCard in videos array should have title 
+  "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].title).toBe('The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99');
+    }
+  });
+  test(`first videoCard in videos array should have sitelink 
+  "https://www.youtube.com/watch?v=3DfOTKGvtOM"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=3DfOTKGvtOM');
+    }
+  });
+  test(`first videoCard in videos array should have source 
+  "YouTube"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].source).toBe('YouTube');
+    }
+  });
+  test(`first videoCard in videos array should have string representation of date 
+  "Mon Oct 29 2018"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].date.toDateString()).toBe('Mon Oct 29 2018');
+    }
+  });
+  test('first videoCard in videos array should have channel "Warner Movies On Demand"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].channel).toBe('Warner Movies On Demand');
+    }
+  });
+  test('first videoCard in videos array should have videoDuration "2:23"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].videoDuration).toBe('2:23');
+    }
+  });
+  test('thumbnailGroups feature should have length of 3', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups.length).toBe(3);
+    }
+  });
+  test('2nd thumbnailGroup should have heading "Cyberpunk movies"', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].heading).toBe('Cyberpunk movies');
+    }
+  });
+  test('title of 2nd thumbnail in 2nd thumbnailGroup should be "Johnny Mnemonic"', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].thumbnails[1].title).toBe('Johnny Mnemonic');
+    }
+  });
+  test(`sitelink of 2nd thumbnail in 2nd thumbnailGroup should be 
+  "/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw"`, () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].thumbnails[1].sitelink).toBe(
+        '/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw',
+      );
     }
   });
 });
