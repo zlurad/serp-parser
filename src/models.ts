@@ -5,12 +5,26 @@ export interface Serp {
   timeTaken?: number;
   currentPage: number;
   pagination: Pagination[];
-  videos?: VideoCard[];
   thumbnailGroups?: ThumbnailGroup[];
+  relatedKeywords: RelatedKeyword[];
+  videos?: VideoCard[]
 }
 
 export interface Pagination {
   page: number;
+  path: string;
+}
+export interface VideoCard {
+  title: string;
+  sitelink: string;
+  date: Date;
+  source: string;
+  channel: string;
+  videoDuration: string;
+}
+
+export interface RelatedKeyword {
+  keyword: string;
   path: string;
 }
 
