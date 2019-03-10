@@ -4,7 +4,8 @@ export interface Serp {
   totalResults?: number;
   timeTaken?: number;
   currentPage: number;
-  pagination: Pagination[],
+  pagination: Pagination[];
+  relatedKeywords: RelatedKeyword[];
   videos?: VideoCard[]
 }
 
@@ -19,6 +20,11 @@ export interface VideoCard {
   source: string;
   channel: string;
   videoDuration: string;
+}
+
+export interface RelatedKeyword {
+  keyword: string;
+  path: string;
 }
 
 export interface Result {
