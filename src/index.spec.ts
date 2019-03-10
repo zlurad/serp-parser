@@ -77,6 +77,10 @@ describe('Parsing Google page with 10 resuts', () => {
   test('2nd result should not have sitelinks', () => {
     expect(serp.organic[1].hasOwnProperty('sitelinks')).toBeFalsy();
   });
+
+  test('testing videos property for non existent results', () => {
+    expect(serp.videos).toBeUndefined();
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -249,6 +253,41 @@ describe('Parsing "The Matrix" search page', () => {
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
     }
   });
+
+  test(`first videoCard in videos array should have title 
+  "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].title).toBe('The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99');
+    }
+  });
+  test(`first videoCard in videos array should have sitelink 
+  "https://www.youtube.com/watch?v=3DfOTKGvtOM"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=3DfOTKGvtOM');
+    }
+  });
+  test(`first videoCard in videos array should have source 
+  "YouTube"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].source).toBe('YouTube');
+    }
+  });
+  test(`first videoCard in videos array should have string representation of date 
+  "Mon Oct 29 2018"`, () => {
+    if (serp.videos) {
+      expect(serp.videos[0].date.toDateString()).toBe('Mon Oct 29 2018');
+    }
+  });
+  test('first videoCard in videos array should have channel "Warner Movies On Demand"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].channel).toBe('Warner Movies On Demand');
+    }
+  });
+  test('first videoCard in videos array should have videoDuration "2:23"', () => {
+    if (serp.videos) {
+      expect(serp.videos[0].videoDuration).toBe('2:23');
+    }
+  });
 });
 
 describe('Parsing nojs "The Matrix" search page', () => {
@@ -279,6 +318,10 @@ describe('Parsing nojs "The Matrix" search page', () => {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
     }
+  });
+
+  test('testing videos property for non existent results', () => {
+    expect(serp.videos).toBeUndefined();
   });
 });
 
