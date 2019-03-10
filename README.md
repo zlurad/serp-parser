@@ -53,6 +53,15 @@ It will return serp object with array of results with domain, position, title, u
       path: "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB" },
     ...
   ],
+  "videos": [
+    { title: "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99",
+      sitelink: "https://www.youtube.com/watch?v=3DfOTKGvtOM",
+      date: 2018-10-28T23:00:00.000Z,
+      source: "YouTube",
+      channel: "Warner Movies On Demand",
+      videoDuration: "2:23" },
+    ...
+  ],
   "organic": [
     {
       "domain": "www.google.com",
