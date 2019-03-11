@@ -368,6 +368,9 @@ describe('Parsing nojs "The Matrix" search page', () => {
   test('testing videos property for non existent results', () => {
     expect(serp.videos).toBeUndefined();
   });
+  test('testing thumbnailGroups property for non existent results', () => {
+    expect(serp.thumbnailGroups).toBeUndefined();
+  });
 });
 
 describe('Testing functions', () => {
