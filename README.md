@@ -62,6 +62,17 @@ It will return serp object with array of results with domain, position, title, u
       videoDuration: "2:23" },
     ...
   ],
+  "thumbnailGroups": [
+      { "heading": "Organization software",
+        "thumbnails:": [ {
+          "sitelink": "/search?safe=off&gl=US&pws=0&nfpr=1&q=Microsoft&stick=H4sIAAAAAAAAAONgFuLUz9U3MDFNNk9S4gAzi8tMtGSyk630k0qLM_NSi4v1M4uLS1OLrIozU1LLEyuLVzGKp1n5F6Un5mVWJZZk5ucpFOenlZQnFqUCAMQud6xPAAAA&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQxA0wHXoECAQQBQ",
+          "title": "Microsoft Corporation"
+        },
+        ...
+      ]
+    },
+    ...
+  ],
   "organic": [
     {
       "domain": "www.google.com",

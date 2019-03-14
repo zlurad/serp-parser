@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Result, Serp, Sitelink, RelatedKeyword } from './models';
+import { RelatedKeyword, Result, Serp, Sitelink, Thumbnail, ThumbnailGroup } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -12,7 +12,7 @@ export const GoogleSERP = (html: string): Serp => {
     keyword: '',
     organic: [],
     pagination: [],
-    relatedKeywords: []
+    relatedKeywords: [],
   };
 
   if ($('body').hasClass('srp')) {
@@ -34,6 +34,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getPagination(serp, $);
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
+  getThumbnails(serp, $);
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -100,12 +101,12 @@ const getSnippet = ($: CheerioStatic, element: CheerioElement): string => {
 const getRelatedKeywords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
   const relatedKeywords: RelatedKeyword[] = [];
   const query = nojs ? 'p.aw5cc a' : 'p.nVcaUb a';
-  $(query).each(function(i, elem){
+  $(query).each((i, elem) => {
     relatedKeywords.push({
       keyword: $(elem).text(),
-      path: $(elem).prop('href')
+      path: $(elem).prop('href'),
     });
-  });  
+  });
 
   serp.relatedKeywords = relatedKeywords;
 };
@@ -194,7 +195,7 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
   const pagination = $('table#nav');
   serp.pagination.push({
     page: serp.currentPage,
-    path: ''
+    path: '',
   });
   pagination.find('td:not(.b) a').each((index, element) => {
     serp.pagination.push({
@@ -207,6 +208,7 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
 const getVideos = (serp: Serp, $: CheerioStatic) => {
   const videosCards = $('g-scrolling-carousel .BFJZOc g-inner-card');
   if (videosCards.text()) {
+    // maybe change this to videosCards.length > 0 ?
     serp.videos = [];
   }
   videosCards.each((index, element) => {
@@ -216,20 +218,63 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
     const sitelink = $(element)
       .find('a')
       .attr('href');
-    const source = $(element).find('.zECGdd:not(.RgAZAc) .cJzOGc').text();
-    const date = new Date($(element).find('.zECGdd:not(.RgAZAc)').text());
-    const channel = $(element).find('.zECGdd.RgAZAc').text();
-    const videoDuration = $(element).find('.k8B8Pc').text();
+    const source = $(element)
+      .find('.zECGdd:not(.RgAZAc) .cJzOGc')
+      .text();
+    const date = new Date(
+      $(element)
+        .find('.zECGdd:not(.RgAZAc)')
+        .text(),
+    );
+    const channel = $(element)
+      .find('.zECGdd.RgAZAc')
+      .text();
+    const videoDuration = $(element)
+      .find('.k8B8Pc')
+      .text();
     const videoCard = {
       channel,
       date,
       sitelink,
       source,
       title,
-      videoDuration
+      videoDuration,
     };
     if (serp.videos) {
       serp.videos.push(videoCard);
+    }
+  });
+};
+
+const getThumbnails = (serp: Serp, $: CheerioStatic) => {
+  const relatedGroup = $('#bres .xpdopen');
+  if (relatedGroup.length > 0) {
+    serp.thumbnailGroups = [];
+  }
+  relatedGroup.each((index, element) => {
+    const heading = $(element)
+      .find('[role="heading"]')
+      .text();
+    const thumbnailGroup: ThumbnailGroup = {
+      heading,
+      thumbnails: [],
+    };
+    const relatedThumbnail = $(element).find('.zVvuGd > div');
+    relatedThumbnail.each((ind, el) => {
+      const title = $(el)
+        .find('.fl')
+        .text();
+      const sitelink = $(el)
+        .find('a')
+        .attr('href');
+      const thumbnail: Thumbnail = {
+        sitelink,
+        title,
+      };
+      thumbnailGroup.thumbnails.push(thumbnail);
+    });
+    if (serp.thumbnailGroups) {
+      serp.thumbnailGroups.push(thumbnailGroup);
     }
   });
 };

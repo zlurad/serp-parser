@@ -5,6 +5,7 @@ export interface Serp {
   timeTaken?: number;
   currentPage: number;
   pagination: Pagination[];
+  thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
   videos?: VideoCard[]
 }
@@ -27,6 +28,24 @@ export interface RelatedKeyword {
   path: string;
 }
 
+export interface VideoCard {
+  title: string;
+  sitelink: string;
+  date: Date;
+  source: string;
+  channel: string;
+  videoDuration: string;
+}
+
+export interface ThumbnailGroup {
+  heading: string;
+  thumbnails: Thumbnail[];
+}
+export interface Thumbnail {
+  title: string;
+  sitelink: string;
+}
+
 export interface Result {
   domain: string;
   cachedUrl?: string;
@@ -47,5 +66,5 @@ export interface Sitelink {
 
 export enum LinkType {
   landing = 'LANDING',
-  home = 'HOME'
+  home = 'HOME',
 }

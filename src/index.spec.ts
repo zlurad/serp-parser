@@ -35,8 +35,9 @@ describe('Parsing Google page with 10 resuts', () => {
   });
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
-    expect(serp.pagination[1].path)
-    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB');
+    expect(serp.pagination[1].path).toBe(
+      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB',
+    );
   });
 
   test('serp should have 7 results', () => {
@@ -161,8 +162,9 @@ describe('Parsing nojs Google page with 10 resuts', () => {
 
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N"`, () => {
-    expect(serp.pagination[1].path)
-    .toBe('/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N');
+    expect(serp.pagination[1].path).toBe(
+      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N',
+    );
   });
 
   test('5th result should have domain domains.google', () => {
@@ -308,6 +310,29 @@ describe('Parsing "The Matrix" search page', () => {
       expect(serp.videos[0].videoDuration).toBe('2:23');
     }
   });
+  test('thumbnailGroups feature should have length of 3', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups.length).toBe(3);
+    }
+  });
+  test('2nd thumbnailGroup should have heading "Cyberpunk movies"', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].heading).toBe('Cyberpunk movies');
+    }
+  });
+  test('title of 2nd thumbnail in 2nd thumbnailGroup should be "Johnny Mnemonic"', () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].thumbnails[1].title).toBe('Johnny Mnemonic');
+    }
+  });
+  test(`sitelink of 2nd thumbnail in 2nd thumbnailGroup should be 
+  "/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw"`, () => {
+    if (serp.thumbnailGroups) {
+      expect(serp.thumbnailGroups[1].thumbnails[1].sitelink).toBe(
+        '/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw',
+      );
+    }
+  });
 });
 
 describe('Parsing nojs "The Matrix" search page', () => {
@@ -342,6 +367,9 @@ describe('Parsing nojs "The Matrix" search page', () => {
 
   test('testing videos property for non existent results', () => {
     expect(serp.videos).toBeUndefined();
+  });
+  test('testing thumbnailGroups property for non existent results', () => {
+    expect(serp.thumbnailGroups).toBeUndefined();
   });
 });
 
