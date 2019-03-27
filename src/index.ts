@@ -291,8 +291,10 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio) => {
 
   const hotelFiltersSection = hotelsFeature.find('.x3UtIe');
   const searchTitle = hotelFiltersSection.find('.BQ5Rcc').text();
-  const checkIn = hotelFiltersSection.find('.vpggTd.ed5F6c span').text();
-  const checkOut = hotelFiltersSection.find('.vpggTd:not(.ed5F6c) span').text();
+  const checkInString = `${hotelFiltersSection.find('.vpggTd.ed5F6c span').text()} ${new Date().getFullYear()}`;
+  const checkIn = new Date(checkInString);
+  const checkOutString = `${hotelFiltersSection.find('.vpggTd:not(.ed5F6c) span').text()} ${new Date().getFullYear()}`;
+  const checkOut = new Date(checkOutString);
   const guests = parseInt(hotelFiltersSection.find('.viupMc').text(), 10);
 
   const filters: HotelFilters[] = [];

@@ -397,14 +397,14 @@ describe('Parsing Hotels search page', () => {
       expect(serp.hotels.searchFilters.searchTitle).toBe('Hotels near New York, NY');
     }
   });
-  test('The checkIn date in searchFilters of hotels feature should be "Thu, Mar 21"', () => {
+  test('The checkIn date in searchFilters of hotels feature should be "Thu Mar 21 2019"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkIn).toBe('Thu, Mar 21');
+      expect(serp.hotels.searchFilters.checkIn.toDateString()).toBe('Thu Mar 21 2019');
     }
   });
-  test('The checkOut date in searchFilters of hotels feature should be "Fri, Mar 22"', () => {
+  test('The checkOut date in searchFilters of hotels feature should be "Fri Mar 22 2019"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkOut).toBe('Fri, Mar 22');
+      expect(serp.hotels.searchFilters.checkOut.toDateString()).toBe('Fri Mar 22 2019');
     }
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
