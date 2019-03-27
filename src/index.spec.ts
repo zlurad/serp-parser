@@ -31,7 +31,9 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.relatedKeywords[0].keyword).toBe('google search');
   });
   test('1st related keyword should have path', () => {
-    expect(serp.relatedKeywords[0].path).toBe('/search?safe=off&gl=US&pws=0&nfpr=1&q=google+search&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAHoECA0QAQ');
+    expect(serp.relatedKeywords[0].path).toBe(
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=google+search&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAHoECA0QAQ',
+    );
   });
   test(`Link to 2nd page should have path 
   "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
@@ -157,7 +159,9 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp.relatedKeywords[0].keyword).toBe('google search');
   });
   test('1st related keyword should have path', () => {
-    expect(serp.relatedKeywords[0].path).toBe('/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=google+search&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQ1QIIUCgA');
+    expect(serp.relatedKeywords[0].path).toBe(
+      '/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=google+search&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQ1QIIUCgA',
+    );
   });
 
   test(`Link to 2nd page should have path 
@@ -376,12 +380,12 @@ describe('Parsing nojs "The Matrix" search page', () => {
 describe('Parsing Hotels search page', () => {
   let html: string;
   let serp: Serp;
- 
+
   beforeAll(() => {
     html = fs.readFileSync('test/hotels.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
   });
- 
+
   test('There should be 1258 similar hotels in the area', () => {
     if (serp.hotels) {
       expect(serp.hotels.moreHotels).toBe(1258);
@@ -390,17 +394,17 @@ describe('Parsing Hotels search page', () => {
 
   test('The searchTitle in searchFilters of hotels feature should be "Hotels near New York, NY"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.searchTitle).toBe("Hotels near New York, NY");
+      expect(serp.hotels.searchFilters.searchTitle).toBe('Hotels near New York, NY');
     }
   });
   test('The checkIn date in searchFilters of hotels feature should be "Thu, Mar 21"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkIn).toBe("Thu, Mar 21");
+      expect(serp.hotels.searchFilters.checkIn).toBe('Thu, Mar 21');
     }
   });
   test('The checkOut date in searchFilters of hotels feature should be "Fri, Mar 22"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkOut).toBe("Fri, Mar 22");
+      expect(serp.hotels.searchFilters.checkOut).toBe('Fri, Mar 22');
     }
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
@@ -408,8 +412,23 @@ describe('Parsing Hotels search page', () => {
       expect(serp.hotels.searchFilters.guests).toBe(2);
     }
   });
- 
- });
+  test(`There should be 
+  ONE active hotel filter and 
+  it should have title "Top choices" and explanation "Based on your search, prices & quality"`, () => {
+    if (serp.hotels) {
+      const activeFiltersNumber = serp.hotels.searchFilters.filters.reduce((acc, curr) => {
+        if (curr.isActive === true) {
+          return acc + 1;
+        } else {
+          return acc;
+        }
+      }, 0);
+      expect(activeFiltersNumber).toBe(1);
+      expect(serp.hotels.searchFilters.filters[0].title).toBe('Top choices');
+      expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
+    }
+  });
+});
 
 describe('Testing functions', () => {
   let serp: Serp;
