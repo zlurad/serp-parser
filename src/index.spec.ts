@@ -428,6 +428,56 @@ describe('Parsing Hotels search page', () => {
       expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
     }
   });
+  test('There should be 4 featured hotels in the hotels feature', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels.length).toBe(4);
+    }
+  });
+  test('First featured hotel should have name "Row NYC"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].name).toBe("Row NYC");
+    }
+  });
+  test('First featured hotel should have currency "$"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].currency).toBe("$");
+    }
+  });
+  test('First featured hotel should have price 128', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].price).toBe(128);
+    }
+  });
+  test('First featured hotel should have rating 3.7', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].rating).toBe(3.7);
+    }
+  });
+  test('First featured hotel should have 6489 votes', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].votes).toBe(6489);
+    }
+  });
+  test('Second featured hotel should have following amenities: "Free Wi-Fi"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[1].amenities).toBe("Free Wi-Fi");
+    }
+  });
+  test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[3].featuredReview).toBe("Small rooms, sink and shower but good for the price.");
+    }
+  });
+  test(`First featured hotel should be labeled with deal,
+   having dealType: "DEAL" and
+   dealDetails: "22% less than usual"`, () => {
+    if (serp.hotels) {
+      if (serp.hotels.hotels[0].deal) {
+        expect(serp.hotels.hotels[0].deal.dealType).toBe("DEAL");
+        expect(serp.hotels.hotels[0].deal.dealDetails).toBe("22% less than usual");
+      }
+    }
+  });
 });
 
 describe('Testing functions', () => {

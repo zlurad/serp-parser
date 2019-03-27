@@ -333,13 +333,15 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio) => {
       .find('.fTKmHE99XE4__star')
       .attr('aria-label');
     const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
-    const votes =  parseInt($(el).find('g-review-stars+span').text().slice(1, -1).replace(',', '') , 10); // Make this better, maybe something instead of slice
+    const votes =  parseInt($(el).find('g-review-stars+span').text().slice(1, -1).replace(',', '') , 10); // Getting rid of parentheses with slice()
+    // Make this better, maybe something instead of slice ?
     
     const additionalInfo = $(el).find('.DabgJ');
     const dealType = additionalInfo.find('.NNPnSe').text();
     const dealDetails = additionalInfo.find('.kOTJue').text();
     const amenities = additionalInfo.find('.AaNHwc').text();
-    const featuredReview = additionalInfo.find('.gisIHb').text();
+    const featuredReview = additionalInfo.find('.gisIHb').text().trim().slice(1,-1); // Getting rid of quotes with slice()
+     // Make this better, maybe something instead of slice ?
 
     const hotelDeal: HotelDeal = {
       dealType
