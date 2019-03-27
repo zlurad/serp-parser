@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { RelatedKeyword, Result, Serp, Sitelink, Thumbnail, ThumbnailGroup } from './models';
+import { Hotel, HotelDeal, HotelFilters, HotelsSearchFilters, RelatedKeyword, Result, Serp, Sitelink, Thumbnail, ThumbnailGroup  } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -35,6 +35,12 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
   getThumbnails(serp, $);
+
+  const hotels = $('.zd2Jbb');
+  if (hotels.length > 0) {
+    getHotels(serp, $, hotels);
+  }
+
 
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
@@ -277,4 +283,107 @@ const getThumbnails = (serp: Serp, $: CheerioStatic) => {
       serp.thumbnailGroups.push(thumbnailGroup);
     }
   });
+};
+
+const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio) => {
+
+  // FILTERS
+
+  const hotelFiltersSection = hotelsFeature.find('.x3UtIe');
+  const searchTitle = hotelFiltersSection.find('.BQ5Rcc').text();
+  const checkIn = hotelFiltersSection.find('.vpggTd.ed5F6c span').text();
+  const checkOut = hotelFiltersSection.find('.vpggTd:not(.ed5F6c) span').text();
+  const guests = parseInt(hotelFiltersSection.find('.viupMc').text(), 10);
+
+  const filters: HotelFilters[] = [];
+
+  const filterGroupsTitles = hotelFiltersSection.find('g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd');
+  filterGroupsTitles.each((ind, el) => {
+    const title = $(el).text();
+    const explanation = $(el).next().text();
+    const hotelFilters: HotelFilters = {
+      explanation,
+      title
+    }
+    if ($(el).closest('.nu5Zhf').hasClass('XlJ6Xb')) {
+      hotelFilters.isActive= true;
+    }
+    filters.push(hotelFilters);
+  });
+
+  const searchFilters: HotelsSearchFilters = {
+    checkIn,
+    checkOut,
+    filters,
+    guests,
+    searchTitle,
+  };
+
+// HOTELS (HOTEL CARDS)
+
+  const hotelCards = hotelsFeature.find('.ntKMYc .hmHBZd');
+  const hotels: Hotel[] = [];
+
+  hotelCards.each((ind, el) => {
+    const name = $(el).find('.BTPx6e').text();
+    const price = parseInt(getFirstMatch($(el).find('.dv1Q3e').text(),/\d+/), 10);
+    const originalPrice = parseInt(getFirstMatch($(el).find('.AfCRQd').text(),/\d+/), 10);
+    const currency = getFirstMatch($(el).find('.dv1Q3e').text(),/[^0-9]+/);
+    const ratingString = $(el)
+      .find('.fTKmHE99XE4__star')
+      .attr('aria-label');
+    const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
+    const votes =  parseInt($(el).find('g-review-stars+span').text().slice(1, -1).replace(',', '') , 10); // Make this better, maybe something instead of slice
+    
+    const additionalInfo = $(el).find('.DabgJ');
+    const dealType = additionalInfo.find('.NNPnSe').text();
+    const dealDetails = additionalInfo.find('.kOTJue').text();
+    const amenities = additionalInfo.find('.AaNHwc').text();
+    const featuredReview = additionalInfo.find('.gisIHb').text();
+
+    const hotelDeal: HotelDeal = {
+      dealType
+    }
+
+    if (dealDetails) {
+      hotelDeal.dealDetails = dealDetails;
+    }
+    if (originalPrice) {
+      hotelDeal.originalPrice = originalPrice;
+    }
+
+    const hotel: Hotel = {
+      currency,
+      name,
+      price,
+      rating,
+      votes
+    }
+
+    if (dealType) {
+      hotel.deal = hotelDeal;
+    }
+
+    if (amenities) {
+      hotel.amenities = amenities;
+    }
+    if (featuredReview) {
+      hotel.featuredReview = featuredReview;
+    }
+
+    hotels.push(hotel);
+    
+  });
+
+  // MORE HOTELS
+
+  const moreHotelsText = hotelsFeature.find('.MWjNvc').text();
+  const moreHotels = parseInt(getFirstMatch(moreHotelsText, /(\d+,?)+/).replace(',', ''), 10);
+
+  serp.hotels = {
+    hotels,
+    moreHotels,
+    searchFilters
+  };
+
 };

@@ -7,7 +7,8 @@ export interface Serp {
   pagination: Pagination[];
   thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
-  videos?: VideoCard[]
+  videos?: VideoCard[],
+  hotels?: Hotels
 }
 
 export interface Pagination {
@@ -28,15 +29,6 @@ export interface RelatedKeyword {
   path: string;
 }
 
-export interface VideoCard {
-  title: string;
-  sitelink: string;
-  date: Date;
-  source: string;
-  channel: string;
-  videoDuration: string;
-}
-
 export interface ThumbnailGroup {
   heading: string;
   thumbnails: Thumbnail[];
@@ -44,6 +36,42 @@ export interface ThumbnailGroup {
 export interface Thumbnail {
   title: string;
   sitelink: string;
+}
+
+export interface Hotels {
+  searchFilters: HotelsSearchFilters;
+  hotels: Hotel[];
+  moreHotels: number;
+}
+export interface HotelsSearchFilters {
+  searchTitle: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  filters: HotelFilters[];
+}
+
+export interface HotelFilters {
+  title: string;
+  explanation: string;
+  isActive?: boolean;
+}
+
+export interface Hotel {
+  name: string;
+  currency: string;
+  price: number;
+  rating: number;
+  votes: number;
+  deal?: HotelDeal;
+  amenities?: string;
+  featuredReview?: string;
+}
+
+export interface HotelDeal {
+  dealType: string;
+  dealDetails?: string;
+  originalPrice?: number;
 }
 
 export interface Result {
