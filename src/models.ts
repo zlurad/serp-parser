@@ -45,8 +45,8 @@ export interface Hotels {
 }
 export interface HotelsSearchFilters {
   searchTitle: string;
-  checkIn: string;
-  checkOut: string;
+  checkIn: string; // SHOULD BE A DATE
+  checkOut: string; // SHOULD BE A DATE
   guests: number;
   filters: HotelFilters[];
 }

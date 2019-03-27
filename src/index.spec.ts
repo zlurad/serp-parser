@@ -373,6 +373,44 @@ describe('Parsing nojs "The Matrix" search page', () => {
   });
 });
 
+describe('Parsing Hotels search page', () => {
+  let html: string;
+  let serp: Serp;
+ 
+  beforeAll(() => {
+    html = fs.readFileSync('test/hotels.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+ 
+  test('There should be 1258 similar hotels in the area', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.moreHotels).toBe(1258);
+    }
+  });
+
+  test('The searchTitle in searchFilters of hotels feature should be "Hotels near New York, NY"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.searchFilters.searchTitle).toBe("Hotels near New York, NY");
+    }
+  });
+  test('The checkIn date in searchFilters of hotels feature should be "Thu, Mar 21"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.searchFilters.checkIn).toBe("Thu, Mar 21");
+    }
+  });
+  test('The checkOut date in searchFilters of hotels feature should be "Fri, Mar 22"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.searchFilters.checkOut).toBe("Fri, Mar 22");
+    }
+  });
+  test('The guests number in searchFilters of hotels feature should be 2', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.searchFilters.guests).toBe(2);
+    }
+  });
+ 
+ });
+
 describe('Testing functions', () => {
   let serp: Serp;
 
