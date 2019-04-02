@@ -428,6 +428,11 @@ describe('Parsing Hotels search page', () => {
       expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
     }
   });
+  test('The second hotel filter should not have a property called isActive', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.searchFilters.filters[1].isActive).toBeUndefined();
+    }
+  });
   test('There should be 4 featured hotels in the hotels feature', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels.length).toBe(4);
@@ -435,12 +440,12 @@ describe('Parsing Hotels search page', () => {
   });
   test('First featured hotel should have name "Row NYC"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[0].name).toBe("Row NYC");
+      expect(serp.hotels.hotels[0].name).toBe('Row NYC');
     }
   });
   test('First featured hotel should have currency "$"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[0].currency).toBe("$");
+      expect(serp.hotels.hotels[0].currency).toBe('$');
     }
   });
   test('First featured hotel should have price 128', () => {
@@ -460,24 +465,46 @@ describe('Parsing Hotels search page', () => {
   });
   test('Second featured hotel should have following amenities: "Free Wi-Fi"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[1].amenities).toBe("Free Wi-Fi");
+      expect(serp.hotels.hotels[1].amenities).toBe('Free Wi-Fi');
     }
   });
+  test('First featured hotel should not have amenities property', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].amenities).toBeUndefined();
+    }
+  })
   test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[3].featuredReview).toBe("Small rooms, sink and shower but good for the price.");
+      expect(serp.hotels.hotels[3].featuredReview).toBe('Small rooms, sink and shower but good for the price.');
     }
   });
+  test('First featured hotel should not have featuredReview property', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].featuredReview).toBeUndefined();
+    }
+  });
+  test('Fourth featured hotel should not have deal property', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[3].deal).toBeUndefined();
+    }
+  })
   test(`First featured hotel should be labeled with deal,
    having dealType: "DEAL" and
    dealDetails: "22% less than usual"`, () => {
     if (serp.hotels) {
       if (serp.hotels.hotels[0].deal) {
-        expect(serp.hotels.hotels[0].deal.dealType).toBe("DEAL");
-        expect(serp.hotels.hotels[0].deal.dealDetails).toBe("22% less than usual");
+        expect(serp.hotels.hotels[0].deal.dealType).toBe('DEAL');
+        expect(serp.hotels.hotels[0].deal.dealDetails).toBe('22% less than usual');
       }
     }
   });
+  test('First featured hotel should not have originalPrice property', () => {
+    if (serp.hotels) {
+      if (serp.hotels.hotels[0].deal) {
+        expect(serp.hotels.hotels[0].deal.originalPrice).toBeUndefined();
+      }
+    }
+  })
 });
 
 describe('Testing functions', () => {
@@ -490,5 +517,9 @@ describe('Testing functions', () => {
   test('testing getResults and getTime function for non existent results', () => {
     expect(serp.totalResults).toBeUndefined();
     expect(serp.timeTaken).toBeUndefined();
+  });
+
+  test('testing getHotels function for non existent results', () => {
+    expect(serp.hotels).toBeUndefined();
   });
 });
