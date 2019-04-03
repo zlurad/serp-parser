@@ -507,6 +507,24 @@ describe('Parsing Hotels search page', () => {
   })
 });
 
+describe('Parsing Hotels-London search page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/hotels-london.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('Second featured hotel should have originalPrice property and should have value 221', () => {
+    if (serp.hotels) {
+      if (serp.hotels.hotels[1].deal) {
+        expect(serp.hotels.hotels[1].deal.originalPrice).toBe(221);
+      }
+    }
+  })
+ 
+});
 describe('Testing functions', () => {
   let serp: Serp;
 
