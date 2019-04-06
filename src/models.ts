@@ -39,9 +39,9 @@ export interface Thumbnail {
 }
 
 export interface Hotels {
-  searchFilters: HotelsSearchFilters;
+  searchFilters?: HotelsSearchFilters;
   hotels: Hotel[];
-  moreHotels: number;
+  moreHotels: number | string;
 }
 export interface HotelsSearchFilters {
   searchTitle: string;
@@ -59,13 +59,17 @@ export interface HotelFilters {
 
 export interface Hotel {
   name: string;
-  currency: string;
-  price: number;
+  currency?: string;
+  price?: number;
   rating: number;
   votes: number;
   deal?: HotelDeal;
   amenities?: string;
   featuredReview?: string;
+  // nojs features
+  stars?: number;
+  description?: string;
+  moreInfoLink?: string;
 }
 
 export interface HotelDeal {

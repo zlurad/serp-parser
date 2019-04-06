@@ -394,43 +394,55 @@ describe('Parsing Hotels search page', () => {
 
   test('The searchTitle in searchFilters of hotels feature should be "Hotels near New York, NY"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.searchTitle).toBe('Hotels near New York, NY');
+      if (serp.hotels.searchFilters) {
+        expect(serp.hotels.searchFilters.searchTitle).toBe('Hotels near New York, NY');
+      }
     }
   });
   test('The checkIn date in searchFilters of hotels feature should be "Thu Mar 21 2019"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkIn.toDateString()).toBe('Thu Mar 21 2019');
+      if (serp.hotels.searchFilters) {
+        expect(serp.hotels.searchFilters.checkIn.toDateString()).toBe('Thu Mar 21 2019');
+      }
     }
   });
   test('The checkOut date in searchFilters of hotels feature should be "Fri Mar 22 2019"', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.checkOut.toDateString()).toBe('Fri Mar 22 2019');
+      if (serp.hotels.searchFilters) {
+        expect(serp.hotels.searchFilters.checkOut.toDateString()).toBe('Fri Mar 22 2019');
+      }
     }
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.guests).toBe(2);
+      if (serp.hotels.searchFilters) {
+        expect(serp.hotels.searchFilters.guests).toBe(2);
+      }
     }
   });
   test(`There should be 
   ONE active hotel filter and 
   it should have title "Top choices" and explanation "Based on your search, prices & quality"`, () => {
     if (serp.hotels) {
-      const activeFiltersNumber = serp.hotels.searchFilters.filters.reduce((acc, curr) => {
-        if (curr.isActive === true) {
-          return acc + 1;
-        } else {
-          return acc;
-        }
-      }, 0);
-      expect(activeFiltersNumber).toBe(1);
-      expect(serp.hotels.searchFilters.filters[0].title).toBe('Top choices');
-      expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
+      if (serp.hotels.searchFilters) {
+        const activeFiltersNumber = serp.hotels.searchFilters.filters.reduce((acc, curr) => {
+          if (curr.isActive === true) {
+            return acc + 1;
+          } else {
+            return acc;
+          }
+        }, 0);
+        expect(activeFiltersNumber).toBe(1);
+        expect(serp.hotels.searchFilters.filters[0].title).toBe('Top choices');
+        expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
+      }
     }
   });
   test('The second hotel filter should not have a property called isActive', () => {
     if (serp.hotels) {
-      expect(serp.hotels.searchFilters.filters[1].isActive).toBeUndefined();
+      if (serp.hotels.searchFilters) {
+        expect(serp.hotels.searchFilters.filters[1].isActive).toBeUndefined();
+      }
     }
   });
   test('There should be 4 featured hotels in the hotels feature', () => {
@@ -472,7 +484,7 @@ describe('Parsing Hotels search page', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels[0].amenities).toBeUndefined();
     }
-  })
+  });
   test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels[3].featuredReview).toBe('Small rooms, sink and shower but good for the price.');
@@ -487,7 +499,7 @@ describe('Parsing Hotels search page', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels[3].deal).toBeUndefined();
     }
-  })
+  });
   test(`First featured hotel should be labeled with deal,
    having dealType: "DEAL" and
    dealDetails: "22% less than usual"`, () => {
@@ -504,7 +516,77 @@ describe('Parsing Hotels search page', () => {
         expect(serp.hotels.hotels[0].deal.originalPrice).toBeUndefined();
       }
     }
-  })
+  });
+});
+
+describe('Parsing Hotels-nojs search page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/hotels-nojs.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  /* NOJS HERE */
+
+  test('Name of the first featured hotel should be "Row NYC"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].name).toBe('Row NYC');
+    }
+  });
+  test('Rating of the first featured hotel should be 3.7', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].rating).toBe(3.7);
+    }
+  });
+  test('Number of votes of the first featured hotel should be 6489', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].votes).toBe(6489);
+    }
+  });
+  test('Number of stars of the first featured hotel should be 2', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].stars).toBe(2);
+    }
+  });
+  test('Description of the first featured hotel should be "Hip hotel with a trendy food court"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].description).toBe('Hip hotel with a trendy food court');
+    }
+  });
+  test('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].featuredReview).toBe(
+        'Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff',
+      );
+    }
+  });
+  test(`MoreInfoLink of the first featured hotel should be 
+  "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA"`, () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[0].moreInfoLink).toBe(
+        '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA',
+      );
+    }
+  });
+  test(`The 2nd featured hotel should have amenities 
+  "Free Wi-Fi"`, () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[1].amenities).toBe(
+        'Free Wi-Fi',
+      );
+    }
+  });
+
+  test(`There should be a moreHotels link and it should have href 
+  "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw"`, () => {
+    if (serp.hotels) {
+      expect(serp.hotels.moreHotels).toBe(
+        '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw',
+      );
+    }
+  });
 });
 
 describe('Parsing Hotels-London search page', () => {
@@ -522,8 +604,7 @@ describe('Parsing Hotels-London search page', () => {
         expect(serp.hotels.hotels[1].deal.originalPrice).toBe(221);
       }
     }
-  })
- 
+  });
 });
 describe('Testing functions', () => {
   let serp: Serp;
