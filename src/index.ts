@@ -1,5 +1,16 @@
 import * as cheerio from 'cheerio';
-import { RelatedKeyword, Result, Serp, Sitelink, Thumbnail, ThumbnailGroup } from './models';
+import {
+  Hotel,
+  HotelDeal,
+  HotelFilters,
+  HotelsSearchFilters,
+  RelatedKeyword,
+  Result,
+  Serp,
+  Sitelink,
+  Thumbnail,
+  ThumbnailGroup,
+} from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
@@ -36,6 +47,11 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getVideos(serp, $);
   getThumbnails(serp, $);
 
+  const hotels = $('.zd2Jbb');
+  if (hotels.length > 0) {
+    getHotels(serp, $, hotels, false);
+  }
+
   $('.rc .r > a').each((index, element) => {
     const position = index + 1;
     const url = $(element).prop('href');
@@ -66,6 +82,11 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, true);
+
+  const hotels = $('.ksBKIe');
+  if (hotels.length > 0) {
+    getHotels(serp, $, hotels, true);
+  }
 
   $('#ires ol .g .r a:not(.sla)').each((index, element) => {
     const position = index + 1;
@@ -277,4 +298,229 @@ const getThumbnails = (serp: Serp, $: CheerioStatic) => {
       serp.thumbnailGroups.push(thumbnailGroup);
     }
   });
+};
+
+const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: boolean) => {
+  if (nojs) {
+    const moreHotelsLink = hotelsFeature.find('a.elzrQ').attr('href');
+    const hotels: Hotel[] = [];
+
+    // HOTELS
+    const hotelOffers = hotelsFeature.find('.IvtMPc');
+    hotelOffers.each((ind, elem) => {
+      const name = $(elem)
+        .find('.kR1eme')
+        .text();
+      const rating = parseFloat(
+        $(elem)
+          .find('.BTtC6e')
+          .text(),
+      );
+      const votes = getFirstMatch(
+        $(elem)
+          .find('.BTtC6e')
+          .closest('div')
+          .text(),
+        /\((\d+,?)+\)/,
+      )
+        .slice(1, -1)
+        .replace(',', '');
+      const votesNumber = parseInt(votes, 10);
+      const hotelStars = getFirstMatch(
+        $(elem)
+          .find('.BTtC6e')
+          .closest('div')
+          .text(),
+        /\d(?=-star)/,
+      );
+      const stars = parseInt(hotelStars, 10);
+      const description = $(elem)
+        .find('.BTtC6e')
+        .closest('div')
+        .next()
+        .text();
+      const amenities = $(elem)
+        .find('.BTtC6e')
+        .closest('div')
+        .next()
+        .next(':not(.RHsRSe)')
+        .text();
+      const featuredReview = $(elem)
+        .find('.X0w5lc')
+        .text()
+        .trim()
+        .slice(1, -1); // Getting rid of quotes with slice()
+      // Make this better, maybe something instead of slice ?;
+      const moreInfoLink = $(elem)
+        .find('.hc8x7b a')
+        .attr('href');
+
+      const hotel: Hotel = {
+        description,
+        moreInfoLink,
+        name,
+        rating,
+        stars,
+        votes: votesNumber,
+      };
+
+      if (amenities) {
+        hotel.amenities = amenities;
+      }
+      if (featuredReview) {
+        hotel.featuredReview = featuredReview;
+      }
+
+      hotels.push(hotel);
+    });
+
+    serp.hotels = {
+      hotels,
+      moreHotels: moreHotelsLink,
+    };
+  } else {
+    // FILTERS
+
+    const hotelFiltersSection = hotelsFeature.find('.x3UtIe');
+    const searchTitle = hotelFiltersSection.find('.BQ5Rcc').text();
+    const checkInString = `${hotelFiltersSection.find('.vpggTd.ed5F6c span').text()} ${new Date().getFullYear()}`;
+    const checkIn = new Date(checkInString);
+    const checkOutString = `${hotelFiltersSection
+      .find('.vpggTd:not(.ed5F6c) span')
+      .text()} ${new Date().getFullYear()}`;
+    const checkOut = new Date(checkOutString);
+    const guests = parseInt(hotelFiltersSection.find('.viupMc').text(), 10);
+
+    const filters: HotelFilters[] = [];
+
+    const filterGroupsTitles = hotelFiltersSection.find('g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd');
+    filterGroupsTitles.each((ind, el) => {
+      const title = $(el).text();
+      const explanation = $(el)
+        .next()
+        .text();
+      const hotelFilters: HotelFilters = {
+        explanation,
+        title,
+      };
+      if (
+        $(el)
+          .closest('.nu5Zhf')
+          .hasClass('XlJ6Xb')
+      ) {
+        hotelFilters.isActive = true;
+      }
+      filters.push(hotelFilters);
+    });
+
+    const searchFilters: HotelsSearchFilters = {
+      checkIn,
+      checkOut,
+      filters,
+      guests,
+      searchTitle,
+    };
+
+    // HOTELS (HOTEL CARDS)
+
+    const hotelCards = hotelsFeature.find('.ntKMYc .hmHBZd');
+    const hotels: Hotel[] = [];
+
+    hotelCards.each((ind, el) => {
+      const name = $(el)
+        .find('.BTPx6e')
+        .text();
+      const price = parseInt(
+        getFirstMatch(
+          $(el)
+            .find('.dv1Q3e')
+            .text(),
+          /\d+/,
+        ),
+        10,
+      );
+      const originalPrice = parseInt(
+        getFirstMatch(
+          $(el)
+            .find('.AfCRQd')
+            .text(),
+          /\d+/,
+        ),
+        10,
+      );
+      const currency = getFirstMatch(
+        $(el)
+          .find('.dv1Q3e')
+          .text(),
+        /[^0-9]+/,
+      );
+      const ratingString = $(el)
+        .find('.fTKmHE99XE4__star')
+        .attr('aria-label');
+      const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
+      const votes = parseInt(
+        $(el)
+          .find('g-review-stars+span')
+          .text()
+          .slice(1, -1)
+          .replace(',', ''),
+        10,
+      ); // Getting rid of parentheses with slice()
+      // Make this better, maybe something instead of slice ?
+
+      const additionalInfo = $(el).find('.DabgJ');
+      const dealType = additionalInfo.find('.NNPnSe').text();
+      const dealDetails = additionalInfo.find('.kOTJue').text();
+      const amenities = additionalInfo.find('.AaNHwc').text();
+      const featuredReview = additionalInfo
+        .find('.gisIHb')
+        .text()
+        .trim()
+        .slice(1, -1); // Getting rid of quotes with slice()
+      // Make this better, maybe something instead of slice ?
+
+      const hotelDeal: HotelDeal = {
+        dealType,
+      };
+
+      if (dealDetails) {
+        hotelDeal.dealDetails = dealDetails;
+      }
+      if (originalPrice) {
+        hotelDeal.originalPrice = originalPrice;
+      }
+
+      const hotel: Hotel = {
+        currency,
+        name,
+        price,
+        rating,
+        votes,
+      };
+
+      if (dealType) {
+        hotel.deal = hotelDeal;
+      }
+
+      if (amenities) {
+        hotel.amenities = amenities;
+      }
+      if (featuredReview) {
+        hotel.featuredReview = featuredReview;
+      }
+
+      hotels.push(hotel);
+    });
+
+    // MORE HOTELS
+
+    const moreHotelsText = hotelsFeature.find('.MWjNvc').text();
+    const moreHotels = parseInt(getFirstMatch(moreHotelsText, /(\d+,?)+/).replace(',', ''), 10);
+
+    serp.hotels = {
+      hotels,
+      moreHotels,
+      searchFilters,
+    };
+  }
 };
