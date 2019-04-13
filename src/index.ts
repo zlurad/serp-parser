@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import {
+  Ad,
   Hotel,
   HotelDeal,
   HotelFilters,
@@ -46,6 +47,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
   getThumbnails(serp, $);
+  getAdwords(serp, $);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -523,4 +525,69 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
       searchFilters,
     };
   }
+};
+
+
+
+const getAdwords = (serp: Serp, $: CheerioStatic) => {
+
+  const adwordsTop = $('#tads');
+  const adwordsBottom = $('#tadsb');
+  if (adwordsTop.length > 0 || adwordsBottom.length > 0) {
+    serp.adwords = [];
+    const ads = $('.ads-ad');
+    ads.each((i, e) => {
+        const title = $(e).find('h3.sA5rQ').text();
+        const url = $(e).find('.ad_cclk a.V0MxL').attr('href');
+        const domain = getDomain(url);
+        const linkType = getLinkType(url);
+        const snippet = $(e).find('.ads-creative').text();
+        const sitelinks: Sitelink[] = [];
+        const adSitelinks = $(e).find('.ads-creative + ul');
+        adSitelinks.each((ind, el) => {
+            if ($(el).hasClass('St0YAf')) {
+                const cardSiteLinks = $(el).find('li');
+                cardSiteLinks.each((index, element) => {
+                    const sitelinkTitle = $(element).find('h3').text();
+                    // const href = $(element).find('h3 a').attr('href'); // MAYBE ADD THIS TO SITELINKS?
+                    const sitelinkSnippet = $(element).find('.F95vTc').text();
+                    const sitelink: Sitelink = {
+                      snippet: sitelinkSnippet,
+                      title: sitelinkTitle,
+                      type: 'card' // Should change this to enum, not magic string!
+                    }
+                    sitelinks.push(sitelink);
+                });
+            } else {
+                const inlineSiteLinks = $(el).find('.OkkX2d .V0MxL');
+                inlineSiteLinks.each((index, element) => {
+                const sitelinkTitle = $(element).text();
+                // const href = $(element).attr('href'); // MAYBE ADD THIS TO SITELINKS?
+                const sitelink: Sitelink = {
+                  title: sitelinkTitle,
+                  type: 'inline' // Should change this to enum, not magic string!
+                }
+                sitelinks.push(sitelink);
+                })
+            }
+        });
+        const location = $(e).closest('#tads').length ? 'TOP' : 'BOTTOM';
+        const position = i + 1;
+        const ad: Ad = {
+          domain,
+          linkType,
+          location,
+          position,
+          sitelinks,
+          snippet,
+          title,
+          url,
+        }
+        if (serp.adwords) { // WHY DO I HAVE TO MAKE THIS CHECK HERE?
+          serp.adwords.push(ad);
+        }
+    });
+  }
+
+  
 };

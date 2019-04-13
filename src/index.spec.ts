@@ -573,9 +573,7 @@ describe('Parsing Hotels-nojs search page', () => {
   test(`The 2nd featured hotel should have amenities 
   "Free Wi-Fi"`, () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[1].amenities).toBe(
-        'Free Wi-Fi',
-      );
+      expect(serp.hotels.hotels[1].amenities).toBe('Free Wi-Fi');
     }
   });
 
@@ -620,5 +618,90 @@ describe('Testing functions', () => {
 
   test('testing getHotels function for non existent results', () => {
     expect(serp.hotels).toBeUndefined();
+  });
+});
+
+describe('Parsing Domain page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/domain.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('There should be 4 ads on the top of the page', () => {
+    if (serp.adwords) {
+      expect(serp.adwords.length).toBe(4);
+    }
+  });
+  test('Title of the first top ad should be "GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].title).toBe('GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎');
+    }
+  });
+  test('Url of the first top ad should be "https://www.godaddy.com/offers/domains/godaddy-b"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].url).toBe('https://www.godaddy.com/offers/domains/godaddy-b');
+    }
+  });
+  test('Domain of the first top ad should be "www.godaddy.com"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].domain).toBe('www.godaddy.com');
+    }
+  });
+  test(`Snippet of the first top ad should be "Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!"`, () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!');
+    }
+  });
+  test(`Snippet of the first top ad should be "Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!"`, () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!');
+    }
+  });
+  test('Position of the first top ad should be 1', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].position).toBe(1);
+    }
+  });
+  test('LinkType of the first top ad should be "LANDING"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].linkType).toBe('LANDING');
+    }
+  });
+  test('2nd sitelink title of the first top ad should be "Domain Privacy" and should be of type "inline"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].sitelinks[1].title).toBe('Domain Privacy');
+      expect(serp.adwords[0].sitelinks[1].type).toBe('inline');
+    }
+  });
+  test('Location of the first top ad should be "TOP"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].location).toBe('TOP');
+    }
+  });
+});
+
+describe('Parsing .com-domains page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/.com-domains.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test(`First top ad should have sitelinks of type card and 2nd sitelink should have sitelinkSnippet 
+  "Special offer for WP users.Free domain and site builders."`, () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].sitelinks[1].type).toBe('card');
+      expect(serp.adwords[0].sitelinks[1].snippet).toBe('Special offer for WP users.Free domain and site builders.');
+    }
+  });
+  test('5th ad should have location "BOTTOM"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[4].location).toBe("BOTTOM");
+    }
   });
 });
