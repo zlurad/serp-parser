@@ -528,8 +528,6 @@ describe('Parsing Hotels-nojs search page', () => {
     serp = GoogleSERP(html);
   });
 
-  /* NOJS HERE */
-
   test('Name of the first featured hotel should be "Row NYC"', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels[0].name).toBe('Row NYC');
@@ -701,7 +699,61 @@ describe('Parsing .com-domains page', () => {
   });
   test('5th ad should have location "BOTTOM"', () => {
     if (serp.adwords) {
-      expect(serp.adwords[4].location).toBe("BOTTOM");
+      expect(serp.adwords[4].location).toBe('BOTTOM');
+    }
+  });
+});
+
+describe('Parsing Domain-nojs page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/domain-nojs.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('Title of the first top ad should be "Google Domains - Official Site | Fast & Secure Infrastructure"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].title).toBe('Google Domains - Official Site | Fast & Secure Infrastructure');
+    }
+  });
+  test('Url of the first top ad should be "http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABAAGgJ3Yg&sig=AOD64_1GGQgzaMznzDlCoRHMnpF57a6iKg&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4Q0QwIEg&adurl="', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].url).toBe(
+        'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABAAGgJ3Yg&sig=AOD64_1GGQgzaMznzDlCoRHMnpF57a6iKg&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4Q0QwIEg&adurl=',
+      );
+    }
+  });
+  test('Domain of the first top ad should be "www.google.com"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].domain).toBe('www.google.com');
+    }
+  });
+  test(`Snippet of the first top ad should be "Shop from a wide selection of domain name endings that will help you stand out on the web. Faster and reliable connection to your website, with same DNS servers as..."`, () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].snippet).toBe('Shop from a wide selection of domain name endings that will help you stand out on the web. Faster and reliable connection to your website, with same DNS servers as...');
+    }
+  });
+  test('Position of the first top ad should be 1', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].position).toBe(1);
+    }
+  });
+  test('LinkType of the first top ad should be "LANDING"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].linkType).toBe('LANDING');
+    }
+  });
+  test('2nd sitelink title of the first top ad should be "Stand out with .dev" and should be of type "card"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].sitelinks[1].title).toBe('Stand out with .dev');
+      expect(serp.adwords[0].sitelinks[1].type).toBe('card');
+    }
+  });
+  test('Location of the first top ad should be "TOP"', () => {
+    if (serp.adwords) {
+      expect(serp.adwords[0].location).toBe('TOP');
     }
   });
 });

@@ -47,7 +47,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
   getThumbnails(serp, $);
-  getAdwords(serp, $);
+  getAdwords(serp, $, false);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -84,6 +84,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, true);
+  getAdwords(serp, $, true);
 
   const hotels = $('.ksBKIe');
   if (hotels.length > 0) {
@@ -529,28 +530,30 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
 
 
 
-const getAdwords = (serp: Serp, $: CheerioStatic) => {
+const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
 
   const adwordsTop = $('#tads');
   const adwordsBottom = $('#tadsb');
-  if (adwordsTop.length > 0 || adwordsBottom.length > 0) {
+  const adwordsNojsTop = $('#KsHht');
+  const adwordsNojsBottom = $('#D7Sjmd');
+  if (adwordsTop.length || adwordsBottom.length || adwordsNojsTop.length || adwordsNojsBottom.length) {
     serp.adwords = [];
     const ads = $('.ads-ad');
     ads.each((i, e) => {
-        const title = $(e).find('h3.sA5rQ').text();
-        const url = $(e).find('.ad_cclk a.V0MxL').attr('href');
+        const title = $(e).find(nojs? 'h3.ellip' : 'h3.sA5rQ').text();
+        const url = $(e).find(nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL').attr('href');
         const domain = getDomain(url);
         const linkType = getLinkType(url);
         const snippet = $(e).find('.ads-creative').text();
         const sitelinks: Sitelink[] = [];
-        const adSitelinks = $(e).find('.ads-creative + ul');
+        const adSitelinks = $(e).find(nojs ? '.ads-creative + div' : '.ads-creative + ul');
         adSitelinks.each((ind, el) => {
-            if ($(el).hasClass('St0YAf')) {
-                const cardSiteLinks = $(el).find('li');
+            if ($(el).hasClass(nojs ? 'DGdP9' : 'St0YAf')) {
+                const cardSiteLinks = $(el).find(nojs ? 'td' : 'li');
                 cardSiteLinks.each((index, element) => {
                     const sitelinkTitle = $(element).find('h3').text();
                     // const href = $(element).find('h3 a').attr('href'); // MAYBE ADD THIS TO SITELINKS?
-                    const sitelinkSnippet = $(element).find('.F95vTc').text();
+                    const sitelinkSnippet = $(element).find(nojs ? 'h3 + div' : '.F95vTc').text();
                     const sitelink: Sitelink = {
                       snippet: sitelinkSnippet,
                       title: sitelinkTitle,
@@ -559,7 +562,7 @@ const getAdwords = (serp: Serp, $: CheerioStatic) => {
                     sitelinks.push(sitelink);
                 });
             } else {
-                const inlineSiteLinks = $(el).find('.OkkX2d .V0MxL');
+                const inlineSiteLinks = $(el).find(nojs ? 'a' : '.OkkX2d .V0MxL');
                 inlineSiteLinks.each((index, element) => {
                 const sitelinkTitle = $(element).text();
                 // const href = $(element).attr('href'); // MAYBE ADD THIS TO SITELINKS?
@@ -571,7 +574,7 @@ const getAdwords = (serp: Serp, $: CheerioStatic) => {
                 })
             }
         });
-        const location = $(e).closest('#tads').length ? 'TOP' : 'BOTTOM';
+        const location = $(e).closest(nojs ? '#KsHht' : '#tads').length ? 'TOP' : 'BOTTOM';
         const position = i + 1;
         const ad: Ad = {
           domain,
