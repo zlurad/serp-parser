@@ -578,7 +578,6 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
           });
         }
       });
-      const location = $(e).closest(nojs ? '#KsHht' : '#tads').length ? 'TOP' : 'BOTTOM';
       const position = i + 1;
       const ad: Ad = {
         domain,
