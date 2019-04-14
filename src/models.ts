@@ -9,7 +9,7 @@ export interface Serp {
   relatedKeywords: RelatedKeyword[];
   videos?: VideoCard[];
   hotels?: Hotels;
-  adwords?: Ad[];
+  adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
 }
 
 export interface Ad {
@@ -20,7 +20,6 @@ export interface Ad {
   sitelinks: Sitelink[];
   position: number;
   linkType: LinkType;
-  location: string; // TOP or BOTTOM
 }
 
 export interface Pagination {
@@ -105,7 +104,7 @@ export interface Result {
 export interface Sitelink {
   title: string;
   snippet?: string;
-  type: string; // Should change this to SitelinkType enum
+  type: SitelinkType;
 }
 
 export enum LinkType {
