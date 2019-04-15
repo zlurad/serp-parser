@@ -93,6 +93,9 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing videos property for non existent results', () => {
     expect(serp.videos).toBeUndefined();
   });
+  test('testing adwords property for non existent results', () => {
+    expect(serp.adwords).toBeUndefined();
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -631,6 +634,11 @@ describe('Parsing Domain page', () => {
   test('There should be 4 ads on the top of the page', () => {
     if (serp.adwords && serp.adwords.adwordsTop) {
       expect(serp.adwords.adwordsTop.length).toBe(4);
+    }
+  });
+  test('Testing adwordsBottom property for non existent results', () => {
+    if (serp.adwords) {
+      expect(serp.adwords.adwordsBottom).toBeUndefined();
     }
   });
   test('Title of the first top ad should be "GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎"', () => {
