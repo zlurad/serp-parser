@@ -82,6 +82,7 @@ describe('Parsing Google page with 10 resuts', () => {
   test('1st result should have card sitelinks', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Google Docs');
+      expect(serp.organic[0].sitelinks[0].href).toBe('https://www.google.com/docs/about/');
       expect(serp.organic[0].sitelinks[0].snippet).toBe('Google Docs brings your documents to life with smart ...');
       expect(serp.organic[0].sitelinks[0].type).toBe('card');
     }
@@ -204,6 +205,9 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   test('1st result should have card sitelinks', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Images');
+      expect(serp.organic[0].sitelinks[0].href).toBe(
+        '/url?q=https://www.google.com/imghp%3Fhl%3Den&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQjBAIHDAB&usg=AOvVaw3Iif_Yr2t3-UMzTSEzaGi5',
+      );
       expect(serp.organic[0].sitelinks[0].snippet).toBe(
         'AllImages. Account &middot; Assistant &middot; Search &middot; Maps &middot; YouTube ...',
       );
@@ -276,6 +280,7 @@ describe('Parsing "The Matrix" search page', () => {
   test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
+      expect(serp.organic[0].sitelinks[0].href).toBe('https://www.imdb.com/title/tt0133093/plotsummary');
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
     }
   });
@@ -365,6 +370,9 @@ describe('Parsing nojs "The Matrix" search page', () => {
   test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
     if (serp.organic[0].sitelinks) {
       expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
+      expect(serp.organic[0].sitelinks[0].href).toBe(
+        '/url?q=https://www.imdb.com/title/tt0133093/plotsummary&sa=U&ved=0ahUKEwj1saWR2tnfAhUC3uAKHTZcCLcQ0gIIGigAMAA&usg=AOvVaw2YlqUvAZ4bHjCBnKL6SwFY',
+      );
       expect(serp.organic[0].sitelinks[0].type).toBe('inline');
     }
   });
@@ -573,9 +581,7 @@ describe('Parsing Hotels-nojs search page', () => {
   test(`The 2nd featured hotel should have amenities 
   "Free Wi-Fi"`, () => {
     if (serp.hotels) {
-      expect(serp.hotels.hotels[1].amenities).toBe(
-        'Free Wi-Fi',
-      );
+      expect(serp.hotels.hotels[1].amenities).toBe('Free Wi-Fi');
     }
   });
 

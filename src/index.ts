@@ -149,10 +149,12 @@ const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sit
     const title = $(el)
       .find('h3 a')
       .text();
+    const href = $(el).find('a').attr('href');
     const snippet = $(el)
       .find('.st')
       .text();
     const sitelink: Sitelink = {
+      href,
       snippet,
       title,
       type: 'card',
@@ -172,7 +174,9 @@ const parseGoogleInlineSitelinks = (
     .find('.s .osl a');
   inlineSitelinks.each((i, el) => {
     const title = $(el).text();
+    const href = $(el).attr('href');
     const sitelink: Sitelink = {
+      href,
       title,
       type: 'inline',
     };
