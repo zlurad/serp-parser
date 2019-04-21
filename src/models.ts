@@ -7,8 +7,19 @@ export interface Serp {
   pagination: Pagination[];
   thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
-  videos?: VideoCard[],
-  hotels?: Hotels
+  videos?: VideoCard[];
+  hotels?: Hotels;
+  adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
+}
+
+export interface Ad {
+  title: string;
+  url: string;
+  domain: string;
+  snippet: string;
+  sitelinks: Sitelink[];
+  position: number;
+  linkType: LinkType;
 }
 
 export interface Pagination {
@@ -93,10 +104,15 @@ export interface Result {
 export interface Sitelink {
   title: string;
   snippet?: string;
-  type: string;
+  type: SitelinkType;
 }
 
 export enum LinkType {
   landing = 'LANDING',
   home = 'HOME',
+}
+
+export enum SitelinkType {
+  card = 'CARD',
+  inline = 'INLINE',
 }
