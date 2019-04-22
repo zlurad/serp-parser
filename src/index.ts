@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import {
   Ad,
+  AvailableOn,
   Hotel,
   HotelDeal,
   HotelFilters,
@@ -12,7 +13,6 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
-  AvailableOn,
 } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
