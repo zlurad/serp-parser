@@ -283,6 +283,15 @@ describe('Parsing "The Matrix" search page', () => {
     }
   });
 
+  test('There should be Available On serp feature, 5 of them', () => {
+    if (serp.availableOn) {
+      expect(serp.availableOn).toHaveLength(5);
+      expect(serp.availableOn[0].service).toBe('YouTube');
+      expect(serp.availableOn[0].price).toBe('$3.99');
+      expect(serp.availableOn[0].url).toBe('http://www.youtube.com/watch?v=qEXv-rVWAu8');
+    }
+  });
+
   test(`first videoCard in videos array should have title 
   "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99"`, () => {
     if (serp.videos) {

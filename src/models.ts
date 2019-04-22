@@ -10,6 +10,7 @@ export interface Serp {
   videos?: VideoCard[];
   hotels?: Hotels;
   adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
+  availableOn?: AvailableOn[];
 }
 
 export interface Ad {
@@ -20,6 +21,12 @@ export interface Ad {
   sitelinks: Sitelink[];
   position: number;
   linkType: LinkType;
+}
+
+export interface AvailableOn {
+  service: string; 
+  price: string; 
+  url: string
 }
 
 export interface Pagination {

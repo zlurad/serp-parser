@@ -12,6 +12,7 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
+  AvailableOn,
 } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
@@ -49,6 +50,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getVideos(serp, $);
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
+  getAvailableOn(serp, $);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -603,5 +605,19 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
       const adsBottom = nojs ? adwordsNojsBottom.find('.ads-ad') : adwordsBottom.find('.ads-ad');
       getAds(adsBottom, serp.adwords.adwordsBottom);
     }
+  }
+};
+
+const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
+  const list = $('a.JkUS4b');
+  const availableOn: AvailableOn[] = [];
+  if(list.length){
+    list.each((i, e) => {
+      const url = $(e).attr('href');
+      const service = $(e).find('.i3LlFf').text();
+      const price = $(e).find('.V8xno span').text();
+      availableOn.push({url, service, price});
+    });
+    serp.availableOn = availableOn;
   }
 };
