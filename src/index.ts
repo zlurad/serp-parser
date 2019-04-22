@@ -1,5 +1,7 @@
 import * as cheerio from 'cheerio';
 import {
+  Ad,
+  AvailableOn,
   Hotel,
   HotelDeal,
   HotelFilters,
@@ -8,6 +10,7 @@ import {
   Result,
   Serp,
   Sitelink,
+  SitelinkType,
   Thumbnail,
   ThumbnailGroup,
 } from './models';
@@ -46,6 +49,8 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
   getThumbnails(serp, $);
+  getAdwords(serp, $, false);
+  getAvailableOn(serp, $);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -82,6 +87,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, true);
+  getAdwords(serp, $, true);
 
   const hotels = $('.ksBKIe');
   if (hotels.length > 0) {
@@ -157,7 +163,7 @@ const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sit
       href,
       snippet,
       title,
-      type: 'card',
+      type: SitelinkType.card,
     };
     sitelinks.push(sitelink);
   });
@@ -178,7 +184,7 @@ const parseGoogleInlineSitelinks = (
     const sitelink: Sitelink = {
       href,
       title,
-      type: 'inline',
+      type: SitelinkType.inline,
     };
     sitelinks.push(sitelink);
   });
@@ -526,5 +532,96 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
       moreHotels,
       searchFilters,
     };
+  }
+};
+
+const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
+  const adwordsTop = $('#tads');
+  const adwordsBottom = $('#tadsb');
+  const adwordsNojsTop = $('#KsHht');
+  const adwordsNojsBottom = $('#D7Sjmd');
+  const getAds = (ads: Cheerio, adsList: Ad[]) => {
+    ads.each((i, e) => {
+      const title = $(e)
+        .find(nojs ? 'h3.ellip' : 'h3.sA5rQ')
+        .text();
+      const url = $(e)
+        .find(nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL')
+        .attr('href');
+      const domain = getDomain(url);
+      const linkType = getLinkType(url);
+      const snippet = $(e)
+        .find('.ads-creative')
+        .text();
+      const sitelinks: Sitelink[] = [];
+      const adSitelinks = $(e).find(nojs ? '.ads-creative + div' : '.ads-creative + ul');
+      adSitelinks.each((ind, el) => {
+        if ($(el).hasClass(nojs ? 'DGdP9' : 'St0YAf')) {
+          const cardSiteLinks = $(el).find(nojs ? 'td' : 'li');
+          cardSiteLinks.each((index, element) => {
+            const sitelinkTitle = $(element)
+              .find('h3')
+              .text();
+            const sitelinkSnippet = $(element)
+              .find(nojs ? 'h3 + div' : '.F95vTc')
+              .text();
+            const sitelink: Sitelink = {
+              snippet: sitelinkSnippet,
+              title: sitelinkTitle,
+              type: SitelinkType.card,
+            };
+            sitelinks.push(sitelink);
+          });
+        } else {
+          const inlineSiteLinks = $(el).find(nojs ? 'a' : '.OkkX2d .V0MxL');
+          inlineSiteLinks.each((index, element) => {
+            const sitelinkTitle = $(element).text();
+            const sitelink: Sitelink = {
+              title: sitelinkTitle,
+              type: SitelinkType.inline,
+            };
+            sitelinks.push(sitelink);
+          });
+        }
+      });
+      const position = i + 1;
+      const ad: Ad = {
+        domain,
+        linkType,
+        position,
+        sitelinks,
+        snippet,
+        title,
+        url,
+      };
+      adsList.push(ad);
+    });
+  };
+  if (adwordsTop.length || adwordsBottom.length || adwordsNojsTop.length || adwordsNojsBottom.length) {
+    serp.adwords = {};
+    if (adwordsTop.length || adwordsNojsTop.length) {
+      serp.adwords.adwordsTop = [];
+      const adsTop = nojs ? adwordsNojsTop.find('.ads-ad') : adwordsTop.find('.ads-ad');
+      getAds(adsTop, serp.adwords.adwordsTop);
+    }
+    if (adwordsBottom.length || adwordsNojsBottom.length) {
+      serp.adwords.adwordsBottom = [];
+      const adsBottom = nojs ? adwordsNojsBottom.find('.ads-ad') : adwordsBottom.find('.ads-ad');
+      getAds(adsBottom, serp.adwords.adwordsBottom);
+    }
+  }
+};
+
+const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
+  const list = $('a.JkUS4b');
+  const availableOn: AvailableOn[] = [];
+  if(list.length){
+    list.each((i, e) => {
+      const url = $(e).attr('href');
+      const service = $(e).find('.i3LlFf').text();
+      const price = $(e).find('.V8xno span').text();
+      availableOn.push({url, service, price});
+    });
+    serp.availableOn = availableOn;
   }
 };
