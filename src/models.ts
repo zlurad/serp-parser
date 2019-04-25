@@ -110,6 +110,7 @@ export interface Result {
 
 export interface Sitelink {
   title: string;
+  href: string;
   snippet?: string;
   type: SitelinkType;
 }

@@ -155,10 +155,14 @@ const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sit
     const title = $(el)
       .find('h3 a')
       .text();
+    const href = $(el)
+      .find('a')
+      .attr('href');
     const snippet = $(el)
       .find('.st')
       .text();
     const sitelink: Sitelink = {
+      href,
       snippet,
       title,
       type: SitelinkType.card,
@@ -178,7 +182,9 @@ const parseGoogleInlineSitelinks = (
     .find('.s .osl a');
   inlineSitelinks.each((i, el) => {
     const title = $(el).text();
+    const href = $(el).attr('href');
     const sitelink: Sitelink = {
+      href,
       title,
       type: SitelinkType.inline,
     };
@@ -555,6 +561,9 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
         if ($(el).hasClass(nojs ? 'DGdP9' : 'St0YAf')) {
           const cardSiteLinks = $(el).find(nojs ? 'td' : 'li');
           cardSiteLinks.each((index, element) => {
+            const sitelinkHref = $(element)
+              .find('h3 a')
+              .attr('href');
             const sitelinkTitle = $(element)
               .find('h3')
               .text();
@@ -562,6 +571,7 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
               .find(nojs ? 'h3 + div' : '.F95vTc')
               .text();
             const sitelink: Sitelink = {
+              href: sitelinkHref,
               snippet: sitelinkSnippet,
               title: sitelinkTitle,
               type: SitelinkType.card,
@@ -571,8 +581,10 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
         } else {
           const inlineSiteLinks = $(el).find(nojs ? 'a' : '.OkkX2d .V0MxL');
           inlineSiteLinks.each((index, element) => {
+            const sitelinkHref = $(element).attr('href');
             const sitelinkTitle = $(element).text();
             const sitelink: Sitelink = {
+              href: sitelinkHref,
               title: sitelinkTitle,
               type: SitelinkType.inline,
             };
@@ -611,12 +623,16 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
 const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
   const list = $('a.JkUS4b');
   const availableOn: AvailableOn[] = [];
-  if(list.length){
+  if (list.length) {
     list.each((i, e) => {
       const url = $(e).attr('href');
-      const service = $(e).find('.i3LlFf').text();
-      const price = $(e).find('.V8xno span').text();
-      availableOn.push({url, service, price});
+      const service = $(e)
+        .find('.i3LlFf')
+        .text();
+      const price = $(e)
+        .find('.V8xno span')
+        .text();
+      availableOn.push({ url, service, price });
     });
     serp.availableOn = availableOn;
   }
