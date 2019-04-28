@@ -9,6 +9,8 @@ import {
   RelatedKeyword,
   Result,
   Serp,
+  ShopCard,
+  ShopDescription,
   Sitelink,
   SitelinkType,
   Thumbnail,
@@ -51,6 +53,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
+  getShopCards(serp, $);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -635,5 +638,79 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
       availableOn.push({ url, service, price });
     });
     serp.availableOn = availableOn;
+  }
+};
+
+const getShopCards = (serp: Serp, $: CheerioStatic) => {
+  const shopFeature = $('.top-pla-group-inner');
+  if (shopFeature.text()) {
+    serp.shop = [];
+    const shopOffer = shopFeature.find('.pla-unit:not(.view-all-unit)');
+    shopOffer.each((ind, el) => {
+      const imgLink = $(el)
+        .find('a.pla-unit-img-container-link')
+        .attr('href');
+      const title = $(el)
+        .find('a > .pymv4e')
+        .text();
+      const price = parseFloat(
+        getFirstMatch(
+          $(el)
+            .find('.e10twf')
+            .text(),
+          /\d+(\.\d+)?/,
+        ),
+      );
+      const currency = getFirstMatch(
+        $(el)
+          .find('.e10twf')
+          .text(),
+        /[^0-9]+/,
+      );
+      const shoppingSite = $(el)
+        .find('.LbUacb')
+        .text();
+      const description: ShopDescription = {};
+      const specialOffer = $(el)
+        .find('.gyXcee')
+        .first()
+        .text();
+      if (specialOffer) {
+        description.specialOffer = specialOffer;
+      }
+      const ratingString = $(el)
+        .find('a > g-review-stars > span')
+        .attr('aria-label');
+      if (ratingString) {
+        const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
+        description.rating = rating;
+      }
+      const votes = $(el)
+        .find('.pbAs0b')
+        .text()
+        .trim()
+        .slice(1, -1);
+      if (votes) {
+        description.votes = votes;
+      }
+      const commodity = $(el)
+        .find('.cYBBsb')
+        .text();
+      if (commodity) {
+        description.commodity = commodity;
+      }
+
+      const shopCard: ShopCard = {
+        currency,
+        description,
+        imgLink,
+        price,
+        shoppingSite,
+        title,
+      };
+      if (serp.shop) {
+        serp.shop.push(shopCard);
+      }
+    });
   }
 };

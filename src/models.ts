@@ -11,6 +11,23 @@ export interface Serp {
   hotels?: Hotels;
   adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
   availableOn?: AvailableOn[];
+  shop?: ShopCard[];
+}
+
+export interface ShopCard {
+  imgLink: string;
+  title: string;
+  price: number;
+  currency: string;
+  shoppingSite: string;
+  description: ShopDescription;
+}
+
+export interface ShopDescription {
+  specialOffer?: string;
+  rating?: number;
+  votes?: string;
+  commodity?: string;
 }
 
 export interface Ad {
