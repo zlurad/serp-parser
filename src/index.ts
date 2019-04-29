@@ -13,6 +13,7 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
+  TopStoryCard,
 } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
@@ -51,6 +52,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
+  getTopStories(serp, $);
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -635,5 +637,29 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
       availableOn.push({ url, service, price });
     });
     serp.availableOn = availableOn;
+  }
+};
+
+const getTopStories = (serp: Serp, $: CheerioStatic) => {
+  const topStoriesFeature = $('g-section-with-header[data-hveid=CAEQAA]');
+  const topStories: TopStoryCard[] = [];
+  if (topStoriesFeature.length) {
+    const topStorieCard = topStoriesFeature.find('.So9e7d');
+    topStorieCard.each((ind, el) => {
+      const imgLink = $(el)
+        .find('g-inner-card.cv2VAd > a')
+        .attr('href');
+      const title = $(el)
+        .find('.mRnBbe')
+        .text();
+      const shoppingSite = $(el)
+        .find('.YQPQv')
+        .text();
+      const publishedTime = $(el)
+        .find('.GJhQm > span.f')
+        .text();
+      topStories.push({ imgLink, title, shoppingSite, publishedTime });
+    });
+    serp.topStories = topStories;
   }
 };

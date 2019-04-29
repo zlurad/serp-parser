@@ -97,6 +97,9 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing adwords property for non existent results', () => {
     expect(serp.adwords).toBeUndefined();
   });
+  test('testing topStories property for non existent results', () => {
+    expect(serp.topStories).toBeUndefined();
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -815,6 +818,40 @@ describe('Parsing Domain-nojs page', () => {
         'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABACGgJ3Yg&sig=AOD64_33ueZUCXOl2-2F8tXhISqo7efG8Q&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4QqyQIGCgB&adurl=',
       );
       expect(serp.adwords.adwordsTop[0].sitelinks[1].type).toBe('CARD');
+    }
+  });
+});
+
+describe('Parsing Dell page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/dell.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('Page should have topStories feature', () => {
+    expect(serp.topStories).toBeDefined();
+  });
+  test('2nd top stories card should have title "Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC"', () => {
+    if (serp.topStories) {
+      expect(serp.topStories[1].title).toBe('Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC');
+    }
+  });
+  test('2nd top stories card should have link "https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc"', () => {
+    if (serp.topStories) {
+      expect(serp.topStories[1].imgLink).toBe('https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc');
+    }
+  });
+  test('2nd top stories card should have shopping site "PCMag.com"', () => {
+    if (serp.topStories) {
+      expect(serp.topStories[1].shoppingSite).toBe('PCMag.com');
+    }
+  });
+  test('2nd top stories card should have been published "1 day ago"', () => {
+    if (serp.topStories) {
+      expect(serp.topStories[1].publishedTime).toBe('1 day ago');
     }
   });
 });
