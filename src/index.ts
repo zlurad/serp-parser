@@ -39,12 +39,20 @@ export const GoogleSERP = (html: string): Serp => {
 };
 
 const parseGoogle = (serp: Serp, $: CheerioStatic) => {
-  serp.keyword = $('input[aria-label="Search"]').val();
-  const resultText = $('#resultStats').text();
+  const CONFIG = {
+    currentPage: 'table#nav td.cur',
+    hotels: '.zd2Jbb',
+    keyword: 'input[aria-label="Search"]',
+    resultText: '#resultStats',
+    results: '.rc .r > a',
+  };
+
+  serp.keyword = $(CONFIG.keyword).val();
+  const resultText = $(CONFIG.resultText).text();
   getResults(serp, resultText);
   getTime(serp, resultText);
 
-  serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
+  serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
@@ -52,12 +60,12 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
 
-  const hotels = $('.zd2Jbb');
+  const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
     getHotels(serp, $, hotels, false);
   }
 
-  $('.rc .r > a').each((index, element) => {
+  $(CONFIG.results).each((index, element) => {
     const position = index + 1;
     const url = $(element).prop('href');
     const domain = getDomain(url);
@@ -81,20 +89,28 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 };
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
-  serp.keyword = $('#sbhost').val();
-  getResults(serp, $('#resultStats').text());
+  const CONFIG = {
+    currentPage: 'table#nav td:not(.b) > b',
+    hotels: '.ksBKIe',
+    keyword: '#sbhost',
+    resultText: '#resultStats',
+    results: '#ires ol .g .r a:not(.sla)',
+  };
 
-  serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
+  serp.keyword = $(CONFIG.keyword).val();
+  getResults(serp, $(CONFIG.resultText).text());
+
+  serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, true);
   getAdwords(serp, $, true);
 
-  const hotels = $('.ksBKIe');
+  const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
     getHotels(serp, $, hotels, true);
   }
 
-  $('#ires ol .g .r a:not(.sla)').each((index, element) => {
+  $(CONFIG.results).each((index, element) => {
     const position = index + 1;
     const url = getUrlFromQuery($(element).prop('href'));
     const domain = getDomain(url);
@@ -148,18 +164,26 @@ const parseSitelinks = ($: CheerioStatic, element: CheerioElement, result: Resul
 };
 
 const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sitelinks: Sitelink[]) => {
+  const CONFIG = {
+    closest: 'div.g',
+    find: '.sld',
+    href: 'a',
+    snippet: '.st',
+    title: 'h3 a',
+  };
+
   const cardSitelinks = $(element)
-    .closest('div.g')
-    .find('.sld');
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
   cardSitelinks.each((i, el) => {
     const title = $(el)
-      .find('h3 a')
+      .find(CONFIG.title)
       .text();
     const href = $(el)
-      .find('a')
+      .find(CONFIG.href)
       .attr('href');
     const snippet = $(el)
-      .find('.st')
+      .find(CONFIG.snippet)
       .text();
     const sitelink: Sitelink = {
       href,
@@ -177,9 +201,14 @@ const parseGoogleInlineSitelinks = (
   sitelinks: Sitelink[],
   nojs: boolean,
 ) => {
+  const CONFIG = {
+    closest: nojs ? 'div.g' : '.rc',
+    find: '.s .osl a',
+  };
+
   const inlineSitelinks = $(element)
-    .closest(nojs ? 'div.g' : '.rc')
-    .find('.s .osl a');
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
   inlineSitelinks.each((i, el) => {
     const title = $(el).text();
     const href = $(el).attr('href');
@@ -193,19 +222,24 @@ const parseGoogleInlineSitelinks = (
 };
 
 const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, result: Result, nojs: boolean) => {
-  $(element)
-    .closest(nojs ? '.g' : '.r')
-    .find(nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a')
-    .each((i, el) => {
-      switch ($(el).text()) {
-        case 'Cached':
-          result.cachedUrl = $(el).prop('href');
-          break;
-        case 'Similar':
-          result.similarUrl = $(el).prop('href');
-          break;
-      }
-    });
+  const CONFIG = {
+    closest: nojs ? '.g' : '.r',
+    find: nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a',
+  };
+
+  const urls = $(element)
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
+  urls.each((i, el) => {
+    switch ($(el).text()) {
+      case 'Cached':
+        result.cachedUrl = $(el).prop('href');
+        break;
+      case 'Similar':
+        result.similarUrl = $(el).prop('href');
+        break;
+    }
+  });
 };
 
 const getResults = (serp: Serp, text: string) => {
@@ -225,12 +259,17 @@ const getTime = (serp: Serp, text: string) => {
 };
 
 const getPagination = (serp: Serp, $: CheerioStatic) => {
-  const pagination = $('table#nav');
+  const CONFIG = {
+    pages: 'td:not(.b) a',
+    pagination: 'table#nav',
+  };
+
+  const pagination = $(CONFIG.pagination);
   serp.pagination.push({
     page: serp.currentPage,
     path: '',
   });
-  pagination.find('td:not(.b) a').each((index, element) => {
+  pagination.find(CONFIG.pages).each((index, element) => {
     serp.pagination.push({
       page: parseInt($(element).text(), 10),
       path: $(element).prop('href'),
@@ -239,31 +278,41 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
 };
 
 const getVideos = (serp: Serp, $: CheerioStatic) => {
-  const videosCards = $('g-scrolling-carousel .BFJZOc g-inner-card');
+  const CONFIG = {
+    channel: '.zECGdd.RgAZAc',
+    date: '.zECGdd:not(.RgAZAc)',
+    sitelink: 'a',
+    source: '.zECGdd:not(.RgAZAc) .cJzOGc',
+    title: 'div[role="heading"]',
+    videoDuration: '.k8B8Pc',
+    videosCards: 'g-scrolling-carousel .BFJZOc g-inner-card',
+  }
+
+  const videosCards = $(CONFIG.videosCards);
   if (videosCards.text()) {
     // maybe change this to videosCards.length > 0 ?
     serp.videos = [];
   }
   videosCards.each((index, element) => {
     const title = $(element)
-      .find('div[role="heading"]')
+      .find(CONFIG.title)
       .text();
     const sitelink = $(element)
-      .find('a')
+      .find(CONFIG.sitelink)
       .attr('href');
     const source = $(element)
-      .find('.zECGdd:not(.RgAZAc) .cJzOGc')
+      .find(CONFIG.source)
       .text();
     const date = new Date(
       $(element)
-        .find('.zECGdd:not(.RgAZAc)')
+        .find(CONFIG.date)
         .text(),
     );
     const channel = $(element)
-      .find('.zECGdd.RgAZAc')
+      .find(CONFIG.channel)
       .text();
     const videoDuration = $(element)
-      .find('.k8B8Pc')
+      .find(CONFIG.videoDuration)
       .text();
     const videoCard = {
       channel,
@@ -541,16 +590,17 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
   const CONFIG = {
     bottom: nojs ? '#D7Sjmd' : '#tadsb',
     top: nojs ? '#KsHht' : '#tads',
-  }
+  };
+
   const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
   if ($(CONFIG.top).length) {
     adwords.adwordsTop = [];
     getAds($, CONFIG.top, adwords.adwordsTop, nojs);
-  } 
+  }
   if ($(CONFIG.bottom).length) {
     adwords.adwordsBottom = [];
     getAds($, CONFIG.bottom, adwords.adwordsBottom, nojs);
-  } 
+  }
   serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
 };
 
@@ -562,31 +612,33 @@ const getAds = ($: CheerioStatic, search: string, adsList: Ad[], nojs: boolean) 
     url: nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL',
   };
 
-  $(search).find(CONFIG.ads).each((i, e) => {
-    const title = $(e)
-      .find(CONFIG.title)
-      .text();
-    const url = $(e)
-      .find(CONFIG.url)
-      .attr('href');
-    const domain = getDomain(url);
-    const linkType = getLinkType(url);
-    const snippet = $(e)
-      .find(CONFIG.snippet)
-      .text();
-    const sitelinks: Sitelink[] = getAdSitelinks($, e, nojs);
-    const position = i + 1;
-    const ad: Ad = {
-      domain,
-      linkType,
-      position,
-      sitelinks,
-      snippet,
-      title,
-      url,
-    };
-    adsList.push(ad);
-  });
+  $(search)
+    .find(CONFIG.ads)
+    .each((i, e) => {
+      const title = $(e)
+        .find(CONFIG.title)
+        .text();
+      const url = $(e)
+        .find(CONFIG.url)
+        .attr('href');
+      const domain = getDomain(url);
+      const linkType = getLinkType(url);
+      const snippet = $(e)
+        .find(CONFIG.snippet)
+        .text();
+      const sitelinks: Sitelink[] = getAdSitelinks($, e, nojs);
+      const position = i + 1;
+      const ad: Ad = {
+        domain,
+        linkType,
+        position,
+        sitelinks,
+        snippet,
+        title,
+        url,
+      };
+      adsList.push(ad);
+    });
 };
 
 const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => {
@@ -599,6 +651,7 @@ const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => 
     sitelinks: nojs ? '.ads-creative + div' : '.ads-creative + ul',
     test: nojs ? 'DGdP9' : 'St0YAf',
   };
+  
   const sitelinks: Sitelink[] = [];
   const adSitelinks = $(ad).find(CONFIG.sitelinks);
   adSitelinks.each((ind, el) => {
@@ -637,19 +690,25 @@ const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => 
     }
   });
   return sitelinks;
-}
+};
 
 const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
-  const list = $('a.JkUS4b');
+  const CONFIG = {
+    price: '.V8xno span',
+    query: 'a.JkUS4b',
+    service: '.i3LlFf',
+  };
+
+  const list = $(CONFIG.query);
   const availableOn: AvailableOn[] = [];
   if (list.length) {
     list.each((i, e) => {
       const url = $(e).attr('href');
       const service = $(e)
-        .find('.i3LlFf')
+        .find(CONFIG.service)
         .text();
       const price = $(e)
-        .find('.V8xno span')
+        .find(CONFIG.price)
         .text();
       availableOn.push({ url, service, price });
     });
