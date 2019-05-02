@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { GoogleSERP } from './index';
-import { Serp, Ad } from './models';
+import { Ad, Serp } from './models';
 
 test('GoogleSERP should return empty organic array on empty html string', () => {
   expect(GoogleSERP('').organic).toEqual([]);
@@ -642,22 +642,20 @@ describe('Testing functions', () => {
 describe('Parsing Domain page', () => {
   let html: string;
   let serp: Serp;
-  
+
   beforeAll(() => {
     html = fs.readFileSync('test/domain.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
   });
 
   describe('Testing ads', () => {
-    
-    let adwords: { adwordsTop?: Ad[] | undefined; adwordsBottom?: Ad[] | undefined; } | undefined;
+    let adwords: { adwordsTop?: Ad[] | undefined; adwordsBottom?: Ad[] | undefined } | undefined;
     let adwordsTop: Ad[] | undefined;
     let adwordsBottom: Ad[] | undefined;
 
-
     beforeAll(() => {
       adwords = serp.adwords;
-      if(adwords) {
+      if (adwords) {
         adwordsTop = adwords.adwordsTop;
         adwordsBottom = adwords.adwordsBottom;
       }
@@ -669,7 +667,7 @@ describe('Parsing Domain page', () => {
     });
 
     test('There should be 4 ads on the top of the page', () => {
-      if(adwordsTop){
+      if (adwordsTop) {
         expect(adwordsTop.length).toBe(4);
       }
     });
@@ -681,16 +679,16 @@ describe('Parsing Domain page', () => {
         expect(firstAd.title).toBe('GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎');
         expect(firstAd.url).toBe('https://www.godaddy.com/offers/domains/godaddy-b');
         expect(firstAd.domain).toBe('www.godaddy.com');
-        expect(firstAd.snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!',);
+        expect(firstAd.snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!');
         expect(firstAd.linkType).toBe('LANDING');
       }
     });
-    
+
     test('Testing first ad sitelink', () => {
       if (adwordsTop) {
         const sitelink = adwordsTop[0].sitelinks[1];
         expect(sitelink.title).toBe('Domain Privacy');
-        expect(sitelink.href).toBe('https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105',);
+        expect(sitelink.href).toBe('https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105');
         expect(sitelink.type).toBe('INLINE');
       }
     });
@@ -698,69 +696,56 @@ describe('Parsing Domain page', () => {
     test('Testing adwordsBottom property for non existent results', () => {
       expect(adwordsBottom).toBeUndefined();
     });
-
   });
-
-  
 });
 
 describe('Parsing .com-domains page', () => {
   let html: string;
   let serp: Serp;
+  let adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } | undefined;
+  let adwordsTop: Ad[] | undefined;
+  let adwordsBottom: Ad[] | undefined;
 
   beforeAll(() => {
     html = fs.readFileSync('test/.com-domains.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
+    adwords = serp.adwords;
+    if (adwords) {
+      adwordsTop = adwords.adwordsTop;
+      adwordsBottom = adwords.adwordsBottom;
+    }
   });
 
-  test(`First top ad should have sitelinks of type card and 2nd sitelink should have title "WordPress Web Hosting", 
-  href should be "https://www.bluehost.com/track/searchgenericpromo/?page=/special/wordpress" sitelinkSnippet 
-  "Special offer for WP users.Free domain and site builders."`, () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].title).toBe('WordPress Web Hosting');
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].href).toBe(
-        'https://www.bluehost.com/track/searchgenericpromo/?page=/special/wordpress',
-      );
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].type).toBe('CARD');
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].snippet).toBe(
-        'Special offer for WP users.Free domain and site builders.',
-      );
+  test('There should be all ads', () => {
+    expect(adwords).toBeDefined();
+    expect(adwordsTop).toBeDefined();
+    expect(adwordsBottom).toBeDefined();
+  });
+
+  test(`Testing first add card sitelinks`, () => {
+    if (adwordsTop) {
+      const sitelink = adwordsTop[0].sitelinks[1];
+      expect(sitelink.title).toBe('WordPress Web Hosting');
+      expect(sitelink.href).toBe('https://www.bluehost.com/track/searchgenericpromo/?page=/special/wordpress');
+      expect(sitelink.type).toBe('CARD');
+      expect(sitelink.snippet).toBe('Special offer for WP users.Free domain and site builders.');
     }
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom.length).toBe(1);
+    if (adwordsBottom) {
+      expect(adwordsBottom).toHaveLength(1);
     }
   });
-  test('First bottom ad should have position 1', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].position).toBe(1);
-    }
-  });
-  test('First bottom ad should have title "Domain.com | Purchase A Domain Name‎"', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].title).toBe('Domain.com | Purchase A Domain Name‎');
-    }
-  });
-  test('First bottom ad should have url "https://www.domain.com/"', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].url).toBe('https://www.domain.com/');
-    }
-  });
-  test('First bottom ad should have domain "www.domain.com"', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].domain).toBe('www.domain.com');
-    }
-  });
-  test('First bottom ad should have linkType "HOME"', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].linkType).toBe('HOME');
-    }
-  });
-  test('First bottom ad should have snippet "We Provide Innovative Products And Services At A Great Value For All Of Your Domain Needs. Eco-Friendly Hosting. Microsoft 0365. Drag & Drop Site Builder. Free Cloud Storage. Types: Domain Transfers, Domain Renewals, New TLDs, Premium Domains."', () => {
-    if (serp.adwords && serp.adwords.adwordsBottom) {
-      expect(serp.adwords.adwordsBottom[0].snippet).toBe(
+  test('First bottom ad tests', () => {
+    if (adwordsBottom) {
+      const ad = adwordsBottom[0];
+      expect(ad.position).toBe(1);
+      expect(ad.title).toBe('Domain.com | Purchase A Domain Name‎');
+      expect(ad.url).toBe('https://www.domain.com/');
+      expect(ad.domain).toBe('www.domain.com');
+      expect(ad.linkType).toBe('HOME');
+      expect(ad.snippet).toBe(
         'We Provide Innovative Products And Services At A Great Value For All Of Your Domain Needs. Eco-Friendly Hosting. Microsoft 0365. Drag & Drop Site Builder. Free Cloud Storage. Types: Domain Transfers, Domain Renewals, New TLDs, Premium Domains.',
       );
     }
@@ -770,54 +755,50 @@ describe('Parsing .com-domains page', () => {
 describe('Parsing Domain-nojs page', () => {
   let html: string;
   let serp: Serp;
+  let adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } | undefined;
+  let adwordsTop: Ad[] | undefined;
+  let adwordsBottom: Ad[] | undefined;
 
   beforeAll(() => {
     html = fs.readFileSync('test/domain-nojs.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
+    adwords = serp.adwords;
+    if (adwords) {
+      adwordsTop = adwords.adwordsTop;
+      adwordsBottom = adwords.adwordsBottom;
+    }
   });
 
-  test('Title of the first top ad should be "Google Domains - Official Site | Fast & Secure Infrastructure"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].title).toBe('Google Domains - Official Site | Fast & Secure Infrastructure');
-    }
+  test('There should be all ads', () => {
+    expect(adwords).toBeDefined();
+    expect(adwordsTop).toBeDefined();
+    expect(adwordsBottom).toBeUndefined();
   });
-  test('Url of the first top ad should be "http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABAAGgJ3Yg&sig=AOD64_1GGQgzaMznzDlCoRHMnpF57a6iKg&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4Q0QwIEg&adurl="', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].url).toBe(
+
+  test('Testing first ad', () => {
+    if (adwordsTop) {
+      const ad = adwordsTop[0];
+      expect(ad.position).toBe(1);
+      expect(ad.title).toBe('Google Domains - Official Site | Fast & Secure Infrastructure');
+      expect(ad.url).toBe(
         'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABAAGgJ3Yg&sig=AOD64_1GGQgzaMznzDlCoRHMnpF57a6iKg&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4Q0QwIEg&adurl=',
       );
-    }
-  });
-  test('Domain of the first top ad should be "www.google.com"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].domain).toBe('www.google.com');
-    }
-  });
-  test(`Snippet of the first top ad should be "Shop from a wide selection of domain name endings that will help you stand out on the web. Faster and reliable connection to your website, with same DNS servers as..."`, () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].snippet).toBe(
+      expect(ad.domain).toBe('www.google.com');
+      expect(ad.snippet).toBe(
         'Shop from a wide selection of domain name endings that will help you stand out on the web. Faster and reliable connection to your website, with same DNS servers as...',
       );
+      expect(ad.linkType).toBe('LANDING');
     }
   });
-  test('Position of the first top ad should be 1', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].position).toBe(1);
-    }
-  });
-  test('LinkType of the first top ad should be "LANDING"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].linkType).toBe('LANDING');
-    }
-  });
-  test(`2nd sitelink title of the first top ad should be "Stand out with .dev",
-   should have href "http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABACGgJ3Yg&sig=AOD64_33ueZUCXOl2-2F8tXhISqo7efG8Q&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4QqyQIGCgB&adurl=" and should be of type "CARD"`, () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].title).toBe('Stand out with .dev');
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].href).toBe(
+
+  test(`Test first top ad card sitelink`, () => {
+    if (adwordsTop) {
+      const sitelink = adwordsTop[0].sitelinks[1];
+      expect(sitelink.title).toBe('Stand out with .dev');
+      expect(sitelink.href).toBe(
         'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABACGgJ3Yg&sig=AOD64_33ueZUCXOl2-2F8tXhISqo7efG8Q&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4QqyQIGCgB&adurl=',
       );
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].type).toBe('CARD');
+      expect(sitelink.type).toBe('CARD');
     }
   });
 });
