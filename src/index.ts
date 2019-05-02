@@ -538,87 +538,106 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
 };
 
 const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
-  const adwordsTop = $('#tads');
-  const adwordsBottom = $('#tadsb');
-  const adwordsNojsTop = $('#KsHht');
-  const adwordsNojsBottom = $('#D7Sjmd');
-  const getAds = (ads: Cheerio, adsList: Ad[]) => {
-    ads.each((i, e) => {
-      const title = $(e)
-        .find(nojs ? 'h3.ellip' : 'h3.sA5rQ')
-        .text();
-      const url = $(e)
-        .find(nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL')
-        .attr('href');
-      const domain = getDomain(url);
-      const linkType = getLinkType(url);
-      const snippet = $(e)
-        .find('.ads-creative')
-        .text();
-      const sitelinks: Sitelink[] = [];
-      const adSitelinks = $(e).find(nojs ? '.ads-creative + div' : '.ads-creative + ul');
-      adSitelinks.each((ind, el) => {
-        if ($(el).hasClass(nojs ? 'DGdP9' : 'St0YAf')) {
-          const cardSiteLinks = $(el).find(nojs ? 'td' : 'li');
-          cardSiteLinks.each((index, element) => {
-            const sitelinkHref = $(element)
-              .find('h3 a')
-              .attr('href');
-            const sitelinkTitle = $(element)
-              .find('h3')
-              .text();
-            const sitelinkSnippet = $(element)
-              .find(nojs ? 'h3 + div' : '.F95vTc')
-              .text();
-            const sitelink: Sitelink = {
-              href: sitelinkHref,
-              snippet: sitelinkSnippet,
-              title: sitelinkTitle,
-              type: SitelinkType.card,
-            };
-            sitelinks.push(sitelink);
-          });
-        } else {
-          const inlineSiteLinks = $(el).find(nojs ? 'a' : '.OkkX2d .V0MxL');
-          inlineSiteLinks.each((index, element) => {
-            const sitelinkHref = $(element).attr('href');
-            const sitelinkTitle = $(element).text();
-            const sitelink: Sitelink = {
-              href: sitelinkHref,
-              title: sitelinkTitle,
-              type: SitelinkType.inline,
-            };
-            sitelinks.push(sitelink);
-          });
-        }
-      });
-      const position = i + 1;
-      const ad: Ad = {
-        domain,
-        linkType,
-        position,
-        sitelinks,
-        snippet,
-        title,
-        url,
-      };
-      adsList.push(ad);
-    });
-  };
-  if (adwordsTop.length || adwordsBottom.length || adwordsNojsTop.length || adwordsNojsBottom.length) {
-    serp.adwords = {};
-    if (adwordsTop.length || adwordsNojsTop.length) {
-      serp.adwords.adwordsTop = [];
-      const adsTop = nojs ? adwordsNojsTop.find('.ads-ad') : adwordsTop.find('.ads-ad');
-      getAds(adsTop, serp.adwords.adwordsTop);
-    }
-    if (adwordsBottom.length || adwordsNojsBottom.length) {
-      serp.adwords.adwordsBottom = [];
-      const adsBottom = nojs ? adwordsNojsBottom.find('.ads-ad') : adwordsBottom.find('.ads-ad');
-      getAds(adsBottom, serp.adwords.adwordsBottom);
-    }
+  const CONFIG = {
+    bottom: nojs ? '#D7Sjmd' : '#tadsb',
+    top: nojs ? '#KsHht' : '#tads',
   }
+  const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
+  if ($(CONFIG.top).length) {
+    adwords.adwordsTop = [];
+    getAds($, CONFIG.top, adwords.adwordsTop, nojs);
+  } 
+  if ($(CONFIG.bottom).length) {
+    adwords.adwordsBottom = [];
+    getAds($, CONFIG.bottom, adwords.adwordsBottom, nojs);
+  } 
+  serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
 };
+
+const getAds = ($: CheerioStatic, search: string, adsList: Ad[], nojs: boolean) => {
+  const CONFIG = {
+    ads: '.ads-ad',
+    snippet: '.ads-creative',
+    title: nojs ? 'h3.ellip' : 'h3.sA5rQ',
+    url: nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL',
+  };
+
+  $(search).find(CONFIG.ads).each((i, e) => {
+    const title = $(e)
+      .find(CONFIG.title)
+      .text();
+    const url = $(e)
+      .find(CONFIG.url)
+      .attr('href');
+    const domain = getDomain(url);
+    const linkType = getLinkType(url);
+    const snippet = $(e)
+      .find(CONFIG.snippet)
+      .text();
+    const sitelinks: Sitelink[] = getAdSitelinks($, e, nojs);
+    const position = i + 1;
+    const ad: Ad = {
+      domain,
+      linkType,
+      position,
+      sitelinks,
+      snippet,
+      title,
+      url,
+    };
+    adsList.push(ad);
+  });
+};
+
+const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => {
+  const CONFIG = {
+    card: nojs ? 'td' : 'li',
+    cardHref: 'h3 a',
+    cardSnippet: nojs ? 'h3 + div' : '.F95vTc',
+    cardTitle: 'h3',
+    inline: nojs ? 'a' : '.OkkX2d .V0MxL',
+    sitelinks: nojs ? '.ads-creative + div' : '.ads-creative + ul',
+    test: nojs ? 'DGdP9' : 'St0YAf',
+  };
+  const sitelinks: Sitelink[] = [];
+  const adSitelinks = $(ad).find(CONFIG.sitelinks);
+  adSitelinks.each((ind, el) => {
+    if ($(el).hasClass(CONFIG.test)) {
+      const cardSiteLinks = $(el).find(CONFIG.card);
+      cardSiteLinks.each((i, e) => {
+        const href = $(e)
+          .find(CONFIG.cardHref)
+          .attr('href');
+        const title = $(e)
+          .find(CONFIG.cardTitle)
+          .text();
+        const snippet = $(e)
+          .find(CONFIG.cardSnippet)
+          .text();
+        const sitelink: Sitelink = {
+          href,
+          snippet,
+          title,
+          type: SitelinkType.card,
+        };
+        sitelinks.push(sitelink);
+      });
+    } else {
+      const inlineSiteLinks = $(el).find(CONFIG.inline);
+      inlineSiteLinks.each((i, e) => {
+        const href = $(e).attr('href');
+        const title = $(e).text();
+        const sitelink: Sitelink = {
+          href,
+          title,
+          type: SitelinkType.inline,
+        };
+        sitelinks.push(sitelink);
+      });
+    }
+  });
+  return sitelinks;
+}
 
 const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
   const list = $('a.JkUS4b');
