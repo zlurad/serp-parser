@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { GoogleSERP } from './index';
-import { Serp } from './models';
+import { Serp, Ad } from './models';
 
 test('GoogleSERP should return empty organic array on empty html string', () => {
   expect(GoogleSERP('').organic).toEqual([]);
@@ -642,63 +642,66 @@ describe('Testing functions', () => {
 describe('Parsing Domain page', () => {
   let html: string;
   let serp: Serp;
-
+  
   beforeAll(() => {
     html = fs.readFileSync('test/domain.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
   });
 
-  test('There should be 4 ads on the top of the page', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop.length).toBe(4);
-    }
+  describe('Testing ads', () => {
+    
+    let adwords: { adwordsTop?: Ad[] | undefined; adwordsBottom?: Ad[] | undefined; } | undefined;
+    let adwordsTop: Ad[] | undefined;
+    let adwordsBottom: Ad[] | undefined;
+
+
+    beforeAll(() => {
+      adwords = serp.adwords;
+      if(adwords) {
+        adwordsTop = adwords.adwordsTop;
+        adwordsBottom = adwords.adwordsBottom;
+      }
+    });
+
+    test('There should be top ads', () => {
+      expect(adwords).toBeDefined();
+      expect(adwordsTop).toBeDefined();
+    });
+
+    test('There should be 4 ads on the top of the page', () => {
+      if(adwordsTop){
+        expect(adwordsTop.length).toBe(4);
+      }
+    });
+
+    test('Testing first ad', () => {
+      if (adwordsTop) {
+        const firstAd = adwordsTop[0];
+        expect(firstAd.position).toBe(1);
+        expect(firstAd.title).toBe('GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎');
+        expect(firstAd.url).toBe('https://www.godaddy.com/offers/domains/godaddy-b');
+        expect(firstAd.domain).toBe('www.godaddy.com');
+        expect(firstAd.snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!',);
+        expect(firstAd.linkType).toBe('LANDING');
+      }
+    });
+    
+    test('Testing first ad sitelink', () => {
+      if (adwordsTop) {
+        const sitelink = adwordsTop[0].sitelinks[1];
+        expect(sitelink.title).toBe('Domain Privacy');
+        expect(sitelink.href).toBe('https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105',);
+        expect(sitelink.type).toBe('INLINE');
+      }
+    });
+
+    test('Testing adwordsBottom property for non existent results', () => {
+      expect(adwordsBottom).toBeUndefined();
+    });
+
   });
-  test('Testing adwordsBottom property for non existent results', () => {
-    if (serp.adwords) {
-      expect(serp.adwords.adwordsBottom).toBeUndefined();
-    }
-  });
-  test('Title of the first top ad should be "GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].title).toBe('GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎');
-    }
-  });
-  test('Url of the first top ad should be "https://www.godaddy.com/offers/domains/godaddy-b"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].url).toBe('https://www.godaddy.com/offers/domains/godaddy-b');
-    }
-  });
-  test('Domain of the first top ad should be "www.godaddy.com"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].domain).toBe('www.godaddy.com');
-    }
-  });
-  test(`Snippet of the first top ad should be "Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!"`, () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].snippet).toBe(
-        'Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!',
-      );
-    }
-  });
-  test('Position of the first top ad should be 1', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].position).toBe(1);
-    }
-  });
-  test('LinkType of the first top ad should be "LANDING"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].linkType).toBe('LANDING');
-    }
-  });
-  test('2nd sitelink title of the first top ad should be "Domain Privacy", href should be "https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105" and should be of type "INLINE"', () => {
-    if (serp.adwords && serp.adwords.adwordsTop) {
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].title).toBe('Domain Privacy');
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].href).toBe(
-        'https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105',
-      );
-      expect(serp.adwords.adwordsTop[0].sitelinks[1].type).toBe('INLINE');
-    }
-  });
+
+  
 });
 
 describe('Parsing .com-domains page', () => {
