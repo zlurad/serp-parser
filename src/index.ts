@@ -13,6 +13,7 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
+  VideoCard,
 } from './models';
 import { getDomain, getFirstMatch, getLinkType, getTimeTaken, getTotalResults, getUrlFromQuery } from './utils';
 
@@ -273,10 +274,10 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
   };
 
   const videosCards = $(CONFIG.videosCards);
-  if (videosCards.text()) {
-    // maybe change this to videosCards.length > 0 ?
-    serp.videos = [];
+  if (videosCards.length === 0) {
+    return;
   }
+  const videos: VideoCard[] = [];
   videosCards.each((index, element) => {
     const title = $(element)
       .find(CONFIG.title)
@@ -306,17 +307,17 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
       title,
       videoDuration,
     };
-    if (serp.videos) {
-      serp.videos.push(videoCard);
-    }
+    videos.push(videoCard);
   });
+  serp.videos = videos;
 };
 
 const getThumbnails = (serp: Serp, $: CheerioStatic) => {
   const relatedGroup = $('#bres .xpdopen');
-  if (relatedGroup.length > 0) {
-    serp.thumbnailGroups = [];
+  if (relatedGroup.length === 0) {
+    return;
   }
+  const thumbnailGroups: ThumbnailGroup[] = [];
   relatedGroup.each((index, element) => {
     const heading = $(element)
       .find('[role="heading"]')
@@ -339,10 +340,9 @@ const getThumbnails = (serp: Serp, $: CheerioStatic) => {
       };
       thumbnailGroup.thumbnails.push(thumbnail);
     });
-    if (serp.thumbnailGroups) {
-      serp.thumbnailGroups.push(thumbnailGroup);
-    }
+    thumbnailGroups.push(thumbnailGroup);
   });
+  serp.thumbnailGroups = thumbnailGroups;
 };
 
 const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: boolean) => {
