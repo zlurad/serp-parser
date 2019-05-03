@@ -642,75 +642,86 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
 };
 
 const getShopCards = (serp: Serp, $: CheerioStatic) => {
-  const shopFeature = $('.top-pla-group-inner');
-  if (shopFeature.text()) {
-    serp.shop = [];
-    const shopOffer = shopFeature.find('.pla-unit:not(.view-all-unit)');
+  const CONFIG = {
+    currency: '.e10twf',
+    imgLink: 'a.pla-unit-img-container-link',
+    price: '.e10twf',
+    shopFeature: '.top-pla-group-inner',
+    shopOffer: '.pla-unit:not(.view-all-unit)',
+    shoppingSite: '.LbUacb',
+    title: 'a > .pymv4e',
+  };
+  const shopFeature = $(CONFIG.shopFeature);
+  if (shopFeature.length) {
+    const shop: ShopCard[] = [];
+    const shopOffer = shopFeature.find(CONFIG.shopOffer);
     shopOffer.each((ind, el) => {
       const imgLink = $(el)
-        .find('a.pla-unit-img-container-link')
+        .find(CONFIG.imgLink)
         .attr('href');
       const title = $(el)
-        .find('a > .pymv4e')
+        .find(CONFIG.title)
         .text();
       const price = parseFloat(
         getFirstMatch(
           $(el)
-            .find('.e10twf')
+            .find(CONFIG.price)
             .text(),
           /\d+(\.\d+)?/,
         ),
       );
       const currency = getFirstMatch(
         $(el)
-          .find('.e10twf')
+          .find(CONFIG.currency)
           .text(),
         /[^0-9]+/,
       );
       const shoppingSite = $(el)
-        .find('.LbUacb')
+        .find(CONFIG.shoppingSite)
         .text();
-      const description: ShopDescription = {};
-      const specialOffer = $(el)
-        .find('.gyXcee')
-        .first()
-        .text();
-      if (specialOffer) {
-        description.specialOffer = specialOffer;
-      }
-      const ratingString = $(el)
-        .find('a > g-review-stars > span')
-        .attr('aria-label');
-      if (ratingString) {
-        const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
-        description.rating = rating;
-      }
-      const votes = $(el)
-        .find('.pbAs0b')
-        .text()
-        .trim()
-        .slice(1, -1);
-      if (votes) {
-        description.votes = votes;
-      }
-      const commodity = $(el)
-        .find('.cYBBsb')
-        .text();
-      if (commodity) {
-        description.commodity = commodity;
-      }
+      const description = getShopOfferDescription(el, $);
 
-      const shopCard: ShopCard = {
-        currency,
-        description,
-        imgLink,
-        price,
-        shoppingSite,
-        title,
-      };
-      if (serp.shop) {
-        serp.shop.push(shopCard);
-      }
+      shop.push({ currency, description, imgLink, price, shoppingSite, title });
     });
+    serp.shop = shop;
   }
+};
+
+const getShopOfferDescription = (shopOffer: CheerioElement, $: CheerioStatic) => {
+  const CONFIG = {
+    commodity: '.cYBBsb',
+    ratingString: 'a > g-review-stars > span',
+    specialOffer: '.gyXcee',
+    votes: '.pbAs0b',
+  };
+  const description: ShopDescription = {};
+  const specialOffer = $(shopOffer)
+    .find(CONFIG.specialOffer)
+    .first()
+    .text();
+  if (specialOffer) {
+    description.specialOffer = specialOffer;
+  }
+  const ratingString = $(shopOffer)
+    .find(CONFIG.ratingString)
+    .attr('aria-label');
+  if (ratingString) {
+    const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
+    description.rating = rating;
+  }
+  const votes = $(shopOffer)
+    .find(CONFIG.votes)
+    .text()
+    .trim()
+    .slice(1, -1);
+  if (votes) {
+    description.votes = votes;
+  }
+  const commodity = $(shopOffer)
+    .find(CONFIG.commodity)
+    .text();
+  if (commodity) {
+    description.commodity = commodity;
+  }
+  return description;
 };
