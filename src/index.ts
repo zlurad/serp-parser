@@ -14,7 +14,7 @@ import {
   Thumbnail,
   ThumbnailGroup,
 } from './models';
-import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getLinkType, getTimeTaken, getTotalResults, getUrlFromQuery } from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -49,8 +49,8 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
   serp.keyword = $(CONFIG.keyword).val();
   const resultText = $(CONFIG.resultText).text();
-  getResults(serp, resultText);
-  getTime(serp, resultText);
+  serp.totalResults = getTotalResults(resultText);
+  serp.timeTaken = getTimeTaken(resultText);
 
   serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
@@ -98,7 +98,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   };
 
   serp.keyword = $(CONFIG.keyword).val();
-  getResults(serp, $(CONFIG.resultText).text());
+  serp.totalResults = getTotalResults($(CONFIG.resultText).text());
 
   serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
@@ -242,22 +242,6 @@ const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, re
   });
 };
 
-const getResults = (serp: Serp, text: string) => {
-  const resultsRegex = /[\d,]+(?= results)/g;
-  const resultsMatched: string = getFirstMatch(text, resultsRegex).replace(/,/g, '');
-  if (resultsMatched !== '') {
-    serp.totalResults = parseInt(resultsMatched, 10);
-  }
-};
-
-const getTime = (serp: Serp, text: string) => {
-  const timeRegex = /[\d.]+(?= seconds)/g;
-  const timeMatched: string = getFirstMatch(text, timeRegex);
-  if (timeMatched !== '') {
-    serp.timeTaken = parseFloat(timeMatched);
-  }
-};
-
 const getPagination = (serp: Serp, $: CheerioStatic) => {
   const CONFIG = {
     pages: 'td:not(.b) a',
@@ -286,7 +270,7 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
     title: 'div[role="heading"]',
     videoDuration: '.k8B8Pc',
     videosCards: 'g-scrolling-carousel .BFJZOc g-inner-card',
-  }
+  };
 
   const videosCards = $(CONFIG.videosCards);
   if (videosCards.text()) {
@@ -651,7 +635,7 @@ const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => 
     sitelinks: nojs ? '.ads-creative + div' : '.ads-creative + ul',
     test: nojs ? 'DGdP9' : 'St0YAf',
   };
-  
+
   const sitelinks: Sitelink[] = [];
   const adSitelinks = $(ad).find(CONFIG.sitelinks);
   adSitelinks.each((ind, el) => {

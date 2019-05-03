@@ -20,3 +20,15 @@ export const getLinkType = (url: string) => {
   const href = new URL(url);
   return href.pathname !== '/' ? LinkType.landing : LinkType.home;
 };
+
+export const getTotalResults = (text: string) => {
+  const resultsRegex = /[\d,]+(?= results)/g;
+  const resultsMatched: string = getFirstMatch(text, resultsRegex).replace(/,/g, '');
+  return resultsMatched !== '' ? parseInt(resultsMatched, 10) : undefined;
+};
+
+export const getTimeTaken = (text: string) => {
+  const timeRegex = /[\d.]+(?= seconds)/g;
+  const timeMatched: string = getFirstMatch(text, timeRegex);
+  return timeMatched !== '' ? parseFloat(timeMatched) : undefined;
+};
