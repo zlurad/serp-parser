@@ -1,5 +1,5 @@
 import { LinkType } from './models';
-import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
+import { getDomain, getFirstMatch, getLinkType, getTimeTaken, getTotalResults, getUrlFromQuery } from './utils';
 
 describe('Testing getDomain utility', () => {
   // test('for empty input it should return empty string', () => {
@@ -42,6 +42,7 @@ describe('Testing getFirstMatch utility', () => {
     expect(getFirstMatch('abcd', /efg/)).toBe('');
   });
 });
+
 describe('Testing getLinkType utility', () => {
   test('Return value should be "LANDING" when provided url contains hostname + "/" + some path after "/', () => {
     expect(getLinkType('http://www.abc.com/path')).toBe(LinkType.landing);
@@ -51,5 +52,21 @@ describe('Testing getLinkType utility', () => {
   });
   test('Return value should be "HOME" when provided url contains only hostname', () => {
     expect(getLinkType('https://www.abc.com')).toBe(LinkType.home);
+  });
+});
+
+describe('Testing getTimeTaken', () => {
+  test('Testing get time function', () => {
+    expect(getTimeTaken('About 1,240,000,000 results (0.58 seconds) ')).toBe(0.58);
+    expect(getTimeTaken('About 1,240,000,000 results (1.12 seconds) ')).toBe(1.12);
+    expect(getTimeTaken('About 1,160,000,000 results')).toBeUndefined();
+  });
+});
+
+describe('Testing getTotalResults', () => {
+  test('Testing get total results function', () => {
+    expect(getTotalResults('About 1,240,000,000 results (0.58 seconds) ')).toBe(1240000000);
+    expect(getTotalResults('About 1,000 results (1.12 seconds) ')).toBe(1000);
+    expect(getTotalResults('')).toBeUndefined();
   });
 });
