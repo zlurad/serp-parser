@@ -97,6 +97,9 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing adwords property for non existent results', () => {
     expect(serp.adwords).toBeUndefined();
   });
+  test('testing shop property for non existent results', () => {
+    expect(serp.shopResults).toBeUndefined();
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -799,6 +802,77 @@ describe('Parsing Domain-nojs page', () => {
         'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABACGgJ3Yg&sig=AOD64_33ueZUCXOl2-2F8tXhISqo7efG8Q&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4QqyQIGCgB&adurl=',
       );
       expect(sitelink.type).toBe('CARD');
+    }
+  });
+});
+
+describe('Parsing Dell page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/dell.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('Page should have shop feature', () => {
+    expect(serp.shopResults).toBeDefined();
+  });
+
+  test('Page should have shop results and the title of the first shop result should be "Dell XPS 13 Laptop 9380 4K Touch -i7-8565U"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].title).toBe('Dell XPS 13 Laptop 9380 4K Touch -i7-8565U');
+    }
+  });
+
+  test('First shop results on the page should have img link "https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].imgLink).toBe(
+        'https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell',
+      );
+    }
+  });
+
+  test('First shop result on the page should have price 764.99', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].price).toBe(764.99);
+    }
+  });
+  test('First shop result on the page should have currency "$"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].currency).toBe("$");
+    }
+  });
+  test('Shopping site for the first shop result on the page should be "Rakuten.com"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].shoppingSite).toBe("Rakuten.com");
+    }
+  });
+  test('First shop result on the page should have specialOffer saying "Special offer"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].specialOffer).toBe("Special offer");
+    }
+  });
+  test('First shop result on the page should not have rating,votes or commodity displayed', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].votes).toBeUndefined();
+      expect(serp.shopResults[0].rating).toBeUndefined();
+      expect(serp.shopResults[0].commodity).toBeUndefined();
+    }
+  });
+  test('2nd shop result on the page should have rating 3.8', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[1].rating).toBe(3.8);
+    }
+  });
+  test('2nd shop result on the page should have 1k+ votes', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[1].votes).toBe("1k+");
+    }
+  });
+  test('4th shop result on the page should have commodity "Free shipping"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[3].commodity).toBe("Free shipping");
     }
   });
 });

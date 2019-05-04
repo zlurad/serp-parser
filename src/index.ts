@@ -9,6 +9,7 @@ import {
   RelatedKeyword,
   Result,
   Serp,
+  ShopResult,
   Sitelink,
   SitelinkType,
   Thumbnail,
@@ -60,6 +61,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
+  getShopResults(serp, $);
 
   const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
@@ -697,5 +699,92 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
       availableOn.push({ url, service, price });
     });
     serp.availableOn = availableOn;
+  }
+};
+
+const getShopResults = (serp: Serp, $: CheerioStatic) => {
+  const CONFIG = {
+    commodity: '.cYBBsb',
+    currency: '.e10twf',
+    currencyRegex: /\D+/,
+    imgLink: 'a.pla-unit-img-container-link',
+    price: '.e10twf',
+    priceRegex: /\d+(\.\d+)?/,
+    ratingRegex: /\d\.\d/,
+    ratingString: 'a > g-review-stars > span',
+    shopFeature: '.top-pla-group-inner',
+    shopOffer: '.pla-unit:not(.view-all-unit)',
+    shoppingSite: '.LbUacb',
+    specialOffer: '.gyXcee',
+    title: 'a > .pymv4e',
+    votes: '.pbAs0b',
+  };
+  const shopFeature = $(CONFIG.shopFeature);
+  if (shopFeature.length) {
+    const shopResults: ShopResult[] = [];
+    const shopOffer = shopFeature.find(CONFIG.shopOffer);
+    shopOffer.each((ind, el) => {
+      const imgLink = $(el)
+        .find(CONFIG.imgLink)
+        .attr('href');
+      const title = $(el)
+        .find(CONFIG.title)
+        .text();
+      const price = parseFloat(
+        getFirstMatch(
+          $(el)
+            .find(CONFIG.price)
+            .text(),
+          CONFIG.priceRegex,
+        ),
+      );
+      const currency = getFirstMatch(
+        $(el)
+          .find(CONFIG.currency)
+          .text(),
+        CONFIG.currencyRegex,
+      );
+      const shoppingSite = $(el)
+        .find(CONFIG.shoppingSite)
+        .text();
+
+      const shopResult: ShopResult = {
+        currency,
+        imgLink,
+        price,
+        shoppingSite,
+        title,
+      };
+      const specialOffer = $(el)
+        .find(CONFIG.specialOffer)
+        .first()
+        .text();
+      if (specialOffer) {
+        shopResult.specialOffer = specialOffer;
+      }
+      const ratingString = $(el)
+        .find(CONFIG.ratingString)
+        .attr('aria-label');
+      if (ratingString) {
+        const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
+        shopResult.rating = rating;
+      }
+      const votes = $(el)
+        .find(CONFIG.votes)
+        .text()
+        .trim()
+        .slice(1, -1);
+      if (votes) {
+        shopResult.votes = votes;
+      }
+      const commodity = $(el)
+        .find(CONFIG.commodity)
+        .text();
+      if (commodity) {
+        shopResult.commodity = commodity;
+      }
+      shopResults.push(shopResult);
+    });
+    serp.shopResults = shopResults;
   }
 };
