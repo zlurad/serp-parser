@@ -98,7 +98,7 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.adwords).toBeUndefined();
   });
   test('testing shop property for non existent results', () => {
-    expect(serp.shop).toBeUndefined();
+    expect(serp.shopResults).toBeUndefined();
   });
 });
 
@@ -816,58 +816,63 @@ describe('Parsing Dell page', () => {
   });
 
   test('Page should have shop feature', () => {
-    expect(serp.shop).toBeDefined();
+    expect(serp.shopResults).toBeDefined();
   });
 
-  test('Page should have shop cards and the title of the first shop card should be "Dell XPS 13 Laptop 9380 4K Touch -i7-8565U"', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].title).toBe('Dell XPS 13 Laptop 9380 4K Touch -i7-8565U');
+  test('Page should have shop results and the title of the first shop result should be "Dell XPS 13 Laptop 9380 4K Touch -i7-8565U"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].title).toBe('Dell XPS 13 Laptop 9380 4K Touch -i7-8565U');
     }
   });
 
-  test('First shop card on the page should have img link "https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell"', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].imgLink).toBe(
+  test('First shop results on the page should have img link "https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].imgLink).toBe(
         'https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell',
       );
     }
   });
 
-  test('First shop card on the page should have price 764.99', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].price).toBe(764.99);
+  test('First shop result on the page should have price 764.99', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].price).toBe(764.99);
     }
   });
-  test('Shopping site for the first shop card on the page should be "Rakuten.com"', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].shoppingSite).toBe("Rakuten.com");
+  test('First shop result on the page should have currency "$"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].currency).toBe("$");
     }
   });
-  test('First shop card on the page should have description with specialOffer saying "Special offer"', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].description.specialOffer).toBe("Special offer");
+  test('Shopping site for the first shop result on the page should be "Rakuten.com"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].shoppingSite).toBe("Rakuten.com");
     }
   });
-  test('First shop card on the page should not have rating,votes or commodity displayed in the description', () => {
-    if (serp.shop) {
-      expect(serp.shop[0].description.votes).toBeUndefined();
-      expect(serp.shop[0].description.rating).toBeUndefined();
-      expect(serp.shop[0].description.commodity).toBeUndefined();
+  test('First shop result on the page should have specialOffer saying "Special offer"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].specialOffer).toBe("Special offer");
     }
   });
-  test('2nd shop card on the page should have rating 3.8', () => {
-    if (serp.shop) {
-      expect(serp.shop[1].description.rating).toBe(3.8);
+  test('First shop result on the page should not have rating,votes or commodity displayed', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[0].votes).toBeUndefined();
+      expect(serp.shopResults[0].rating).toBeUndefined();
+      expect(serp.shopResults[0].commodity).toBeUndefined();
     }
   });
-  test('2nd shop card on the page should have 1k+ votes', () => {
-    if (serp.shop) {
-      expect(serp.shop[1].description.votes).toBe("1k+");
+  test('2nd shop result on the page should have rating 3.8', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[1].rating).toBe(3.8);
     }
   });
-  test('4th shop card on the page should have commodity "Free shipping"', () => {
-    if (serp.shop) {
-      expect(serp.shop[3].description.commodity).toBe("Free shipping");
+  test('2nd shop result on the page should have 1k+ votes', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[1].votes).toBe("1k+");
+    }
+  });
+  test('4th shop result on the page should have commodity "Free shipping"', () => {
+    if (serp.shopResults) {
+      expect(serp.shopResults[3].commodity).toBe("Free shipping");
     }
   });
 });

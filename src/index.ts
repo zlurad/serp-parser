@@ -9,8 +9,7 @@ import {
   RelatedKeyword,
   Result,
   Serp,
-  ShopCard,
-  ShopDescription,
+  ShopResult,
   Sitelink,
   SitelinkType,
   Thumbnail,
@@ -62,7 +61,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
-  getShopCards(serp, $);
+  getShopResults(serp, $);
 
   const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
@@ -703,19 +702,26 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
   }
 };
 
-const getShopCards = (serp: Serp, $: CheerioStatic) => {
+const getShopResults = (serp: Serp, $: CheerioStatic) => {
   const CONFIG = {
+    commodity: '.cYBBsb',
     currency: '.e10twf',
+    currencyRegex: /\D+/,
     imgLink: 'a.pla-unit-img-container-link',
     price: '.e10twf',
+    priceRegex: /\d+(\.\d+)?/,
+    ratingRegex: /\d\.\d/,
+    ratingString: 'a > g-review-stars > span',
     shopFeature: '.top-pla-group-inner',
     shopOffer: '.pla-unit:not(.view-all-unit)',
     shoppingSite: '.LbUacb',
+    specialOffer: '.gyXcee',
     title: 'a > .pymv4e',
+    votes: '.pbAs0b',
   };
   const shopFeature = $(CONFIG.shopFeature);
   if (shopFeature.length) {
-    const shop: ShopCard[] = [];
+    const shopResults: ShopResult[] = [];
     const shopOffer = shopFeature.find(CONFIG.shopOffer);
     shopOffer.each((ind, el) => {
       const imgLink = $(el)
@@ -729,61 +735,56 @@ const getShopCards = (serp: Serp, $: CheerioStatic) => {
           $(el)
             .find(CONFIG.price)
             .text(),
-          /\d+(\.\d+)?/,
+          CONFIG.priceRegex,
         ),
       );
       const currency = getFirstMatch(
         $(el)
           .find(CONFIG.currency)
           .text(),
-        /[^0-9]+/,
+        CONFIG.currencyRegex,
       );
       const shoppingSite = $(el)
         .find(CONFIG.shoppingSite)
         .text();
-      const description = getShopOfferDescription(el, $);
 
-      shop.push({ currency, description, imgLink, price, shoppingSite, title });
+      const shopResult: ShopResult = {
+        currency,
+        imgLink,
+        price,
+        shoppingSite,
+        title,
+      };
+      const specialOffer = $(el)
+        .find(CONFIG.specialOffer)
+        .first()
+        .text();
+      if (specialOffer) {
+        shopResult.specialOffer = specialOffer;
+      }
+      const ratingString = $(el)
+        .find(CONFIG.ratingString)
+        .attr('aria-label');
+      if (ratingString) {
+        const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
+        shopResult.rating = rating;
+      }
+      const votes = $(el)
+        .find(CONFIG.votes)
+        .text()
+        .trim()
+        .slice(1, -1);
+      if (votes) {
+        shopResult.votes = votes;
+      }
+      const commodity = $(el)
+        .find(CONFIG.commodity)
+        .text();
+      if (commodity) {
+        shopResult.commodity = commodity;
+      }
+      shopResults.push(shopResult);
     });
-    serp.shop = shop;
+    serp.shopResults = shopResults;
   }
-};
-
-const getShopOfferDescription = (shopOffer: CheerioElement, $: CheerioStatic) => {
-  const CONFIG = {
-    commodity: '.cYBBsb',
-    ratingString: 'a > g-review-stars > span',
-    specialOffer: '.gyXcee',
-    votes: '.pbAs0b',
-  };
-  const description: ShopDescription = {};
-  const specialOffer = $(shopOffer)
-    .find(CONFIG.specialOffer)
-    .first()
-    .text();
-  if (specialOffer) {
-    description.specialOffer = specialOffer;
-  }
-  const ratingString = $(shopOffer)
-    .find(CONFIG.ratingString)
-    .attr('aria-label');
-  if (ratingString) {
-    const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
-    description.rating = rating;
-  }
-  const votes = $(shopOffer)
-    .find(CONFIG.votes)
-    .text()
-    .trim()
-    .slice(1, -1);
-  if (votes) {
-    description.votes = votes;
-  }
-  const commodity = $(shopOffer)
-    .find(CONFIG.commodity)
-    .text();
-  if (commodity) {
-    description.commodity = commodity;
-  }
-  return description;
 };
