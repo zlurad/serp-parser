@@ -357,41 +357,22 @@ const getThumbnails = (serp: Serp, $: CheerioStatic) => {
 const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: boolean) => {
   // SPLIT TO getHotels and getHotelsNojs
   // SPLIT FURTHER TO getSearchFilters, getHotelOffers
-  const CONFIG = {
-    activeFilter:'.nu5Zhf.XlJ6Xb',
-    amenities: nojs? '.LPMtqb > div:last-child:not(.RHsRSe)' : '.DabgJ .AaNHwc',
-    checkInString: '.vpggTd.ed5F6c span',
-    checkOutString: '.vpggTd:not(.ed5F6c) span',
-    currency: '.dv1Q3e',
-    currencyRegex: /\D+/,
-    dealDetails: '.DabgJ .kOTJue',
-    dealType: '.DabgJ .NNPnSe',
-    description: nojs? '.kR1eme' : '',
-    featuredReview: nojs? '.X0w5lc' : '.DabgJ .gisIHb',
-    filterGroupsTitles: 'g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd',
-    guests: '.viupMc',
-    hotelCards: '.ntKMYc .hmHBZd',
-    hotelFiltersSection: '.x3UtIe',
-    hotelOffers: nojs? '.IvtMPc' : '',
-    hotelStars: nojs? '.kR1eme' : '',
-    hotelStarsRegex: /\d(?=-star)/,
-    moreHotelsLink: nojs? 'a.elzrQ' : '',
-    moreHotelsRegex: /(\d+,?)+/,
-    moreHotelsText: '.MWjNvc',
-    moreInfoLink: nojs? '.hc8x7b a' : '',
-    name: nojs? '.kR1eme' : '.BTPx6e',
-    originalPrice: '.AfCRQd',
-    originalPriceRegex: /\d+/,
-    price: '.dv1Q3e',
-    priceRegex: /\d+/,
-    rating: nojs? '.BTtC6e' : '.fTKmHE99XE4__star',
-    ratingRegex: /\d\.\d/,
-    searchTitle: '.BQ5Rcc',
-    votes: nojs? '.kR1eme' : 'g-review-stars+span',
-    votesRegex:/\((\d+,?)+\)/,
-  };
+
   if (nojs) {
-    
+    const CONFIG = {
+      amenities: '.LPMtqb > div:last-child:not(.RHsRSe)',
+      description: '.kR1eme',
+      featuredReview: '.X0w5lc',
+      hotelOffers: '.IvtMPc',
+      hotelStars: '.kR1eme',
+      hotelStarsRegex: /\d(?=-star)/,
+      moreHotelsLink: 'a.elzrQ',
+      moreInfoLink: '.hc8x7b a',
+      name: '.kR1eme',
+      rating: '.BTtC6e',
+      votes: '.kR1eme',
+      votesRegex: /\((\d+,?)+\)/,
+    };
     const moreHotelsLink = hotelsFeature.find(CONFIG.moreHotelsLink).attr('href');
     const hotels: Hotel[] = [];
 
@@ -466,137 +447,15 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
       moreHotels: moreHotelsLink,
     };
   } else {
-    // FILTERS
-
-    const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
-    const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
-    const checkInString = `${hotelFiltersSection.find(CONFIG.checkInString).text()} ${new Date().getFullYear()}`;
-    const checkIn = new Date(checkInString);
-    const checkOutString = `${hotelFiltersSection.find(CONFIG.checkOutString).text()} ${new Date().getFullYear()}`;
-    const checkOut = new Date(checkOutString);
-    const guests = parseInt(hotelFiltersSection.find(CONFIG.guests).text(), 10);
-
-    const filters: HotelFilters[] = [];
-
-    const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
-    filterGroupsTitles.each((ind, el) => {
-      const title = $(el).text();
-      const explanation = $(el)
-        .next()
-        .text();
-      const hotelFilters: HotelFilters = {
-        explanation,
-        title,
-      };
-      if ($(el).closest(CONFIG.activeFilter).length) {
-        hotelFilters.isActive = true;
-      }
-      filters.push(hotelFilters);
-    });
-
-    const searchFilters: HotelsSearchFilters = {
-      checkIn,
-      checkOut,
-      filters,
-      guests,
-      searchTitle,
+    const CONFIG = {
+      moreHotelsRegex: /(\d+,?)+/,
+      moreHotelsText: '.MWjNvc',
     };
+    // FILTERS
+    const searchFilters: HotelsSearchFilters = getHotelSearchFilters($, hotelsFeature);
 
     // HOTELS (HOTEL CARDS)
-
-    const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
-    const hotels: Hotel[] = [];
-
-    hotelCards.each((ind, el) => {
-      const name = $(el)
-        .find(CONFIG.name)
-        .text();
-      const price = parseInt(
-        getFirstMatch(
-          $(el)
-            .find(CONFIG.price)
-            .text(),
-          CONFIG.priceRegex,
-        ),
-        10,
-      );
-      const originalPrice = parseInt(
-        getFirstMatch(
-          $(el)
-            .find(CONFIG.originalPrice)
-            .text(),
-          CONFIG.originalPriceRegex,
-        ),
-        10,
-      );
-      const currency = getFirstMatch(
-        $(el)
-          .find(CONFIG.currency)
-          .text(),
-        CONFIG.currencyRegex,
-      );
-      const ratingString = $(el)
-        .find(CONFIG.rating)
-        .attr('aria-label');
-      const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
-      const votes = parseInt(
-        $(el)
-          .find(CONFIG.votes)
-          .text()
-          .slice(1, -1)
-          .replace(',', ''),
-        10,
-      ); // Getting rid of parentheses with slice()
-      // Make this better, maybe something instead of slice ?
-
-      const dealType = $(el)
-        .find(CONFIG.dealType)
-        .text();
-      const dealDetails = $(el)
-        .find(CONFIG.dealDetails)
-        .text();
-      const amenities = $(el)
-        .find(CONFIG.amenities)
-        .text();
-      const featuredReview = $(el)
-        .find(CONFIG.featuredReview)
-        .text()
-        .trim()
-        .slice(1, -1); // Getting rid of quotes with slice()
-      // Make this better, maybe something instead of slice ?
-
-      const hotelDeal: HotelDeal = {
-        dealType,
-      };
-
-      if (dealDetails) {
-        hotelDeal.dealDetails = dealDetails;
-      }
-      if (originalPrice) {
-        hotelDeal.originalPrice = originalPrice;
-      }
-
-      const hotel: Hotel = {
-        currency,
-        name,
-        price,
-        rating,
-        votes,
-      };
-
-      if (dealType) {
-        hotel.deal = hotelDeal;
-      }
-
-      if (amenities) {
-        hotel.amenities = amenities;
-      }
-      if (featuredReview) {
-        hotel.featuredReview = featuredReview;
-      }
-
-      hotels.push(hotel);
-    });
+    const hotels: Hotel[] = getHotelOffers($, hotelsFeature);
 
     // MORE HOTELS
 
@@ -609,6 +468,165 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
       searchFilters,
     };
   }
+};
+
+const getHotelSearchFilters = ($: CheerioStatic, hotelsFeature: Cheerio): HotelsSearchFilters => {
+  const CONFIG = {
+    activeFilter: '.nu5Zhf.XlJ6Xb',
+    checkInString: '.vpggTd.ed5F6c span',
+    checkOutString: '.vpggTd:not(.ed5F6c) span',
+    filterGroupsTitles: 'g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd',
+    guests: '.viupMc',
+    hotelFiltersSection: '.x3UtIe',
+    searchTitle: '.BQ5Rcc',
+  };
+  const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
+  const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
+  const checkInString = `${hotelFiltersSection.find(CONFIG.checkInString).text()} ${new Date().getFullYear()}`;
+  const checkIn = new Date(checkInString);
+  const checkOutString = `${hotelFiltersSection.find(CONFIG.checkOutString).text()} ${new Date().getFullYear()}`;
+  const checkOut = new Date(checkOutString);
+  const guests = parseInt(hotelFiltersSection.find(CONFIG.guests).text(), 10);
+
+  const filters: HotelFilters[] = [];
+
+  const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
+  filterGroupsTitles.each((ind, el) => {
+    const title = $(el).text();
+    const explanation = $(el)
+      .next()
+      .text();
+    const hotelFilters: HotelFilters = {
+      explanation,
+      title,
+    };
+    if ($(el).closest(CONFIG.activeFilter).length) {
+      hotelFilters.isActive = true;
+    }
+    filters.push(hotelFilters);
+  });
+
+  return {
+    checkIn,
+    checkOut,
+    filters,
+    guests,
+    searchTitle,
+  };
+};
+
+const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
+  const CONFIG = {
+    amenities: '.DabgJ .AaNHwc',
+    currency: '.dv1Q3e',
+    currencyRegex: /\D+/,
+    dealDetails: '.DabgJ .kOTJue',
+    dealType: '.DabgJ .NNPnSe',
+    featuredReview: '.DabgJ .gisIHb',
+    hotelCards: '.ntKMYc .hmHBZd',
+    name: '.BTPx6e',
+    originalPrice: '.AfCRQd',
+    originalPriceRegex: /\d+/,
+    price: '.dv1Q3e',
+    priceRegex: /\d+/,
+    rating: '.fTKmHE99XE4__star',
+    ratingRegex: /\d\.\d/,
+    votes: 'g-review-stars+span',
+  };
+  const hotels: Hotel[] = [];
+  const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
+  hotelCards.each((ind, el) => {
+    const name = $(el)
+      .find(CONFIG.name)
+      .text();
+    const price = parseInt(
+      getFirstMatch(
+        $(el)
+          .find(CONFIG.price)
+          .text(),
+        CONFIG.priceRegex,
+      ),
+      10,
+    );
+    const originalPrice = parseInt(
+      getFirstMatch(
+        $(el)
+          .find(CONFIG.originalPrice)
+          .text(),
+        CONFIG.originalPriceRegex,
+      ),
+      10,
+    );
+    const currency = getFirstMatch(
+      $(el)
+        .find(CONFIG.currency)
+        .text(),
+      CONFIG.currencyRegex,
+    );
+    const ratingString = $(el)
+      .find(CONFIG.rating)
+      .attr('aria-label');
+    const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
+    const votes = parseInt(
+      $(el)
+        .find(CONFIG.votes)
+        .text()
+        .slice(1, -1)
+        .replace(',', ''),
+      10,
+    ); // Getting rid of parentheses with slice()
+    // Make this better, maybe something instead of slice ?
+
+    const dealType = $(el)
+      .find(CONFIG.dealType)
+      .text();
+    const dealDetails = $(el)
+      .find(CONFIG.dealDetails)
+      .text();
+    const amenities = $(el)
+      .find(CONFIG.amenities)
+      .text();
+    const featuredReview = $(el)
+      .find(CONFIG.featuredReview)
+      .text()
+      .trim()
+      .slice(1, -1); // Getting rid of quotes with slice()
+    // Make this better, maybe something instead of slice ?
+
+    const hotelDeal: HotelDeal = {
+      dealType,
+    };
+
+    if (dealDetails) {
+      hotelDeal.dealDetails = dealDetails;
+    }
+    if (originalPrice) {
+      hotelDeal.originalPrice = originalPrice;
+    }
+
+    const hotel: Hotel = {
+      currency,
+      name,
+      price,
+      rating,
+      votes,
+    };
+
+    if (dealType) {
+      hotel.deal = hotelDeal;
+    }
+
+    if (amenities) {
+      hotel.amenities = amenities;
+    }
+    if (featuredReview) {
+      hotel.featuredReview = featuredReview;
+    }
+
+    hotels.push(hotel);
+  });
+
+  return hotels;
 };
 
 const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
