@@ -16,7 +16,7 @@ import {
   ThumbnailGroup,
   VideoCard,
 } from './models';
-import { getDomain, getFirstMatch, getLinkType, getTimeTaken, getTotalResults, getUrlFromQuery } from './utils';
+import * as utils from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -51,8 +51,8 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 
   serp.keyword = $(CONFIG.keyword).val();
   const resultText = $(CONFIG.resultText).text();
-  serp.totalResults = getTotalResults(resultText);
-  serp.timeTaken = getTimeTaken(resultText);
+  serp.totalResults = utils.getTotalResults(resultText);
+  serp.timeTaken = utils.getTimeTaken(resultText);
 
   serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
@@ -71,12 +71,12 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   $(CONFIG.results).each((index, element) => {
     const position = index + 1;
     const url = $(element).prop('href');
-    const domain = getDomain(url);
+    const domain = utils.getDomain(url);
     const title = $(element)
       .find('h3')
       .text();
     const snippet = getSnippet($, element);
-    const linkType = getLinkType(url);
+    const linkType = utils.getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -101,7 +101,7 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
   };
 
   serp.keyword = $(CONFIG.keyword).val();
-  serp.totalResults = getTotalResults($(CONFIG.resultText).text());
+  serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
 
   serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
@@ -115,13 +115,13 @@ const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
 
   $(CONFIG.results).each((index, element) => {
     const position = index + 1;
-    const url = getUrlFromQuery($(element).prop('href'));
-    const domain = getDomain(url);
+    const url = utils.getUrlFromQuery($(element).prop('href'));
+    const domain = utils.getDomain(url);
     const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
     const snippet = getSnippet($, element)
       .replace(/(&nbsp;)/g, ' ')
       .replace(/ +(?= )/g, '');
-    const linkType = getLinkType(url);
+    const linkType = utils.getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -387,17 +387,18 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
           .find(CONFIG.rating)
           .text(),
       );
-      const votes = getFirstMatch(
-        $(elem)
-          .find(CONFIG.votes)
-          .next()
-          .text(),
-        CONFIG.votesRegex,
-      )
+      const votes = utils
+        .getFirstMatch(
+          $(elem)
+            .find(CONFIG.votes)
+            .next()
+            .text(),
+          CONFIG.votesRegex,
+        )
         .slice(1, -1)
         .replace(',', '');
       const votesNumber = parseInt(votes, 10);
-      const hotelStars = getFirstMatch(
+      const hotelStars = utils.getFirstMatch(
         $(elem)
           .find(CONFIG.hotelStars)
           .next()
@@ -460,7 +461,7 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
     // MORE HOTELS
 
     const moreHotelsText = hotelsFeature.find(CONFIG.moreHotelsText).text();
-    const moreHotels = parseInt(getFirstMatch(moreHotelsText, CONFIG.moreHotelsRegex).replace(',', ''), 10);
+    const moreHotels = parseInt(utils.getFirstMatch(moreHotelsText, CONFIG.moreHotelsRegex).replace(',', ''), 10);
 
     serp.hotels = {
       hotels,
@@ -540,7 +541,7 @@ const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
       .find(CONFIG.name)
       .text();
     const price = parseInt(
-      getFirstMatch(
+      utils.getFirstMatch(
         $(el)
           .find(CONFIG.price)
           .text(),
@@ -549,7 +550,7 @@ const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
       10,
     );
     const originalPrice = parseInt(
-      getFirstMatch(
+      utils.getFirstMatch(
         $(el)
           .find(CONFIG.originalPrice)
           .text(),
@@ -557,7 +558,7 @@ const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
       ),
       10,
     );
-    const currency = getFirstMatch(
+    const currency = utils.getFirstMatch(
       $(el)
         .find(CONFIG.currency)
         .text(),
@@ -566,7 +567,7 @@ const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
     const ratingString = $(el)
       .find(CONFIG.rating)
       .attr('aria-label');
-    const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
+    const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
     const votes = parseInt(
       $(el)
         .find(CONFIG.votes)
@@ -664,8 +665,8 @@ const getAds = ($: CheerioStatic, search: string, adsList: Ad[], nojs: boolean) 
       const url = $(e)
         .find(CONFIG.url)
         .attr('href');
-      const domain = getDomain(url);
-      const linkType = getLinkType(url);
+      const domain = utils.getDomain(url);
+      const linkType = utils.getLinkType(url);
       const snippet = $(e)
         .find(CONFIG.snippet)
         .text();
@@ -788,14 +789,14 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
         .find(CONFIG.title)
         .text();
       const price = parseFloat(
-        getFirstMatch(
+        utils.getFirstMatch(
           $(el)
             .find(CONFIG.price)
             .text(),
           CONFIG.priceRegex,
         ),
       );
-      const currency = getFirstMatch(
+      const currency = utils.getFirstMatch(
         $(el)
           .find(CONFIG.currency)
           .text(),
@@ -823,7 +824,7 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
         .find(CONFIG.ratingString)
         .attr('aria-label');
       if (ratingString) {
-        const rating = parseFloat(getFirstMatch(ratingString, CONFIG.ratingRegex));
+        const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
         shopResult.rating = rating;
       }
       const votes = $(el)
