@@ -13,7 +13,7 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
-  TopStoryCard,
+  TopStory,
 } from './models';
 import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
 
@@ -52,7 +52,11 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
-  getTopStories(serp, $);
+
+  const topStoriesFeature = $('g-section-with-header[data-hveid=CAEQAA]');
+  if (topStoriesFeature.length) {
+    getTopStories(serp, $, topStoriesFeature);
+  }
 
   const hotels = $('.zd2Jbb');
   if (hotels.length > 0) {
@@ -640,26 +644,31 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
   }
 };
 
-const getTopStories = (serp: Serp, $: CheerioStatic) => {
-  const topStoriesFeature = $('g-section-with-header[data-hveid=CAEQAA]');
-  const topStories: TopStoryCard[] = [];
-  if (topStoriesFeature.length) {
-    const topStorieCard = topStoriesFeature.find('.So9e7d');
-    topStorieCard.each((ind, el) => {
-      const imgLink = $(el)
-        .find('g-inner-card.cv2VAd > a')
-        .attr('href');
-      const title = $(el)
-        .find('.mRnBbe')
-        .text();
-      const shoppingSite = $(el)
-        .find('.YQPQv')
-        .text();
-      const publishedTime = $(el)
-        .find('.GJhQm > span.f')
-        .text();
-      topStories.push({ imgLink, title, shoppingSite, publishedTime });
-    });
-    serp.topStories = topStories;
-  }
+const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio) => {
+  const CONFIG = {
+    imgLink: 'g-inner-card.cv2VAd > a',
+    publishedTime: '.GJhQm > span.f',
+    shoppingSite: '.YQPQv',
+    title: '.mRnBbe',
+    topStory: '.So9e7d',
+  };
+
+  const topStories: TopStory[] = [];
+  const topStory = topStoriesFeature.find(CONFIG.topStory);
+  topStory.each((ind, el) => {
+    const imgLink = $(el)
+      .find(CONFIG.imgLink)
+      .attr('href');
+    const title = $(el)
+      .find(CONFIG.title)
+      .text();
+    const shoppingSite = $(el)
+      .find(CONFIG.shoppingSite)
+      .text();
+    const publishedTime = $(el)
+      .find(CONFIG.publishedTime)
+      .text();
+    topStories.push({ imgLink, title, shoppingSite, publishedTime });
+  });
+  serp.topStories = topStories;
 };
