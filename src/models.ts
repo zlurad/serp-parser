@@ -12,6 +12,7 @@ export interface Serp {
   adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
   availableOn?: AvailableOn[];
   topStories?: TopStory[];
+  shopResults?: ShopResult[];
 }
 
 export interface TopStory {
@@ -19,6 +20,18 @@ export interface TopStory {
   title: string;
   shoppingSite: string;
   publishedTime: string;
+}
+
+export interface ShopResult {
+  imgLink: string;
+  title: string;
+  price: number;
+  currency: string;
+  shoppingSite: string;
+  specialOffer?: string;
+  rating?: number;
+  votes?: string;
+  commodity?: string;
 }
 
 export interface Ad {

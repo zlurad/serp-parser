@@ -9,13 +9,15 @@ import {
   RelatedKeyword,
   Result,
   Serp,
+  ShopResult,
   Sitelink,
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
   TopStory,
+  VideoCard,
 } from './models';
-import { getDomain, getFirstMatch, getLinkType, getUrlFromQuery } from './utils';
+import * as utils from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
   const $ = cheerio.load(html, {
@@ -40,38 +42,47 @@ export const GoogleSERP = (html: string): Serp => {
 };
 
 const parseGoogle = (serp: Serp, $: CheerioStatic) => {
-  serp.keyword = $('input[aria-label="Search"]').val();
-  const resultText = $('#resultStats').text();
-  getResults(serp, resultText);
-  getTime(serp, resultText);
+  const CONFIG = {
+    currentPage: 'table#nav td.cur',
+    hotels: '.zd2Jbb',
+    keyword: 'input[aria-label="Search"]',
+    resultText: '#resultStats',
+    results: '.rc .r > a',
+  };
 
-  serp.currentPage = parseInt($('table#nav td.cur').text(), 10);
+  serp.keyword = $(CONFIG.keyword).val();
+  const resultText = $(CONFIG.resultText).text();
+  serp.totalResults = utils.getTotalResults(resultText);
+  serp.timeTaken = utils.getTimeTaken(resultText);
+
+  serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, false);
   getVideos(serp, $);
   getThumbnails(serp, $);
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
+  getShopResults(serp, $);
 
   const topStoriesFeature = $('g-section-with-header[data-hveid=CAEQAA]');
   if (topStoriesFeature.length) {
     getTopStories(serp, $, topStoriesFeature);
   }
 
-  const hotels = $('.zd2Jbb');
+  const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
     getHotels(serp, $, hotels, false);
   }
 
-  $('.rc .r > a').each((index, element) => {
+  $(CONFIG.results).each((index, element) => {
     const position = index + 1;
     const url = $(element).prop('href');
-    const domain = getDomain(url);
+    const domain = utils.getDomain(url);
     const title = $(element)
       .find('h3')
       .text();
     const snippet = getSnippet($, element);
-    const linkType = getLinkType(url);
+    const linkType = utils.getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -87,28 +98,36 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
 };
 
 const parseGoogleNojs = (serp: Serp, $: CheerioStatic) => {
-  serp.keyword = $('#sbhost').val();
-  getResults(serp, $('#resultStats').text());
+  const CONFIG = {
+    currentPage: 'table#nav td:not(.b) > b',
+    hotels: '.ksBKIe',
+    keyword: '#sbhost',
+    resultText: '#resultStats',
+    results: '#ires ol .g .r a:not(.sla)',
+  };
 
-  serp.currentPage = parseInt($('table#nav td:not(.b) > b').text(), 10);
+  serp.keyword = $(CONFIG.keyword).val();
+  serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
+
+  serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
   getPagination(serp, $);
   getRelatedKeywords(serp, $, true);
   getAdwords(serp, $, true);
 
-  const hotels = $('.ksBKIe');
+  const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
     getHotels(serp, $, hotels, true);
   }
 
-  $('#ires ol .g .r a:not(.sla)').each((index, element) => {
+  $(CONFIG.results).each((index, element) => {
     const position = index + 1;
-    const url = getUrlFromQuery($(element).prop('href'));
-    const domain = getDomain(url);
+    const url = utils.getUrlFromQuery($(element).prop('href'));
+    const domain = utils.getDomain(url);
     const title = $(element).text(); // maybe use regex to eliminate whitespace instead of options param in cheerio.load
     const snippet = getSnippet($, element)
       .replace(/(&nbsp;)/g, ' ')
       .replace(/ +(?= )/g, '');
-    const linkType = getLinkType(url);
+    const linkType = utils.getLinkType(url);
     const result: Result = {
       domain,
       linkType,
@@ -154,18 +173,26 @@ const parseSitelinks = ($: CheerioStatic, element: CheerioElement, result: Resul
 };
 
 const parseGoogleCardSitelinks = ($: CheerioStatic, element: CheerioElement, sitelinks: Sitelink[]) => {
+  const CONFIG = {
+    closest: 'div.g',
+    find: '.sld',
+    href: 'a',
+    snippet: '.st',
+    title: 'h3 a',
+  };
+
   const cardSitelinks = $(element)
-    .closest('div.g')
-    .find('.sld');
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
   cardSitelinks.each((i, el) => {
     const title = $(el)
-      .find('h3 a')
+      .find(CONFIG.title)
       .text();
     const href = $(el)
-      .find('a')
+      .find(CONFIG.href)
       .attr('href');
     const snippet = $(el)
-      .find('.st')
+      .find(CONFIG.snippet)
       .text();
     const sitelink: Sitelink = {
       href,
@@ -183,9 +210,14 @@ const parseGoogleInlineSitelinks = (
   sitelinks: Sitelink[],
   nojs: boolean,
 ) => {
+  const CONFIG = {
+    closest: nojs ? 'div.g' : '.rc',
+    find: '.s .osl a',
+  };
+
   const inlineSitelinks = $(element)
-    .closest(nojs ? 'div.g' : '.rc')
-    .find('.s .osl a');
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
   inlineSitelinks.each((i, el) => {
     const title = $(el).text();
     const href = $(el).attr('href');
@@ -199,44 +231,38 @@ const parseGoogleInlineSitelinks = (
 };
 
 const parseCachedAndSimilarUrls = ($: CheerioStatic, element: CheerioElement, result: Result, nojs: boolean) => {
-  $(element)
-    .closest(nojs ? '.g' : '.r')
-    .find(nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a')
-    .each((i, el) => {
-      switch ($(el).text()) {
-        case 'Cached':
-          result.cachedUrl = $(el).prop('href');
-          break;
-        case 'Similar':
-          result.similarUrl = $(el).prop('href');
-          break;
-      }
-    });
-};
+  const CONFIG = {
+    closest: nojs ? '.g' : '.r',
+    find: nojs ? 'cite + .Pj9hGd ul .mUpfKd > a' : 'span ol > li.action-menu-item > a',
+  };
 
-const getResults = (serp: Serp, text: string) => {
-  const resultsRegex = /[\d,]+(?= results)/g;
-  const resultsMatched: string = getFirstMatch(text, resultsRegex).replace(/,/g, '');
-  if (resultsMatched !== '') {
-    serp.totalResults = parseInt(resultsMatched, 10);
-  }
-};
-
-const getTime = (serp: Serp, text: string) => {
-  const timeRegex = /[\d.]+(?= seconds)/g;
-  const timeMatched: string = getFirstMatch(text, timeRegex);
-  if (timeMatched !== '') {
-    serp.timeTaken = parseFloat(timeMatched);
-  }
+  const urls = $(element)
+    .closest(CONFIG.closest)
+    .find(CONFIG.find);
+  urls.each((i, el) => {
+    switch ($(el).text()) {
+      case 'Cached':
+        result.cachedUrl = $(el).prop('href');
+        break;
+      case 'Similar':
+        result.similarUrl = $(el).prop('href');
+        break;
+    }
+  });
 };
 
 const getPagination = (serp: Serp, $: CheerioStatic) => {
-  const pagination = $('table#nav');
+  const CONFIG = {
+    pages: 'td:not(.b) a',
+    pagination: 'table#nav',
+  };
+
+  const pagination = $(CONFIG.pagination);
   serp.pagination.push({
     page: serp.currentPage,
     path: '',
   });
-  pagination.find('td:not(.b) a').each((index, element) => {
+  pagination.find(CONFIG.pages).each((index, element) => {
     serp.pagination.push({
       page: parseInt($(element).text(), 10),
       path: $(element).prop('href'),
@@ -245,31 +271,41 @@ const getPagination = (serp: Serp, $: CheerioStatic) => {
 };
 
 const getVideos = (serp: Serp, $: CheerioStatic) => {
-  const videosCards = $('g-scrolling-carousel .BFJZOc g-inner-card');
-  if (videosCards.text()) {
-    // maybe change this to videosCards.length > 0 ?
-    serp.videos = [];
+  const CONFIG = {
+    channel: '.zECGdd.RgAZAc',
+    date: '.zECGdd:not(.RgAZAc)',
+    sitelink: 'a',
+    source: '.zECGdd:not(.RgAZAc) .cJzOGc',
+    title: 'div[role="heading"]',
+    videoDuration: '.k8B8Pc',
+    videosCards: 'g-scrolling-carousel .BFJZOc g-inner-card',
+  };
+
+  const videosCards = $(CONFIG.videosCards);
+  if (videosCards.length === 0) {
+    return;
   }
+  const videos: VideoCard[] = [];
   videosCards.each((index, element) => {
     const title = $(element)
-      .find('div[role="heading"]')
+      .find(CONFIG.title)
       .text();
     const sitelink = $(element)
-      .find('a')
+      .find(CONFIG.sitelink)
       .attr('href');
     const source = $(element)
-      .find('.zECGdd:not(.RgAZAc) .cJzOGc')
+      .find(CONFIG.source)
       .text();
     const date = new Date(
       $(element)
-        .find('.zECGdd:not(.RgAZAc)')
+        .find(CONFIG.date)
         .text(),
     );
     const channel = $(element)
-      .find('.zECGdd.RgAZAc')
+      .find(CONFIG.channel)
       .text();
     const videoDuration = $(element)
-      .find('.k8B8Pc')
+      .find(CONFIG.videoDuration)
       .text();
     const videoCard = {
       channel,
@@ -279,32 +315,39 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
       title,
       videoDuration,
     };
-    if (serp.videos) {
-      serp.videos.push(videoCard);
-    }
+    videos.push(videoCard);
   });
+  serp.videos = videos;
 };
 
 const getThumbnails = (serp: Serp, $: CheerioStatic) => {
-  const relatedGroup = $('#bres .xpdopen');
-  if (relatedGroup.length > 0) {
-    serp.thumbnailGroups = [];
+  const CONFIG = {
+    heading: '[role="heading"]',
+    relatedGroup: '#bres .xpdopen',
+    relatedThumbnail: '.zVvuGd > div',
+    sitelink: 'a',
+    title: '.fl',
+  };
+  const relatedGroup = $(CONFIG.relatedGroup);
+  if (relatedGroup.length === 0) {
+    return;
   }
+  const thumbnailGroups: ThumbnailGroup[] = [];
   relatedGroup.each((index, element) => {
     const heading = $(element)
-      .find('[role="heading"]')
+      .find(CONFIG.heading)
       .text();
     const thumbnailGroup: ThumbnailGroup = {
       heading,
       thumbnails: [],
     };
-    const relatedThumbnail = $(element).find('.zVvuGd > div');
+    const relatedThumbnail = $(element).find(CONFIG.relatedThumbnail);
     relatedThumbnail.each((ind, el) => {
       const title = $(el)
-        .find('.fl')
+        .find(CONFIG.title)
         .text();
       const sitelink = $(el)
-        .find('a')
+        .find(CONFIG.sitelink)
         .attr('href');
       const thumbnail: Thumbnail = {
         sitelink,
@@ -312,65 +355,79 @@ const getThumbnails = (serp: Serp, $: CheerioStatic) => {
       };
       thumbnailGroup.thumbnails.push(thumbnail);
     });
-    if (serp.thumbnailGroups) {
-      serp.thumbnailGroups.push(thumbnailGroup);
-    }
+    thumbnailGroups.push(thumbnailGroup);
   });
+  serp.thumbnailGroups = thumbnailGroups;
 };
 
 const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: boolean) => {
+  // SPLIT TO getHotels and getHotelsNojs
+  // SPLIT FURTHER TO getSearchFilters, getHotelOffers
+
   if (nojs) {
-    const moreHotelsLink = hotelsFeature.find('a.elzrQ').attr('href');
+    const CONFIG = {
+      amenities: '.LPMtqb > div:last-child:not(.RHsRSe)',
+      description: '.kR1eme',
+      featuredReview: '.X0w5lc',
+      hotelOffers: '.IvtMPc',
+      hotelStars: '.kR1eme',
+      hotelStarsRegex: /\d(?=-star)/,
+      moreHotelsLink: 'a.elzrQ',
+      moreInfoLink: '.hc8x7b a',
+      name: '.kR1eme',
+      rating: '.BTtC6e',
+      votes: '.kR1eme',
+      votesRegex: /\((\d+,?)+\)/,
+    };
+    const moreHotelsLink = hotelsFeature.find(CONFIG.moreHotelsLink).attr('href');
     const hotels: Hotel[] = [];
 
     // HOTELS
-    const hotelOffers = hotelsFeature.find('.IvtMPc');
+    const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
     hotelOffers.each((ind, elem) => {
       const name = $(elem)
-        .find('.kR1eme')
+        .find(CONFIG.name)
         .text();
       const rating = parseFloat(
         $(elem)
-          .find('.BTtC6e')
+          .find(CONFIG.rating)
           .text(),
       );
-      const votes = getFirstMatch(
-        $(elem)
-          .find('.BTtC6e')
-          .closest('div')
-          .text(),
-        /\((\d+,?)+\)/,
-      )
+      const votes = utils
+        .getFirstMatch(
+          $(elem)
+            .find(CONFIG.votes)
+            .next()
+            .text(),
+          CONFIG.votesRegex,
+        )
         .slice(1, -1)
         .replace(',', '');
       const votesNumber = parseInt(votes, 10);
-      const hotelStars = getFirstMatch(
+      const hotelStars = utils.getFirstMatch(
         $(elem)
-          .find('.BTtC6e')
-          .closest('div')
+          .find(CONFIG.hotelStars)
+          .next()
           .text(),
-        /\d(?=-star)/,
+        CONFIG.hotelStarsRegex,
       );
       const stars = parseInt(hotelStars, 10);
       const description = $(elem)
-        .find('.BTtC6e')
-        .closest('div')
+        .find(CONFIG.description)
+        .next()
         .next()
         .text();
       const amenities = $(elem)
-        .find('.BTtC6e')
-        .closest('div')
-        .next()
-        .next(':not(.RHsRSe)')
+        .find(CONFIG.amenities)
         .text();
       const featuredReview = $(elem)
-        .find('.X0w5lc')
+        .find(CONFIG.featuredReview)
         .text()
         .trim()
         .slice(1, -1); // Getting rid of quotes with slice()
       // Make this better, maybe something instead of slice ?;
       const moreInfoLink = $(elem)
-        .find('.hc8x7b a')
+        .find(CONFIG.moreInfoLink)
         .attr('href');
 
       const hotel: Hotel = {
@@ -397,143 +454,20 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
       moreHotels: moreHotelsLink,
     };
   } else {
-    // FILTERS
-
-    const hotelFiltersSection = hotelsFeature.find('.x3UtIe');
-    const searchTitle = hotelFiltersSection.find('.BQ5Rcc').text();
-    const checkInString = `${hotelFiltersSection.find('.vpggTd.ed5F6c span').text()} ${new Date().getFullYear()}`;
-    const checkIn = new Date(checkInString);
-    const checkOutString = `${hotelFiltersSection
-      .find('.vpggTd:not(.ed5F6c) span')
-      .text()} ${new Date().getFullYear()}`;
-    const checkOut = new Date(checkOutString);
-    const guests = parseInt(hotelFiltersSection.find('.viupMc').text(), 10);
-
-    const filters: HotelFilters[] = [];
-
-    const filterGroupsTitles = hotelFiltersSection.find('g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd');
-    filterGroupsTitles.each((ind, el) => {
-      const title = $(el).text();
-      const explanation = $(el)
-        .next()
-        .text();
-      const hotelFilters: HotelFilters = {
-        explanation,
-        title,
-      };
-      if (
-        $(el)
-          .closest('.nu5Zhf')
-          .hasClass('XlJ6Xb')
-      ) {
-        hotelFilters.isActive = true;
-      }
-      filters.push(hotelFilters);
-    });
-
-    const searchFilters: HotelsSearchFilters = {
-      checkIn,
-      checkOut,
-      filters,
-      guests,
-      searchTitle,
+    const CONFIG = {
+      moreHotelsRegex: /(\d+,?)+/,
+      moreHotelsText: '.MWjNvc',
     };
+    // FILTERS
+    const searchFilters: HotelsSearchFilters = getHotelSearchFilters($, hotelsFeature);
 
     // HOTELS (HOTEL CARDS)
-
-    const hotelCards = hotelsFeature.find('.ntKMYc .hmHBZd');
-    const hotels: Hotel[] = [];
-
-    hotelCards.each((ind, el) => {
-      const name = $(el)
-        .find('.BTPx6e')
-        .text();
-      const price = parseInt(
-        getFirstMatch(
-          $(el)
-            .find('.dv1Q3e')
-            .text(),
-          /\d+/,
-        ),
-        10,
-      );
-      const originalPrice = parseInt(
-        getFirstMatch(
-          $(el)
-            .find('.AfCRQd')
-            .text(),
-          /\d+/,
-        ),
-        10,
-      );
-      const currency = getFirstMatch(
-        $(el)
-          .find('.dv1Q3e')
-          .text(),
-        /[^0-9]+/,
-      );
-      const ratingString = $(el)
-        .find('.fTKmHE99XE4__star')
-        .attr('aria-label');
-      const rating = parseFloat(getFirstMatch(ratingString, /\d\.\d/));
-      const votes = parseInt(
-        $(el)
-          .find('g-review-stars+span')
-          .text()
-          .slice(1, -1)
-          .replace(',', ''),
-        10,
-      ); // Getting rid of parentheses with slice()
-      // Make this better, maybe something instead of slice ?
-
-      const additionalInfo = $(el).find('.DabgJ');
-      const dealType = additionalInfo.find('.NNPnSe').text();
-      const dealDetails = additionalInfo.find('.kOTJue').text();
-      const amenities = additionalInfo.find('.AaNHwc').text();
-      const featuredReview = additionalInfo
-        .find('.gisIHb')
-        .text()
-        .trim()
-        .slice(1, -1); // Getting rid of quotes with slice()
-      // Make this better, maybe something instead of slice ?
-
-      const hotelDeal: HotelDeal = {
-        dealType,
-      };
-
-      if (dealDetails) {
-        hotelDeal.dealDetails = dealDetails;
-      }
-      if (originalPrice) {
-        hotelDeal.originalPrice = originalPrice;
-      }
-
-      const hotel: Hotel = {
-        currency,
-        name,
-        price,
-        rating,
-        votes,
-      };
-
-      if (dealType) {
-        hotel.deal = hotelDeal;
-      }
-
-      if (amenities) {
-        hotel.amenities = amenities;
-      }
-      if (featuredReview) {
-        hotel.featuredReview = featuredReview;
-      }
-
-      hotels.push(hotel);
-    });
+    const hotels: Hotel[] = getHotelOffers($, hotelsFeature);
 
     // MORE HOTELS
 
-    const moreHotelsText = hotelsFeature.find('.MWjNvc').text();
-    const moreHotels = parseInt(getFirstMatch(moreHotelsText, /(\d+,?)+/).replace(',', ''), 10);
+    const moreHotelsText = hotelsFeature.find(CONFIG.moreHotelsText).text();
+    const moreHotels = parseInt(utils.getFirstMatch(moreHotelsText, CONFIG.moreHotelsRegex).replace(',', ''), 10);
 
     serp.hotels = {
       hotels,
@@ -543,61 +477,206 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
   }
 };
 
+const getHotelSearchFilters = ($: CheerioStatic, hotelsFeature: Cheerio): HotelsSearchFilters => {
+  const CONFIG = {
+    activeFilter: '.nu5Zhf.XlJ6Xb',
+    checkInString: '.vpggTd.ed5F6c span',
+    checkOutString: '.vpggTd:not(.ed5F6c) span',
+    filterGroupsTitles: 'g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd',
+    guests: '.viupMc',
+    hotelFiltersSection: '.x3UtIe',
+    searchTitle: '.BQ5Rcc',
+  };
+  const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
+  const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
+  const checkInString = `${hotelFiltersSection.find(CONFIG.checkInString).text()} ${new Date().getFullYear()}`;
+  const checkIn = new Date(checkInString);
+  const checkOutString = `${hotelFiltersSection.find(CONFIG.checkOutString).text()} ${new Date().getFullYear()}`;
+  const checkOut = new Date(checkOutString);
+  const guests = parseInt(hotelFiltersSection.find(CONFIG.guests).text(), 10);
+
+  const filters: HotelFilters[] = [];
+
+  const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
+  filterGroupsTitles.each((ind, el) => {
+    const title = $(el).text();
+    const explanation = $(el)
+      .next()
+      .text();
+    const hotelFilters: HotelFilters = {
+      explanation,
+      title,
+    };
+    if ($(el).closest(CONFIG.activeFilter).length) {
+      hotelFilters.isActive = true;
+    }
+    filters.push(hotelFilters);
+  });
+
+  return {
+    checkIn,
+    checkOut,
+    filters,
+    guests,
+    searchTitle,
+  };
+};
+
+const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
+  const CONFIG = {
+    amenities: '.DabgJ .AaNHwc',
+    currency: '.dv1Q3e',
+    currencyRegex: /\D+/,
+    dealDetails: '.DabgJ .kOTJue',
+    dealType: '.DabgJ .NNPnSe',
+    featuredReview: '.DabgJ .gisIHb',
+    hotelCards: '.ntKMYc .hmHBZd',
+    name: '.BTPx6e',
+    originalPrice: '.AfCRQd',
+    originalPriceRegex: /\d+/,
+    price: '.dv1Q3e',
+    priceRegex: /\d+/,
+    rating: '.fTKmHE99XE4__star',
+    ratingRegex: /\d\.\d/,
+    votes: 'g-review-stars+span',
+  };
+  const hotels: Hotel[] = [];
+  const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
+  hotelCards.each((ind, el) => {
+    const name = $(el)
+      .find(CONFIG.name)
+      .text();
+    const price = parseInt(
+      utils.getFirstMatch(
+        $(el)
+          .find(CONFIG.price)
+          .text(),
+        CONFIG.priceRegex,
+      ),
+      10,
+    );
+    const originalPrice = parseInt(
+      utils.getFirstMatch(
+        $(el)
+          .find(CONFIG.originalPrice)
+          .text(),
+        CONFIG.originalPriceRegex,
+      ),
+      10,
+    );
+    const currency = utils.getFirstMatch(
+      $(el)
+        .find(CONFIG.currency)
+        .text(),
+      CONFIG.currencyRegex,
+    );
+    const ratingString = $(el)
+      .find(CONFIG.rating)
+      .attr('aria-label');
+    const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
+    const votes = parseInt(
+      $(el)
+        .find(CONFIG.votes)
+        .text()
+        .slice(1, -1)
+        .replace(',', ''),
+      10,
+    ); // Getting rid of parentheses with slice()
+    // Make this better, maybe something instead of slice ?
+
+    const dealType = $(el)
+      .find(CONFIG.dealType)
+      .text();
+    const dealDetails = $(el)
+      .find(CONFIG.dealDetails)
+      .text();
+    const amenities = $(el)
+      .find(CONFIG.amenities)
+      .text();
+    const featuredReview = $(el)
+      .find(CONFIG.featuredReview)
+      .text()
+      .trim()
+      .slice(1, -1); // Getting rid of quotes with slice()
+    // Make this better, maybe something instead of slice ?
+
+    const hotelDeal: HotelDeal = {
+      dealType,
+    };
+
+    if (dealDetails) {
+      hotelDeal.dealDetails = dealDetails;
+    }
+    if (originalPrice) {
+      hotelDeal.originalPrice = originalPrice;
+    }
+
+    const hotel: Hotel = {
+      currency,
+      name,
+      price,
+      rating,
+      votes,
+    };
+
+    if (dealType) {
+      hotel.deal = hotelDeal;
+    }
+
+    if (amenities) {
+      hotel.amenities = amenities;
+    }
+    if (featuredReview) {
+      hotel.featuredReview = featuredReview;
+    }
+
+    hotels.push(hotel);
+  });
+
+  return hotels;
+};
+
 const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
-  const adwordsTop = $('#tads');
-  const adwordsBottom = $('#tadsb');
-  const adwordsNojsTop = $('#KsHht');
-  const adwordsNojsBottom = $('#D7Sjmd');
-  const getAds = (ads: Cheerio, adsList: Ad[]) => {
-    ads.each((i, e) => {
+  const CONFIG = {
+    bottom: nojs ? '#D7Sjmd' : '#tadsb',
+    top: nojs ? '#KsHht' : '#tads',
+  };
+
+  const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
+  if ($(CONFIG.top).length) {
+    adwords.adwordsTop = [];
+    getAds($, CONFIG.top, adwords.adwordsTop, nojs);
+  }
+  if ($(CONFIG.bottom).length) {
+    adwords.adwordsBottom = [];
+    getAds($, CONFIG.bottom, adwords.adwordsBottom, nojs);
+  }
+  serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
+};
+
+const getAds = ($: CheerioStatic, search: string, adsList: Ad[], nojs: boolean) => {
+  const CONFIG = {
+    ads: '.ads-ad',
+    snippet: '.ads-creative',
+    title: nojs ? 'h3.ellip' : 'h3.sA5rQ',
+    url: nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL',
+  };
+
+  $(search)
+    .find(CONFIG.ads)
+    .each((i, e) => {
       const title = $(e)
-        .find(nojs ? 'h3.ellip' : 'h3.sA5rQ')
+        .find(CONFIG.title)
         .text();
       const url = $(e)
-        .find(nojs ? 'h3.ellip a' : '.ad_cclk a.V0MxL')
+        .find(CONFIG.url)
         .attr('href');
-      const domain = getDomain(url);
-      const linkType = getLinkType(url);
+      const domain = utils.getDomain(url);
+      const linkType = utils.getLinkType(url);
       const snippet = $(e)
-        .find('.ads-creative')
+        .find(CONFIG.snippet)
         .text();
-      const sitelinks: Sitelink[] = [];
-      const adSitelinks = $(e).find(nojs ? '.ads-creative + div' : '.ads-creative + ul');
-      adSitelinks.each((ind, el) => {
-        if ($(el).hasClass(nojs ? 'DGdP9' : 'St0YAf')) {
-          const cardSiteLinks = $(el).find(nojs ? 'td' : 'li');
-          cardSiteLinks.each((index, element) => {
-            const sitelinkHref = $(element)
-              .find('h3 a')
-              .attr('href');
-            const sitelinkTitle = $(element)
-              .find('h3')
-              .text();
-            const sitelinkSnippet = $(element)
-              .find(nojs ? 'h3 + div' : '.F95vTc')
-              .text();
-            const sitelink: Sitelink = {
-              href: sitelinkHref,
-              snippet: sitelinkSnippet,
-              title: sitelinkTitle,
-              type: SitelinkType.card,
-            };
-            sitelinks.push(sitelink);
-          });
-        } else {
-          const inlineSiteLinks = $(el).find(nojs ? 'a' : '.OkkX2d .V0MxL');
-          inlineSiteLinks.each((index, element) => {
-            const sitelinkHref = $(element).attr('href');
-            const sitelinkTitle = $(element).text();
-            const sitelink: Sitelink = {
-              href: sitelinkHref,
-              title: sitelinkTitle,
-              type: SitelinkType.inline,
-            };
-            sitelinks.push(sitelink);
-          });
-        }
-      });
+      const sitelinks: Sitelink[] = getAdSitelinks($, e, nojs);
       const position = i + 1;
       const ad: Ad = {
         domain,
@@ -610,33 +689,76 @@ const getAdwords = (serp: Serp, $: CheerioStatic, nojs: boolean) => {
       };
       adsList.push(ad);
     });
+};
+
+const getAdSitelinks = ($: CheerioStatic, ad: CheerioElement, nojs: boolean) => {
+  const CONFIG = {
+    card: nojs ? 'td' : 'li',
+    cardHref: 'h3 a',
+    cardSnippet: nojs ? 'h3 + div' : '.F95vTc',
+    cardTitle: 'h3',
+    inline: nojs ? 'a' : '.OkkX2d .V0MxL',
+    sitelinks: nojs ? '.ads-creative + div' : '.ads-creative + ul',
+    test: nojs ? 'DGdP9' : 'St0YAf',
   };
-  if (adwordsTop.length || adwordsBottom.length || adwordsNojsTop.length || adwordsNojsBottom.length) {
-    serp.adwords = {};
-    if (adwordsTop.length || adwordsNojsTop.length) {
-      serp.adwords.adwordsTop = [];
-      const adsTop = nojs ? adwordsNojsTop.find('.ads-ad') : adwordsTop.find('.ads-ad');
-      getAds(adsTop, serp.adwords.adwordsTop);
+
+  const sitelinks: Sitelink[] = [];
+  const adSitelinks = $(ad).find(CONFIG.sitelinks);
+  adSitelinks.each((ind, el) => {
+    if ($(el).hasClass(CONFIG.test)) {
+      const cardSiteLinks = $(el).find(CONFIG.card);
+      cardSiteLinks.each((i, e) => {
+        const href = $(e)
+          .find(CONFIG.cardHref)
+          .attr('href');
+        const title = $(e)
+          .find(CONFIG.cardTitle)
+          .text();
+        const snippet = $(e)
+          .find(CONFIG.cardSnippet)
+          .text();
+        const sitelink: Sitelink = {
+          href,
+          snippet,
+          title,
+          type: SitelinkType.card,
+        };
+        sitelinks.push(sitelink);
+      });
+    } else {
+      const inlineSiteLinks = $(el).find(CONFIG.inline);
+      inlineSiteLinks.each((i, e) => {
+        const href = $(e).attr('href');
+        const title = $(e).text();
+        const sitelink: Sitelink = {
+          href,
+          title,
+          type: SitelinkType.inline,
+        };
+        sitelinks.push(sitelink);
+      });
     }
-    if (adwordsBottom.length || adwordsNojsBottom.length) {
-      serp.adwords.adwordsBottom = [];
-      const adsBottom = nojs ? adwordsNojsBottom.find('.ads-ad') : adwordsBottom.find('.ads-ad');
-      getAds(adsBottom, serp.adwords.adwordsBottom);
-    }
-  }
+  });
+  return sitelinks;
 };
 
 const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
-  const list = $('a.JkUS4b');
+  const CONFIG = {
+    price: '.V8xno span',
+    query: 'a.JkUS4b',
+    service: '.i3LlFf',
+  };
+
+  const list = $(CONFIG.query);
   const availableOn: AvailableOn[] = [];
   if (list.length) {
     list.each((i, e) => {
       const url = $(e).attr('href');
       const service = $(e)
-        .find('.i3LlFf')
+        .find(CONFIG.service)
         .text();
       const price = $(e)
-        .find('.V8xno span')
+        .find(CONFIG.price)
         .text();
       availableOn.push({ url, service, price });
     });
@@ -671,4 +793,91 @@ const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio)
     topStories.push({ imgLink, title, shoppingSite, publishedTime });
   });
   serp.topStories = topStories;
+}
+
+const getShopResults = (serp: Serp, $: CheerioStatic) => {
+  const CONFIG = {
+    commodity: '.cYBBsb',
+    currency: '.e10twf',
+    currencyRegex: /\D+/,
+    imgLink: 'a.pla-unit-img-container-link',
+    price: '.e10twf',
+    priceRegex: /\d+(\.\d+)?/,
+    ratingRegex: /\d\.\d/,
+    ratingString: 'a > g-review-stars > span',
+    shopFeature: '.top-pla-group-inner',
+    shopOffer: '.pla-unit:not(.view-all-unit)',
+    shoppingSite: '.LbUacb',
+    specialOffer: '.gyXcee',
+    title: 'a > .pymv4e',
+    votes: '.pbAs0b',
+  };
+  const shopFeature = $(CONFIG.shopFeature);
+  if (shopFeature.length) {
+    const shopResults: ShopResult[] = [];
+    const shopOffer = shopFeature.find(CONFIG.shopOffer);
+    shopOffer.each((ind, el) => {
+      const imgLink = $(el)
+        .find(CONFIG.imgLink)
+        .attr('href');
+      const title = $(el)
+        .find(CONFIG.title)
+        .text();
+      const price = parseFloat(
+        utils.getFirstMatch(
+          $(el)
+            .find(CONFIG.price)
+            .text(),
+          CONFIG.priceRegex,
+        ),
+      );
+      const currency = utils.getFirstMatch(
+        $(el)
+          .find(CONFIG.currency)
+          .text(),
+        CONFIG.currencyRegex,
+      );
+      const shoppingSite = $(el)
+        .find(CONFIG.shoppingSite)
+        .text();
+
+      const shopResult: ShopResult = {
+        currency,
+        imgLink,
+        price,
+        shoppingSite,
+        title,
+      };
+      const specialOffer = $(el)
+        .find(CONFIG.specialOffer)
+        .first()
+        .text();
+      if (specialOffer) {
+        shopResult.specialOffer = specialOffer;
+      }
+      const ratingString = $(el)
+        .find(CONFIG.ratingString)
+        .attr('aria-label');
+      if (ratingString) {
+        const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
+        shopResult.rating = rating;
+      }
+      const votes = $(el)
+        .find(CONFIG.votes)
+        .text()
+        .trim()
+        .slice(1, -1);
+      if (votes) {
+        shopResult.votes = votes;
+      }
+      const commodity = $(el)
+        .find(CONFIG.commodity)
+        .text();
+      if (commodity) {
+        shopResult.commodity = commodity;
+      }
+      shopResults.push(shopResult);
+    });
+    serp.shopResults = shopResults;
+  }
 };
