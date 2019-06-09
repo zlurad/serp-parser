@@ -18,8 +18,8 @@ export interface Serp {
 export interface TopStory {
   imgLink: string;
   title: string;
-  shoppingSite: string;
-  publishedTime: string;
+  publisher: string;
+  published: string;
 }
 
 export interface ShopResult {

@@ -769,8 +769,8 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
 const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio) => {
   const CONFIG = {
     imgLink: 'g-inner-card.cv2VAd > a',
-    publishedTime: '.GJhQm > span.f',
-    shoppingSite: '.YQPQv',
+    published: '.GJhQm > span.f',
+    publisher: '.YQPQv',
     title: '.mRnBbe',
     topStory: '.So9e7d',
   };
@@ -784,13 +784,13 @@ const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio)
     const title = $(el)
       .find(CONFIG.title)
       .text();
-    const shoppingSite = $(el)
-      .find(CONFIG.shoppingSite)
+    const publisher = $(el)
+      .find(CONFIG.publisher)
       .text();
-    const publishedTime = $(el)
-      .find(CONFIG.publishedTime)
+    const published = $(el)
+      .find(CONFIG.published)
       .text();
-    topStories.push({ imgLink, title, shoppingSite, publishedTime });
+    topStories.push({ imgLink, title, publisher, published });
   });
   serp.topStories = topStories;
 }

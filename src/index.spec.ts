@@ -904,12 +904,12 @@ describe('Parsing Dell page', () => {
   });
   test('2nd top stories card should have shopping site "PCMag.com"', () => {
     if (serp.topStories) {
-      expect(serp.topStories[1].shoppingSite).toBe('PCMag.com');
+      expect(serp.topStories[1].publisher).toBe('PCMag.com');
     }
   });
   test('2nd top stories card should have been published "1 day ago"', () => {
     if (serp.topStories) {
-      expect(serp.topStories[1].publishedTime).toBe('1 day ago');
+      expect(serp.topStories[1].published).toBe('1 day ago');
     }
   });
 });
