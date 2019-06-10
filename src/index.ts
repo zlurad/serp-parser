@@ -14,6 +14,7 @@ import {
   SitelinkType,
   Thumbnail,
   ThumbnailGroup,
+  TopStory,
   VideoCard,
 } from './models';
 import * as utils from './utils';
@@ -62,6 +63,11 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
   getAdwords(serp, $, false);
   getAvailableOn(serp, $);
   getShopResults(serp, $);
+
+  const topStoriesFeature = $('g-section-with-header[data-hveid=CAEQAA]');
+  if (topStoriesFeature.length) {
+    getTopStories(serp, $, topStoriesFeature);
+  }
 
   const hotels = $(CONFIG.hotels);
   if (hotels.length > 0) {
@@ -759,6 +765,35 @@ const getAvailableOn = (serp: Serp, $: CheerioStatic) => {
     serp.availableOn = availableOn;
   }
 };
+
+const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio) => {
+  const CONFIG = {
+    imgLink: 'g-inner-card.cv2VAd > a',
+    published: '.GJhQm > span.f',
+    publisher: '.YQPQv',
+    title: '.mRnBbe',
+    topStory: '.So9e7d',
+  };
+
+  const topStories: TopStory[] = [];
+  const topStory = topStoriesFeature.find(CONFIG.topStory);
+  topStory.each((ind, el) => {
+    const imgLink = $(el)
+      .find(CONFIG.imgLink)
+      .attr('href');
+    const title = $(el)
+      .find(CONFIG.title)
+      .text();
+    const publisher = $(el)
+      .find(CONFIG.publisher)
+      .text();
+    const published = $(el)
+      .find(CONFIG.published)
+      .text();
+    topStories.push({ imgLink, title, publisher, published });
+  });
+  serp.topStories = topStories;
+}
 
 const getShopResults = (serp: Serp, $: CheerioStatic) => {
   const CONFIG = {
