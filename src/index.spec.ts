@@ -713,7 +713,7 @@ describe('Parsing .com-domains page', () => {
   let adwordsBottom: Ad[] | undefined;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/.com-domains.html', { encoding: 'utf8' });
+    html = fs.readFileSync('test/_com-domains.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
     adwords = serp.adwords;
     if (adwords) {
