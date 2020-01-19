@@ -456,7 +456,7 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
   } else {
     const CONFIG = {
       moreHotelsRegex: /(\d+,?)+/,
-      moreHotelsText: '.MWjNvc',
+      moreHotelsText: '.LPOxmb',
     };
     // FILTERS
     const searchFilters: HotelsSearchFilters = getHotelSearchFilters($, hotelsFeature);
@@ -479,10 +479,10 @@ const getHotels = (serp: Serp, $: CheerioStatic, hotelsFeature: Cheerio, nojs: b
 
 const getHotelSearchFilters = ($: CheerioStatic, hotelsFeature: Cheerio): HotelsSearchFilters => {
   const CONFIG = {
-    activeFilter: '.nu5Zhf.XlJ6Xb',
+    activeFilter: '.CWGqFd',
     checkInString: '.vpggTd.ed5F6c span',
     checkOutString: '.vpggTd:not(.ed5F6c) span',
-    filterGroupsTitles: 'g-scrolling-carousel .bcgA2 .nu5Zhf .rD7YBd',
+    filterGroupsTitles: '.d2IDkc',
     guests: '.viupMc',
     hotelFiltersSection: '.x3UtIe',
     searchTitle: '.BQ5Rcc',
@@ -524,11 +524,11 @@ const getHotelSearchFilters = ($: CheerioStatic, hotelsFeature: Cheerio): Hotels
 
 const getHotelOffers = ($: CheerioStatic, hotelsFeature: Cheerio): Hotel[] => {
   const CONFIG = {
-    amenities: '.DabgJ .AaNHwc',
+    amenities: '.I9B2He',
     currency: '.dv1Q3e',
     currencyRegex: /\D+/,
-    dealDetails: '.DabgJ .kOTJue',
-    dealType: '.DabgJ .NNPnSe',
+    dealDetails: '.kOTJue.jj25pf',
+    dealType: '.NNPnSe',
     featuredReview: '.DabgJ .gisIHb',
     hotelCards: '.ntKMYc .hmHBZd',
     name: '.BTPx6e',

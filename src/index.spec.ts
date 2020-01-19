@@ -75,12 +75,13 @@ describe('Parsing Google page with 10 resuts', () => {
   });
 
   test('1st result should have card sitelinks', () => {
-    if (serp.organic[0].sitelinks) {
-      expect(serp.organic[0].sitelinks[0].title).toBe('Google Accounts');
-      expect(serp.organic[0].sitelinks[0].href).toBe('https://accounts.google.com/');
-      expect(serp.organic[0].sitelinks[0].snippet).toBe('Not your computer? Use Guest mode to sign in privately. Learn ...');
-      expect(serp.organic[0].sitelinks[0].type).toBe('CARD');
-    }
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Google Accounts');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://accounts.google.com/');
+    expect(serp).toHaveProperty(
+      ['organic', 0, 'sitelinks', 0, 'snippet'],
+      'Not your computer? Use Guest mode to sign in privately. Learn ...',
+    );
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
   test('2nd result should not have sitelinks', () => {
     expect(serp.organic[1].hasOwnProperty('sitelinks')).toBeFalsy();
@@ -117,7 +118,7 @@ describe('Parsing Google page with 100 results', () => {
     expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
-  test('3rd result should have url https://about.google/', () => { 
+  test('3rd result should have url https://about.google/', () => {
     expect(serp.organic[2].url).toBe('https://about.google/');
   });
 
@@ -207,16 +208,16 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   });
 
   test('1st result should have card sitelinks', () => {
-    if (serp.organic[0].sitelinks) {
-      expect(serp.organic[0].sitelinks[0].title).toBe('Images');
-      expect(serp.organic[0].sitelinks[0].href).toBe(
-        '/url?q=https://www.google.com/imghp%3Fhl%3Den&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQjBAIHDAB&usg=AOvVaw3Iif_Yr2t3-UMzTSEzaGi5',
-      );
-      expect(serp.organic[0].sitelinks[0].snippet).toBe(
-        'AllImages. Account &middot; Assistant &middot; Search &middot; Maps &middot; YouTube ...',
-      );
-      expect(serp.organic[0].sitelinks[0].type).toBe('CARD');
-    }
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Images');
+    expect(serp).toHaveProperty(
+      ['organic', 0, 'sitelinks', 0, 'href'],
+      '/url?q=https://www.google.com/imghp%3Fhl%3Den&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQjBAIHDAB&usg=AOvVaw3Iif_Yr2t3-UMzTSEzaGi5',
+    );
+    expect(serp).toHaveProperty(
+      ['organic', 0, 'sitelinks', 0, 'snippet'],
+      'AllImages. Account &middot; Assistant &middot; Search &middot; Maps &middot; YouTube ...',
+    );
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
 
   test('3rd result should not have sitelinks', () => {
@@ -282,41 +283,38 @@ describe('Parsing "The Matrix" search page', () => {
   });
 
   test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
-    if (serp.organic[0].sitelinks) {
-      expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
-      expect(serp.organic[0].sitelinks[0].href).toBe('https://www.imdb.com/title/tt0133093/plotsummary');
-      expect(serp.organic[0].sitelinks[0].type).toBe('INLINE');
-    }
+    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'title'], 'The Matrix (franchise)');
+    expect(serp).toHaveProperty(
+      ['organic', 1, 'sitelinks', 0, 'href'],
+      'https://en.wikipedia.org/wiki/The_Matrix_(franchise)',
+    );
+    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('There should be Available On serp feature, 6 of them', () => {
-    if (serp.availableOn) {
-      expect(serp.availableOn).toHaveLength(6);
-      expect(serp.availableOn[0].service).toBe('YouTube');
-      expect(serp.availableOn[0].price).toBe('$3.99');
-      expect(serp.availableOn[0].url).toBe('http://www.youtube.com/watch?v=qEXv-rVWAu8');
-    }
+    expect(serp.availableOn).toHaveLength(6);
+    expect(serp).toHaveProperty(['availableOn', 0, 'service'], 'YouTube');
+    expect(serp).toHaveProperty(['availableOn', 0, 'price'], '$3.99');
+    expect(serp).toHaveProperty(['availableOn', 0, 'url'], 'http://www.youtube.com/watch?v=qEXv-rVWAu8');
   });
 
   test('Test videoCard feature', () => {
-    if (serp.videos) {
-      expect(serp.videos[0].title).toBe('The Matrix (1999) Official Trailer #1 - Sci-Fi Action Movie');
-      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=vKQi3bBA1y8');
-      expect(serp.videos[0].source).toBe('YouTube');
-      expect(serp.videos[0].date.toDateString()).toBe('Tue Nov 19 2013');
-      expect(serp.videos[0].channel).toBe('Movieclips Classic Trailers');
-      expect(serp.videos[0].videoDuration).toBe('2:20');
-    }
+    expect(serp.videos).toHaveLength(10);
+    expect(serp).toHaveProperty(['videos', 0, 'title'], 'The Matrix (1999) Official Trailer #1 - Sci-Fi Action Movie');
+    expect(serp).toHaveProperty(['videos', 0, 'sitelink'], 'https://www.youtube.com/watch?v=vKQi3bBA1y8');
+    expect(serp).toHaveProperty(['videos', 0, 'source'], 'YouTube');
+    expect(serp).toHaveProperty(['videos', 0, 'date'], new Date('2013-11-19'));
+    expect(serp).toHaveProperty(['videos', 0, 'channel'], 'Movieclips Classic Trailers');
+    expect(serp).toHaveProperty(['videos', 0, 'videoDuration'], '2:20');
   });
   test('thumbnailGroups feature test', () => {
-    if (serp.thumbnailGroups) {
-      expect(serp.thumbnailGroups.length).toBe(3);
-      expect(serp.thumbnailGroups[1].heading).toBe('Keanu Reeves movies');
-      expect(serp.thumbnailGroups[1].thumbnails[0].title).toBe('Johnny Mnemonic');
-      expect(serp.thumbnailGroups[1].thumbnails[0].sitelink).toBe(
-        'https://www.google.com/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwiK0Z_0xY_nAhVmxYUKHa1kD5YQxA0wIHoECBkQBQ',
-      );
-    }
+    expect(serp.thumbnailGroups).toHaveLength(3);
+    expect(serp).toHaveProperty(['thumbnailGroups', 1, 'heading'], 'Keanu Reeves movies');
+    expect(serp).toHaveProperty(['thumbnailGroups', 1, 'thumbnails', 0, 'title'], 'Johnny Mnemonic');
+    expect(serp).toHaveProperty(
+      ['thumbnailGroups', 1, 'thumbnails', 0, 'sitelink'],
+      'https://www.google.com/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwiK0Z_0xY_nAhVmxYUKHa1kD5YQxA0wIHoECBkQBQ',
+    );
   });
 });
 
@@ -344,13 +342,13 @@ describe('Parsing nojs "The Matrix" search page', () => {
   });
 
   test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
-    if (serp.organic[0].sitelinks) {
-      expect(serp.organic[0].sitelinks[0].title).toBe('Plot Summary');
-      expect(serp.organic[0].sitelinks[0].href).toBe(
-        '/url?q=https://www.imdb.com/title/tt0133093/plotsummary&sa=U&ved=0ahUKEwj1saWR2tnfAhUC3uAKHTZcCLcQ0gIIGigAMAA&usg=AOvVaw2YlqUvAZ4bHjCBnKL6SwFY',
-      );
-      expect(serp.organic[0].sitelinks[0].type).toBe('INLINE');
-    }
+    expect(serp.organic[0].sitelinks).toHaveLength(4);
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Plot Summary');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(
+      ['organic', 0, 'sitelinks', 0, 'href'],
+      '/url?q=https://www.imdb.com/title/tt0133093/plotsummary&sa=U&ved=0ahUKEwj1saWR2tnfAhUC3uAKHTZcCLcQ0gIIGigAMAA&usg=AOvVaw2YlqUvAZ4bHjCBnKL6SwFY',
+    );
   });
 
   test('testing videos property for non existent results', () => {
@@ -370,136 +368,76 @@ describe('Parsing Hotels search page', () => {
     serp = GoogleSERP(html);
   });
 
-  test('There should be 1258 similar hotels in the area', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.moreHotels).toBe(1258);
-    }
+  test('There should be 1417 similar hotels in the area', () => {
+    expect(serp).toHaveProperty(['hotels', 'moreHotels'], 1417);
   });
 
-  test('The searchTitle in searchFilters of hotels feature should be "Hotels near New York, NY"', () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        expect(serp.hotels.searchFilters.searchTitle).toBe('Hotels near New York, NY');
-      }
-    }
+  test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York, NY"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
   });
-  test('The checkIn date in searchFilters of hotels feature should be "Thu Mar 21 2019"', () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        expect(serp.hotels.searchFilters.checkIn.toDateString()).toBe('Thu Mar 21 2019');
-      }
-    }
+  test('The checkIn date in searchFilters of hotels feature should be "Thu Jan 23 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('Thu Jan 23 2020'));
   });
-  test('The checkOut date in searchFilters of hotels feature should be "Fri Mar 22 2019"', () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        expect(serp.hotels.searchFilters.checkOut.toDateString()).toBe('Fri Mar 22 2019');
-      }
-    }
+  test('The checkOut date in searchFilters of hotels feature should be "Fri Jan 24 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('Fri Jan 24 2020'));
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        expect(serp.hotels.searchFilters.guests).toBe(2);
-      }
-    }
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
   });
-  test(`There should be 
-  ONE active hotel filter and 
-  it should have title "Top choices" and explanation "Based on your search, prices & quality"`, () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        const activeFiltersNumber = serp.hotels.searchFilters.filters.reduce((acc, curr) => {
-          if (curr.isActive === true) {
-            return acc + 1;
-          } else {
-            return acc;
-          }
-        }, 0);
-        expect(activeFiltersNumber).toBe(1);
-        expect(serp.hotels.searchFilters.filters[0].title).toBe('Top choices');
-        expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
-      }
-    }
+
+  test(`First search filter should have title 'Guest favorites'`, () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'filters', 0, 'title'], 'Guest favorites');
+
+    // There is no explanation on the new search filters
+    // expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
   });
   test('The second hotel filter should not have a property called isActive', () => {
-    if (serp.hotels) {
-      if (serp.hotels.searchFilters) {
-        expect(serp.hotels.searchFilters.filters[1].isActive).toBeUndefined();
-      }
-    }
+    expect(serp).not.toHaveProperty(['hotels', 'searchFilters', 'filters', 1, 'isActive']);
   });
   test('There should be 4 featured hotels in the hotels feature', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels.length).toBe(4);
-    }
+    expect(serp.hotels?.hotels).toHaveLength(4);
   });
-  test('First featured hotel should have name "Row NYC"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].name).toBe('Row NYC');
-    }
+  test('First featured hotel should have name "Park Central Hotel New York"', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'Park Central Hotel New York');
   });
   test('First featured hotel should have currency "$"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].currency).toBe('$');
-    }
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'currency'], '$');
   });
-  test('First featured hotel should have price 128', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].price).toBe(128);
-    }
+  test('First featured hotel should have price 88', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'price'], 88);
   });
-  test('First featured hotel should have rating 3.7', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].rating).toBe(3.7);
-    }
+  test('First featured hotel should have rating 4.1', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'rating'], 4.1);
   });
-  test('First featured hotel should have 6489 votes', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].votes).toBe(6489);
-    }
+  test('First featured hotel should have 3895 votes', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'votes'], 3895);
   });
-  test('Second featured hotel should have following amenities: "Free Wi-Fi"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[1].amenities).toBe('Free Wi-Fi');
-    }
+  test('Second featured hotel should have following amenities: "Spa"', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'amenities'], 'Spa');
   });
   test('First featured hotel should not have amenities property', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].amenities).toBeUndefined();
-    }
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'amenities']);
   });
-  test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[3].featuredReview).toBe('Small rooms, sink and shower but good for the price.');
-    }
-  });
+  // TODO there is no featured review on the new hotels page
+  // test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
+  //   if (serp.hotels) {
+  //     expect(serp.hotels.hotels[3].featuredReview).toBe('Small rooms, sink and shower but good for the price.');
+  //   }
+  // });
   test('First featured hotel should not have featuredReview property', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].featuredReview).toBeUndefined();
-    }
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'featuredReview']);
   });
-  test('Fourth featured hotel should not have deal property', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[3].deal).toBeUndefined();
-    }
+  test('3rd featured hotel should not have deal property', () => {
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 2, 'deal']);
   });
   test(`First featured hotel should be labeled with deal,
    having dealType: "DEAL" and
    dealDetails: "22% less than usual"`, () => {
-    if (serp.hotels) {
-      if (serp.hotels.hotels[0].deal) {
-        expect(serp.hotels.hotels[0].deal.dealType).toBe('DEAL');
-        expect(serp.hotels.hotels[0].deal.dealDetails).toBe('22% less than usual');
-      }
-    }
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'deal', 'dealType'], 'GREAT DEAL');
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'deal', 'dealDetails'], '37% less than usual');
   });
   test('First featured hotel should not have originalPrice property', () => {
-    if (serp.hotels) {
-      if (serp.hotels.hotels[0].deal) {
-        expect(serp.hotels.hotels[0].deal.originalPrice).toBeUndefined();
-      }
-    }
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'deal', 'originalPrice']);
   });
 });
 
@@ -513,59 +451,40 @@ describe('Parsing Hotels-nojs search page', () => {
   });
 
   test('Name of the first featured hotel should be "Row NYC"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].name).toBe('Row NYC');
-    }
+    expect(serp.hotels?.hotels[0].name).toBe('Row NYC');
   });
   test('Rating of the first featured hotel should be 3.7', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].rating).toBe(3.7);
-    }
+    expect(serp.hotels?.hotels[0].rating).toBe(3.7);
   });
   test('Number of votes of the first featured hotel should be 6489', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].votes).toBe(6489);
-    }
+    expect(serp.hotels?.hotels[0].votes).toBe(6489);
   });
   test('Number of stars of the first featured hotel should be 2', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].stars).toBe(2);
-    }
+    expect(serp.hotels?.hotels[0].stars).toBe(2);
   });
   test('Description of the first featured hotel should be "Hip hotel with a trendy food court"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].description).toBe('Hip hotel with a trendy food court');
-    }
+    expect(serp.hotels?.hotels[0].description).toBe('Hip hotel with a trendy food court');
   });
   test('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].featuredReview).toBe(
-        'Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff',
-      );
-    }
+    expect(serp.hotels?.hotels[0].featuredReview).toBe(
+      'Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff',
+    );
   });
-  test(`MoreInfoLink of the first featured hotel should be 
+  test(`MoreInfoLink of the first featured hotel should be
   "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA"`, () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[0].moreInfoLink).toBe(
-        '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA',
-      );
-    }
+    expect(serp.hotels?.hotels[0].moreInfoLink).toBe(
+      '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA',
+    );
   });
-  test(`The 2nd featured hotel should have amenities 
-  "Free Wi-Fi"`, () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[1].amenities).toBe('Free Wi-Fi');
-    }
+  test(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
+    expect(serp.hotels?.hotels[1].amenities).toBe('Free Wi-Fi');
   });
 
-  test(`There should be a moreHotels link and it should have href 
+  test(`There should be a moreHotels link and it should have href
   "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw"`, () => {
-    if (serp.hotels) {
-      expect(serp.hotels.moreHotels).toBe(
-        '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw',
-      );
-    }
+    expect(serp.hotels?.moreHotels).toBe(
+      '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw',
+    );
   });
 });
 
@@ -578,14 +497,22 @@ describe('Parsing Hotels-London search page', () => {
     serp = GoogleSERP(html);
   });
 
-  test('Second featured hotel should have originalPrice property and should have value 221', () => {
-    if (serp.hotels) {
-      if (serp.hotels.hotels[1].deal) {
-        expect(serp.hotels.hotels[1].deal.originalPrice).toBe(221);
+  test('Second featured hotel should have originalPrice property and should have value 113', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'deal', 'originalPrice'], 113);
+  });
+
+  test('Expect to have one active filter', () => {
+    const activeFiltersNumber = serp.hotels?.searchFilters?.filters.reduce((acc, curr) => {
+      if (curr.isActive === true) {
+        return acc + 1;
+      } else {
+        return acc;
       }
-    }
+    }, 0);
+    expect(activeFiltersNumber).toBe(1);
   });
 });
+
 describe('Testing functions', () => {
   let serp: Serp;
 
