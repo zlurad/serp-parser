@@ -15,11 +15,11 @@ describe('Parsing Google page with 10 resuts', () => {
     serp = GoogleSERP(html);
   });
 
-  test('Page should have 15,860,000,000 results', () => {
-    expect(serp.totalResults).toBe(15860000000);
+  test('Page should have 25,270,000,000 results', () => {
+    expect(serp.totalResults).toBe(25270000000);
   });
-  test('Search should be done in 0.61 seconds', () => {
-    expect(serp.timeTaken).toBe(0.61);
+  test('Search should be done in 0.6 seconds', () => {
+    expect(serp.timeTaken).toBe(0.6);
   });
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
@@ -27,63 +27,58 @@ describe('Parsing Google page with 10 resuts', () => {
   test('Page should have 8 related keywords', () => {
     expect(serp.relatedKeywords).toHaveLength(8);
   });
-  test('1st related keyword should be "google search"', () => {
-    expect(serp.relatedKeywords[0].keyword).toBe('google search');
+  test('1st related keyword should be "google account"', () => {
+    expect(serp.relatedKeywords[0].keyword).toBe('google account');
   });
   test('1st related keyword should have path', () => {
     expect(serp.relatedKeywords[0].path).toBe(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&q=google+search&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ1QIoAHoECA0QAQ',
+      'https://www.google.com/search?q=google+account&sa=X&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQ1QIoAHoECBEQAQ',
     );
   });
-  test(`Link to 2nd page should have path 
-  "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB"`, () => {
+  test(`Link to 2nd page should have path`, () => {
     expect(serp.pagination[1].path).toBe(
-      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=N1QvXKbhOLCC5wLlvLa4Dg&start=10&sa=N&ved=0ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQ8tMDCOwB',
+      'https://www.google.com/search?q=google&ei=JI8jXuOHOdKWaNzKjLAP&start=10&sa=N&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQ8tMDegQIDhA1',
     );
   });
 
-  test('serp should have 7 results', () => {
-    expect(serp.organic).toHaveLength(7);
+  test('serp should have 6 results', () => {
+    expect(serp.organic).toHaveLength(6);
   });
 
-  test('3rd result should have url https://domains.google/', () => {
-    expect(serp.organic[2].url).toBe('https://domains.google/');
+  test('4th result should have url https://about.google/', () => {
+    expect(serp.organic[3].url).toBe('https://about.google/');
   });
 
-  test(`1st result should have cachedUrl 
-  "https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us"
-  `, () => {
+  test(`1st result should have cachedUrl`, () => {
     expect(serp.organic[0].cachedUrl).toBe(
       'https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us',
     );
   });
-  test(`1st result should have similarUrl 
-  "/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAAegQIARAG"
-  `, () => {
+  test(`1st result should have similarUrl`, () => {
     expect(serp.organic[0].similarUrl).toBe(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjm2Mn2ktTfAhUwwVkKHWWeDecQHzAAegQIARAG',
+      'https://www.google.com/search?q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQHzAAegQIEBAI',
     );
   });
 
-  test('3rd result should have domain domains.google', () => {
-    expect(serp.organic[2].domain).toBe('domains.google');
+  test('4th result should have domain about.google', () => {
+    expect(serp.organic[3].domain).toBe('about.google');
   });
 
-  test('3rd result should have title "Google Domains - Google"', () => {
-    expect(serp.organic[2].title).toBe('Google Domains - Google');
+  test('4th result should have title "Google Domains - Google"', () => {
+    expect(serp.organic[3].title).toBe('Google: About');
   });
 
-  test('3rd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
-    expect(serp.organic[2].snippet).toBe(
-      'Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.',
+  test('4th result should have snippet to start with "Get the latest news, updates,...', () => {
+    expect(serp.organic[3].snippet).toBe(
+      `Get the latest news, updates, and happenings at Google. Learn about Google's core values and company philosophy.`,
     );
   });
 
   test('1st result should have card sitelinks', () => {
     if (serp.organic[0].sitelinks) {
-      expect(serp.organic[0].sitelinks[0].title).toBe('Google Docs');
-      expect(serp.organic[0].sitelinks[0].href).toBe('https://www.google.com/docs/about/');
-      expect(serp.organic[0].sitelinks[0].snippet).toBe('Google Docs brings your documents to life with smart ...');
+      expect(serp.organic[0].sitelinks[0].title).toBe('Google Accounts');
+      expect(serp.organic[0].sitelinks[0].href).toBe('https://accounts.google.com/');
+      expect(serp.organic[0].sitelinks[0].snippet).toBe('Not your computer? Use Guest mode to sign in privately. Learn ...');
       expect(serp.organic[0].sitelinks[0].type).toBe('CARD');
     }
   });
@@ -843,17 +838,17 @@ describe('Parsing Dell page', () => {
   });
   test('First shop result on the page should have currency "$"', () => {
     if (serp.shopResults) {
-      expect(serp.shopResults[0].currency).toBe("$");
+      expect(serp.shopResults[0].currency).toBe('$');
     }
   });
   test('Shopping site for the first shop result on the page should be "Rakuten.com"', () => {
     if (serp.shopResults) {
-      expect(serp.shopResults[0].shoppingSite).toBe("Rakuten.com");
+      expect(serp.shopResults[0].shoppingSite).toBe('Rakuten.com');
     }
   });
   test('First shop result on the page should have specialOffer saying "Special offer"', () => {
     if (serp.shopResults) {
-      expect(serp.shopResults[0].specialOffer).toBe("Special offer");
+      expect(serp.shopResults[0].specialOffer).toBe('Special offer');
     }
   });
   test('First shop result on the page should not have rating,votes or commodity displayed', () => {
@@ -870,12 +865,12 @@ describe('Parsing Dell page', () => {
   });
   test('2nd shop result on the page should have 1k+ votes', () => {
     if (serp.shopResults) {
-      expect(serp.shopResults[1].votes).toBe("1k+");
+      expect(serp.shopResults[1].votes).toBe('1k+');
     }
   });
   test('4th shop result on the page should have commodity "Free shipping"', () => {
     if (serp.shopResults) {
-      expect(serp.shopResults[3].commodity).toBe("Free shipping");
+      expect(serp.shopResults[3].commodity).toBe('Free shipping');
     }
   });
 });
@@ -899,7 +894,9 @@ describe('Parsing Dell page', () => {
   });
   test('2nd top stories card should have link "https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc"', () => {
     if (serp.topStories) {
-      expect(serp.topStories[1].imgLink).toBe('https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc');
+      expect(serp.topStories[1].imgLink).toBe(
+        'https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc',
+      );
     }
   });
   test('2nd top stories card should have shopping site "PCMag.com"', () => {

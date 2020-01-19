@@ -47,7 +47,7 @@ const parseGoogle = (serp: Serp, $: CheerioStatic) => {
     hotels: '.zd2Jbb',
     keyword: 'input[aria-label="Search"]',
     resultText: '#resultStats',
-    results: '.rc .r > a',
+    results: '.bkWMgd > .g > h2 + div .rc > .r > a,.bkWMgd > h2 + div .rc > .r > a',
   };
 
   serp.keyword = $(CONFIG.keyword).val();
