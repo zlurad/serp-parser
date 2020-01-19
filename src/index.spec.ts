@@ -105,29 +105,29 @@ describe('Parsing Google page with 100 results', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google100.html', { encoding: 'utf8' });
+    html = fs.readFileSync('test/google-100.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
   });
 
-  test('serp should have 98 results', () => {
-    expect(serp.organic).toHaveLength(98);
+  test('serp should have 93 results', () => {
+    expect(serp.organic).toHaveLength(93);
   });
 
   test('all results should have domain domains.google', () => {
     expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
-  test('2nd result should have url https://domains.google/', () => {
-    expect(serp.organic[1].url).toBe('https://domains.google/');
+  test('3rd result should have url https://about.google/', () => { 
+    expect(serp.organic[2].url).toBe('https://about.google/');
   });
 
-  test('2nd result should have title "Google Domains - Google"', () => {
-    expect(serp.organic[1].title).toBe('Google Domains - Google');
+  test('3rd result should have title "About Google"', () => {
+    expect(serp.organic[2].title).toBe('Google: About');
   });
 
-  test('2nd result should have snippet to start with "Search for and register a domain, get hosting...', () => {
-    expect(serp.organic[1].snippet).toBe(
-      'Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.',
+  test('3rd result should have snippet to start with "Get the latest news, updates...', () => {
+    expect(serp.organic[2].snippet).toBe(
+      `Get the latest news, updates, and happenings at Google. Learn about Google's core values and company philosophy.`,
     );
   });
 
@@ -273,8 +273,8 @@ describe('Parsing "The Matrix" search page', () => {
     serp = GoogleSERP(html);
   });
 
-  test('serp should have 9 results', () => {
-    expect(serp.organic).toHaveLength(9);
+  test('serp should have 8 results', () => {
+    expect(serp.organic).toHaveLength(8);
   });
 
   test('Keyword should be "The Matrix"', () => {
@@ -289,69 +289,32 @@ describe('Parsing "The Matrix" search page', () => {
     }
   });
 
-  test('There should be Available On serp feature, 5 of them', () => {
+  test('There should be Available On serp feature, 6 of them', () => {
     if (serp.availableOn) {
-      expect(serp.availableOn).toHaveLength(5);
+      expect(serp.availableOn).toHaveLength(6);
       expect(serp.availableOn[0].service).toBe('YouTube');
       expect(serp.availableOn[0].price).toBe('$3.99');
       expect(serp.availableOn[0].url).toBe('http://www.youtube.com/watch?v=qEXv-rVWAu8');
     }
   });
 
-  test(`first videoCard in videos array should have title 
-  "The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99"`, () => {
+  test('Test videoCard feature', () => {
     if (serp.videos) {
-      expect(serp.videos[0].title).toBe('The Matrix YouTube Movies Science Fiction - 1999 $ From $3.99');
-    }
-  });
-  test(`first videoCard in videos array should have sitelink 
-  "https://www.youtube.com/watch?v=3DfOTKGvtOM"`, () => {
-    if (serp.videos) {
-      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=3DfOTKGvtOM');
-    }
-  });
-  test(`first videoCard in videos array should have source 
-  "YouTube"`, () => {
-    if (serp.videos) {
+      expect(serp.videos[0].title).toBe('The Matrix (1999) Official Trailer #1 - Sci-Fi Action Movie');
+      expect(serp.videos[0].sitelink).toBe('https://www.youtube.com/watch?v=vKQi3bBA1y8');
       expect(serp.videos[0].source).toBe('YouTube');
+      expect(serp.videos[0].date.toDateString()).toBe('Tue Nov 19 2013');
+      expect(serp.videos[0].channel).toBe('Movieclips Classic Trailers');
+      expect(serp.videos[0].videoDuration).toBe('2:20');
     }
   });
-  test(`first videoCard in videos array should have string representation of date 
-  "Mon Oct 29 2018"`, () => {
-    if (serp.videos) {
-      expect(serp.videos[0].date.toDateString()).toBe('Mon Oct 29 2018');
-    }
-  });
-  test('first videoCard in videos array should have channel "Warner Movies On Demand"', () => {
-    if (serp.videos) {
-      expect(serp.videos[0].channel).toBe('Warner Movies On Demand');
-    }
-  });
-  test('first videoCard in videos array should have videoDuration "2:23"', () => {
-    if (serp.videos) {
-      expect(serp.videos[0].videoDuration).toBe('2:23');
-    }
-  });
-  test('thumbnailGroups feature should have length of 3', () => {
+  test('thumbnailGroups feature test', () => {
     if (serp.thumbnailGroups) {
       expect(serp.thumbnailGroups.length).toBe(3);
-    }
-  });
-  test('2nd thumbnailGroup should have heading "Cyberpunk movies"', () => {
-    if (serp.thumbnailGroups) {
-      expect(serp.thumbnailGroups[1].heading).toBe('Cyberpunk movies');
-    }
-  });
-  test('title of 2nd thumbnail in 2nd thumbnailGroup should be "Johnny Mnemonic"', () => {
-    if (serp.thumbnailGroups) {
-      expect(serp.thumbnailGroups[1].thumbnails[1].title).toBe('Johnny Mnemonic');
-    }
-  });
-  test(`sitelink of 2nd thumbnail in 2nd thumbnailGroup should be 
-  "/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw"`, () => {
-    if (serp.thumbnailGroups) {
-      expect(serp.thumbnailGroups[1].thumbnails[1].sitelink).toBe(
-        '/search?safe=off&gl=US&pws=0&nfpr=1&q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPsPCgmQAE-6fSE4AAAA&sa=X&ved=2ahUKEwiVguyg0t_fAhWNm1kKHbSKAmMQxA0wFnoECAYQBw',
+      expect(serp.thumbnailGroups[1].heading).toBe('Keanu Reeves movies');
+      expect(serp.thumbnailGroups[1].thumbnails[0].title).toBe('Johnny Mnemonic');
+      expect(serp.thumbnailGroups[1].thumbnails[0].sitelink).toBe(
+        'https://www.google.com/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwiK0Z_0xY_nAhVmxYUKHa1kD5YQxA0wIHoECBkQBQ',
       );
     }
   });

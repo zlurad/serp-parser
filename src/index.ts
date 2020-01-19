@@ -277,7 +277,7 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
     sitelink: 'a',
     source: '.zECGdd:not(.RgAZAc) .cJzOGc',
     title: 'div[role="heading"]',
-    videoDuration: '.k8B8Pc',
+    videoDuration: '.Woharf.LQFTgb',
     videosCards: 'g-scrolling-carousel .BFJZOc g-inner-card',
   };
 
@@ -322,7 +322,7 @@ const getVideos = (serp: Serp, $: CheerioStatic) => {
 
 const getThumbnails = (serp: Serp, $: CheerioStatic) => {
   const CONFIG = {
-    heading: '[role="heading"]',
+    heading: '[role="heading"] .VLkRKc',
     relatedGroup: '#bres .xpdopen',
     relatedThumbnail: '.zVvuGd > div',
     sitelink: 'a',
