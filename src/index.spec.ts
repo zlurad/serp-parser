@@ -418,12 +418,12 @@ describe('Parsing Hotels search page', () => {
   test('First featured hotel should not have amenities property', () => {
     expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'amenities']);
   });
-  // TODO there is no featured review on the new hotels page
-  // test('Fourth featured hotel should have featured review: "Small rooms, sink and shower but good for the price."', () => {
-  //   if (serp.hotels) {
-  //     expect(serp.hotels.hotels[3].featuredReview).toBe('Small rooms, sink and shower but good for the price.');
-  //   }
-  // });
+  // TODO there is no featured review on the new hotels page, find one to test
+  xtest('Fourth featured hotel should have featured review', () => {
+    if (serp.hotels) {
+      expect(serp.hotels.hotels[3].featuredReview).toBe('');
+    }
+  });
   test('First featured hotel should not have featuredReview property', () => {
     expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'featuredReview']);
   });
@@ -540,52 +540,61 @@ describe('Parsing Domain page', () => {
   });
 
   describe('Testing ads', () => {
-    let adwords: { adwordsTop?: Ad[] | undefined; adwordsBottom?: Ad[] | undefined } | undefined;
-    let adwordsTop: Ad[] | undefined;
-    let adwordsBottom: Ad[] | undefined;
-
-    beforeAll(() => {
-      adwords = serp.adwords;
-      if (adwords) {
-        adwordsTop = adwords.adwordsTop;
-        adwordsBottom = adwords.adwordsBottom;
-      }
-    });
-
     test('There should be top ads', () => {
-      expect(adwords).toBeDefined();
-      expect(adwordsTop).toBeDefined();
+      expect(serp.adwords).toBeDefined();
+      expect(serp.adwords?.adwordsTop).toBeDefined();
+      expect(serp.adwords?.adwordsBottom).toBeDefined();
     });
 
     test('There should be 4 ads on the top of the page', () => {
-      if (adwordsTop) {
-        expect(adwordsTop.length).toBe(4);
-      }
+      expect(serp.adwords?.adwordsTop).toHaveLength(4);
     });
 
     test('Testing first ad', () => {
-      if (adwordsTop) {
-        const firstAd = adwordsTop[0];
-        expect(firstAd.position).toBe(1);
-        expect(firstAd.title).toBe('GoDaddy $0.99 Domains | Get Your Domain Today | GoDaddy.com‎');
-        expect(firstAd.url).toBe('https://www.godaddy.com/offers/domains/godaddy-b');
-        expect(firstAd.domain).toBe('www.godaddy.com');
-        expect(firstAd.snippet).toBe('Find Your Perfect Domain at GoDaddy and Get it Before Someone Else Does!');
-        expect(firstAd.linkType).toBe('LANDING');
-      }
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'title'],
+        `Don't Overpay For A Domain | Get Yours For 99¢ | GoDaddy.com‎`,
+      );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'url'],
+        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwju1q-toY7nAhVEyt4KHXasAeEYABAAGgJ3Yg&ggladgrp=7066528666257623986&gglcreat=18388609245422997597&ohost=www.google.com&cid=CAASE-RoHgRhrdvvlXSNdwDfHE-UoBg&sig=AOD64_3vqRXzc5r0TD5CVlw_XI--pKlztw&adurl=&q=',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.googleadservices.com');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'snippet'],
+        `Find The Perfect Domain at GoDaddy & Get it Before Someone Else Does! Easy Domain Setup. 100's of New Domains. Fast Domain Forwarding. Big Savings Over Others. Trusted By 19 Million. World's Largest Registrar. Services: Private Registration, WHOIS Lookup.`,
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
     test('Testing first ad sitelink', () => {
-      if (adwordsTop) {
-        const sitelink = adwordsTop[0].sitelinks[1];
-        expect(sitelink.title).toBe('Domain Privacy');
-        expect(sitelink.href).toBe('https://www.godaddy.com/domains/full-domain-privacy-and-protection?isc=goopr105');
-        expect(sitelink.type).toBe('INLINE');
-      }
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], '$0.99 .CO or .com Sale');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
+        'https://www.godaddy.com/offers/domains/tlds/great-price-first-year-com-or-co-domains?isc=gdcomg01',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'INLINE');
     });
 
-    test('Testing adwordsBottom property for non existent results', () => {
-      expect(adwordsBottom).toBeUndefined();
+    test('Testing adwordsBottom property', () => {
+      expect(serp.adwords?.adwordsBottom).toHaveLength(1);
+      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsBottom', 0, 'title'],
+        'Cheap Domains from $0.98/yr | Free WhoisGuard Forever‎',
+      );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsBottom', 0, 'url'],
+        'https://www.namecheap.com/promos/amazing98s/',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.namecheap.com');
+      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsBottom', 0, 'snippet'],
+        `Namecheap Offers The Lowest Prices in the Market. Register at Namecheap & Save Big Now. Domains Come w Free Domains Privacy for Life & 2 Free Months of Private Email. Affordable Domains. Easy Registration Process. 2 Free Months of Email.`,
+      );
     });
   });
 });
@@ -593,53 +602,45 @@ describe('Parsing Domain page', () => {
 describe('Parsing .com-domains page', () => {
   let html: string;
   let serp: Serp;
-  let adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } | undefined;
-  let adwordsTop: Ad[] | undefined;
-  let adwordsBottom: Ad[] | undefined;
 
   beforeAll(() => {
     html = fs.readFileSync('test/_com-domains.html', { encoding: 'utf8' });
     serp = GoogleSERP(html);
-    adwords = serp.adwords;
-    if (adwords) {
-      adwordsTop = adwords.adwordsTop;
-      adwordsBottom = adwords.adwordsBottom;
-    }
   });
 
   test('There should be all ads', () => {
-    expect(adwords).toBeDefined();
-    expect(adwordsTop).toBeDefined();
-    expect(adwordsBottom).toBeDefined();
+    expect(serp.adwords).toBeDefined();
+    expect(serp.adwords?.adwordsTop).toBeDefined();
+    expect(serp.adwords?.adwordsBottom).toBeDefined();
   });
 
-  test(`Testing first add card sitelinks`, () => {
-    if (adwordsTop) {
-      const sitelink = adwordsTop[0].sitelinks[1];
-      expect(sitelink.title).toBe('WordPress Web Hosting');
-      expect(sitelink.href).toBe('https://www.bluehost.com/track/searchgenericpromo/?page=/special/wordpress');
-      expect(sitelink.type).toBe('CARD');
-      expect(sitelink.snippet).toBe('Special offer for WP users.Free domain and site builders.');
-    }
+  test(`Testing first bottom ad sitelinks`, () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'title'], 'Pricing and Plan Features');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'href'],
+      'https://www.squarespace.com/pricing/?channel=pnb&subchannel=go&campaign=pnb-dr-go-us-en-website-bmm&subcampaign=(website-website-build_Pricing-and-Plan-Features_sl)',
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'type'], 'INLINE');
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
-    if (adwordsBottom) {
-      expect(adwordsBottom).toHaveLength(1);
-    }
+    expect(serp.adwords?.adwordsBottom).toHaveLength(3);
   });
   test('First bottom ad tests', () => {
-    if (adwordsBottom) {
-      const ad = adwordsBottom[0];
-      expect(ad.position).toBe(1);
-      expect(ad.title).toBe('Domain.com | Purchase A Domain Name‎');
-      expect(ad.url).toBe('https://www.domain.com/');
-      expect(ad.domain).toBe('www.domain.com');
-      expect(ad.linkType).toBe('HOME');
-      expect(ad.snippet).toBe(
-        'We Provide Innovative Products And Services At A Great Value For All Of Your Domain Needs. Eco-Friendly Hosting. Microsoft 0365. Drag & Drop Site Builder. Free Cloud Storage. Types: Domain Transfers, Domain Renewals, New TLDs, Premium Domains.',
-      );
-    }
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'title'], 'Claim Your Domain | Squarespace© Domains‎');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 0, 'url'],
+      'https://www.squarespace.com/domain-name-search',
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.squarespace.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 0, 'snippet'],
+      `The best websites start with the right domain. Start a website for free today! Free 14-day Trial. Services: Blog Platform, Modern Templates, SEO, Social Integrations, Mobile Friendly, Content Management, Analytics, 24/7 Support.`,
+    );
   });
 });
 
@@ -707,96 +708,67 @@ describe('Parsing Dell page', () => {
     expect(serp.shopResults).toBeDefined();
   });
 
-  test('Page should have shop results and the title of the first shop result should be "Dell XPS 13 Laptop 9380 4K Touch -i7-8565U"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].title).toBe('Dell XPS 13 Laptop 9380 4K Touch -i7-8565U');
-    }
+  test(`Page should have shop results and the title of the first shop result should be 
+    "Dell XPS 13 9380 Business Laptop 13.3 inch Notebook - 8GB - 256GB - Windows 10 Pro"`, () => {
+    expect(serp).toHaveProperty(
+      ['shopResults', 0, 'title'],
+      'Dell XPS 13 9380 Business Laptop 13.3 inch Notebook - 8GB - 256GB - Windows 10 Pro',
+    );
   });
 
-  test('First shop results on the page should have img link "https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].imgLink).toBe(
-        'https://www.rakuten.com/shop/dell/product/xnita3ws701h/?sku=xnita3ws701h&scid=pla_google_dell',
-      );
-    }
+  test('First shop results on the page should have img link', () => {
+    expect(serp).toHaveProperty(
+      ['shopResults', 0, 'imgLink'],
+      'https://www.dell.com/en-us/work/shop/cty/pdp/spd/xps-13-9380-laptop/cax13w10p1c706s',
+    );
   });
 
-  test('First shop result on the page should have price 764.99', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].price).toBe(764.99);
-    }
+  test('First shop result on the page should have price 1149.00', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'price'], 1149.0);
   });
+
   test('First shop result on the page should have currency "$"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].currency).toBe('$');
-    }
+    expect(serp).toHaveProperty(['shopResults', 0, 'currency'], '$');
   });
-  test('Shopping site for the first shop result on the page should be "Rakuten.com"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].shoppingSite).toBe('Rakuten.com');
-    }
-  });
-  test('First shop result on the page should have specialOffer saying "Special offer"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].specialOffer).toBe('Special offer');
-    }
-  });
-  test('First shop result on the page should not have rating,votes or commodity displayed', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[0].votes).toBeUndefined();
-      expect(serp.shopResults[0].rating).toBeUndefined();
-      expect(serp.shopResults[0].commodity).toBeUndefined();
-    }
-  });
-  test('2nd shop result on the page should have rating 3.8', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[1].rating).toBe(3.8);
-    }
-  });
-  test('2nd shop result on the page should have 1k+ votes', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[1].votes).toBe('1k+');
-    }
-  });
-  test('4th shop result on the page should have commodity "Free shipping"', () => {
-    if (serp.shopResults) {
-      expect(serp.shopResults[3].commodity).toBe('Free shipping');
-    }
-  });
-});
 
-describe('Parsing Dell page', () => {
-  let html: string;
-  let serp: Serp;
+  test('Shopping site for the first shop result on the page should be "Dell"', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'shoppingSite'], 'Dell');
+  });
 
-  beforeAll(() => {
-    html = fs.readFileSync('test/dell.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+  // TODO there is no special offer on this page, find one to test
+  xtest('First shop result on the page should have specialOffer saying "Special offer"', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'specialOffer'], 'Special offer');
+  });
+
+  test('2nd shop result on the page should not have rating, votes, but will have commodity', () => {
+    expect(serp).not.toHaveProperty(['shopResults', 1, 'votes']);
+    expect(serp).not.toHaveProperty(['shopResults', 1, 'rating']);
+    expect(serp).toHaveProperty(['shopResults', 1, 'commodity'], 'Free shipping');
+  });
+
+  test('1st shop result on the page should have rating 3.8', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'rating'], 3.6);
+  });
+
+  // TODO there is no 1k+ rating to test on this page, find one for testing
+  xtest('2nd shop result on the page should have 1k+ votes', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '1k+');
   });
 
   test('Page should have topStories feature', () => {
     expect(serp.topStories).toBeDefined();
   });
+
   test('2nd top stories card should have title "Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC"', () => {
-    if (serp.topStories) {
-      expect(serp.topStories[1].title).toBe('Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC');
-    }
-  });
-  test('2nd top stories card should have link "https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc"', () => {
-    if (serp.topStories) {
-      expect(serp.topStories[1].imgLink).toBe(
-        'https://www.pcmag.com/news/367910/deals-ipad-pro-dell-xps-13-sandisk-extreme-microsdxc',
-      );
-    }
-  });
-  test('2nd top stories card should have shopping site "PCMag.com"', () => {
-    if (serp.topStories) {
-      expect(serp.topStories[1].publisher).toBe('PCMag.com');
-    }
-  });
-  test('2nd top stories card should have been published "1 day ago"', () => {
-    if (serp.topStories) {
-      expect(serp.topStories[1].published).toBe('1 day ago');
-    }
+    expect(serp).toHaveProperty(
+      ['topStories', 1, 'title'],
+      'Dell laptop deal: the XPS 13 laptop gets a massive $969 price cut',
+    );
+    expect(serp).toHaveProperty(
+      ['topStories', 1, 'imgLink'],
+      'https://www.techradar.com/news/dell-laptop-deal-the-xps-13-laptop-gets-a-massive-dollar969-price-cut',
+    );
+    expect(serp).toHaveProperty(['topStories', 1, 'publisher'], 'TechRadar');
+    expect(serp).toHaveProperty(['topStories', 1, 'published'], '3 days ago');
   });
 });

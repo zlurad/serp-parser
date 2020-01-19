@@ -802,7 +802,7 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
     currencyRegex: /\D+/,
     imgLink: 'a.pla-unit-img-container-link',
     price: '.e10twf',
-    priceRegex: /\d+(\.\d+)?/,
+    priceRegex: /[\d,.]+/,
     ratingRegex: /\d\.\d/,
     ratingString: 'a > g-review-stars > span',
     shopFeature: '.top-pla-group-inner',
@@ -829,7 +829,7 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
             .find(CONFIG.price)
             .text(),
           CONFIG.priceRegex,
-        ),
+        ).replace(/,/g, ''),
       );
       const currency = utils.getFirstMatch(
         $(el)
