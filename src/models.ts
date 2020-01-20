@@ -45,9 +45,9 @@ export interface Ad {
 }
 
 export interface AvailableOn {
-  service: string; 
-  price: string; 
-  url: string
+  service: string;
+  price: string;
+  url: string;
 }
 
 export interface Pagination {

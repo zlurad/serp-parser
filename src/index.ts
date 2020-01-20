@@ -793,7 +793,7 @@ const getTopStories = (serp: Serp, $: CheerioStatic, topStoriesFeature: Cheerio)
     topStories.push({ imgLink, title, publisher, published });
   });
   serp.topStories = topStories;
-}
+};
 
 const getShopResults = (serp: Serp, $: CheerioStatic) => {
   const CONFIG = {
@@ -824,12 +824,14 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
         .find(CONFIG.title)
         .text();
       const price = parseFloat(
-        utils.getFirstMatch(
-          $(el)
-            .find(CONFIG.price)
-            .text(),
-          CONFIG.priceRegex,
-        ).replace(/,/g, ''),
+        utils
+          .getFirstMatch(
+            $(el)
+              .find(CONFIG.price)
+              .text(),
+            CONFIG.priceRegex,
+          )
+          .replace(/,/g, ''),
       );
       const currency = utils.getFirstMatch(
         $(el)
