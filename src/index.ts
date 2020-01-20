@@ -810,7 +810,7 @@ const getShopResults = (serp: Serp, $: CheerioStatic) => {
     shoppingSite: '.LbUacb',
     specialOffer: '.gyXcee',
     title: 'a > .pymv4e',
-    votes: '.pbAs0b',
+    votes: '.nbd1Bd .QhqGkb.RnJeZd',
   };
   const shopFeature = $(CONFIG.shopFeature);
   if (shopFeature.length) {

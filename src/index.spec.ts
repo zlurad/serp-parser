@@ -735,6 +735,10 @@ describe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'shoppingSite'], 'Dell');
   });
 
+  test('First shop result on the page should not have specialOffer', () => {
+    expect(serp).not.toHaveProperty(['shopResults', 0, 'specialOffer']);
+  });
+
   // TODO there is no special offer on this page, find one to test
   xtest('First shop result on the page should have specialOffer saying "Special offer"', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'specialOffer'], 'Special offer');
@@ -748,6 +752,10 @@ describe('Parsing Dell page', () => {
 
   test('1st shop result on the page should have rating 3.8', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'rating'], 3.6);
+  });
+
+  test('1st shop result on the page should have 1k+ votes', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '553');
   });
 
   // TODO there is no 1k+ rating to test on this page, find one for testing
