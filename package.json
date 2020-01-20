@@ -36,15 +36,15 @@
   "homepage": "https://github.com/zlurad/serp-parser#readme",
   "devDependencies": {
     "@types/cheerio": "^0.22.11",
-    "@types/fs-extra": "^7.0.0",
-    "@types/jest": "^24.0.13",
-    "fs-extra": "^8.0.1",
-    "jest": "^24.8.0",
-    "prettier": "^1.17.1",
-    "ts-jest": "^24.0.2",
-    "tslint": "^5.17.0",
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.9.0",
+    "fs-extra": "^8.1.0",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.3.0",
+    "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3"
