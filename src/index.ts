@@ -671,8 +671,8 @@ const getAds = ($: CheerioStatic, search: string, adsList: Ad[], nojs: boolean) 
       const url = $(e)
         .find(CONFIG.url)
         .attr('href');
-      const domain = utils.getDomain(url);
-      const linkType = utils.getLinkType(url);
+      const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
+      const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
       const snippet = $(e)
         .find(CONFIG.snippet)
         .text();
