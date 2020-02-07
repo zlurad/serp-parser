@@ -599,6 +599,56 @@ describe('Parsing Domain page', () => {
   });
 });
 
+describe('Parsing Paris page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/paris.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  describe('Testing ads', () => {
+    test('There should be top ads', () => {
+      expect(serp.adwords).toBeDefined();
+      expect(serp.adwords?.adwordsTop).toBeDefined();
+      expect(serp.adwords?.adwordsBottom).not.toBeDefined();
+    });
+
+    test('There should be 4 ads on the top of the page', () => {
+      expect(serp.adwords?.adwordsTop).toHaveLength(4);
+    });
+
+    test('Testing first ad', () => {
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'title'],
+        `The Best Things to Do in Paris - Airbnb - airbnb.com‎`,
+      );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'url'],
+        '/aclk?sa=l&ai=DChcSEwidtOmvrb_nAhXX-FEKHbj0DbIYABAAGgJ3cw&sig=AOD64_30sqttmnoUUIsmjWZ1SV9X-Odg0w&adurl=&q=',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.googleadservices.com');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'snippet'],
+        `Search for Rentals with Airbnb. Book Online with Instant Confirmation! Over 6 Million Listings. 100,000 Cities. 191 Countries. 24/7 Customer Service. Best Prices. Superb Locations. Amenities: Business Travel Ready, Family Friendly, Pet Friendly.`,
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
+    });
+
+    test('Testing first ad sitelink', () => {
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], 'Long-Term Housing');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
+        'https://www.airbnb.com/b/Long-Term-Stay',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'INLINE');
+    });
+  });
+});
+
 describe('Parsing .com-domains page', () => {
   let html: string;
   let serp: Serp;

@@ -1,7 +1,7 @@
 import { LinkType } from './models';
 
-export const getDomain = (url: string): string => {
-  const href = new URL(url);
+export const getDomain = (url: string, base?: string): string => {
+  const href = new URL(url, base);
   return href.hostname;
 };
 
@@ -16,8 +16,8 @@ export const getFirstMatch = (str: string, reg: RegExp) => {
   return matches ? matches[0] : '';
 };
 
-export const getLinkType = (url: string) => {
-  const href = new URL(url);
+export const getLinkType = (url: string, base?: string) => {
+  const href = new URL(url, base);
   return href.pathname !== '/' ? LinkType.landing : LinkType.home;
 };
 
