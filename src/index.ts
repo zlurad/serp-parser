@@ -20,6 +20,10 @@ import {
 import * as utils from './utils';
 
 export const GoogleSERP = (html: string): Serp => {
+  const CONFIG = {
+    noResults: '.med.card-section p:contains(" - did not match any documents.")',
+    noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
+  };
   const $ = cheerio.load(html, {
     normalizeWhitespace: true,
     xmlMode: true,
@@ -31,6 +35,11 @@ export const GoogleSERP = (html: string): Serp => {
     pagination: [],
     relatedKeywords: [],
   };
+
+  if ($(CONFIG.noResults).length === 1 || $(CONFIG.noResultsNojs).length === 1) {
+    serp.error = 'No results page';
+    return serp;
+  }
 
   if ($('body').hasClass('srp')) {
     parseGoogle(serp, $);

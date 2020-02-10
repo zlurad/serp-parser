@@ -13,6 +13,7 @@ export interface Serp {
   availableOn?: AvailableOn[];
   topStories?: TopStory[];
   shopResults?: ShopResult[];
+  error?: string;
 }
 
 export interface TopStory {
