@@ -830,3 +830,33 @@ describe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['topStories', 1, 'published'], '3 days ago');
   });
 });
+
+describe('Parsing no results page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/no-results.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('There should be 0 results', () => {
+    expect(serp.organic).toHaveLength(0);
+    expect(serp.error).toBe('No results page');
+  });
+});
+
+describe('Parsing no results nojs page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync('test/no-results-nojs.html', { encoding: 'utf8' });
+    serp = GoogleSERP(html);
+  });
+
+  test('There should be 0 results', () => {
+    expect(serp.organic).toHaveLength(0);
+    expect(serp.error).toBe('No results page');
+  });
+});
