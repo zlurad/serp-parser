@@ -64,7 +64,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       currentPage: nojs ? 'table#nav td:not(.b) > b' : 'table#nav td.cur',
-      keyword: nojs? '#sbhost' : 'input[aria-label="Search"]',
+      keyword: nojs ? '#sbhost' : 'input[aria-label="Search"]',
       resultText: '#resultStats',
     };
 
@@ -78,7 +78,7 @@ export class GoogleSERP {
     this.getAdwords(nojs);
     this.getHotels(nojs);
 
-    if(!nojs){
+    if (!nojs) {
       serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
       this.getVideos();
       this.getThumbnails();
@@ -141,18 +141,15 @@ export class GoogleSERP {
   }
 
   private getRelatedKeywords(nojs?: boolean) {
-    const serp = this.serp;
-    const $ = this.$;
     const relatedKeywords: RelatedKeyword[] = [];
     const query = nojs ? 'p.aw5cc a' : 'p.nVcaUb a';
-    $(query).each((i, elem) => {
+    this.$(query).each((i, elem) => {
       relatedKeywords.push({
-        keyword: $(elem).text(),
-        path: $(elem).prop('href'),
+        keyword: this.$(elem).text(),
+        path: this.$(elem).prop('href'),
       });
     });
-
-    serp.relatedKeywords = relatedKeywords;
+    this.serp.relatedKeywords = relatedKeywords;
   }
 
   private parseGoogleCardSitelinks(element: CheerioElement, sitelinks: Sitelink[]) {
@@ -169,13 +166,10 @@ export class GoogleSERP {
       .closest(CONFIG.closest)
       .find(CONFIG.find);
     cardSitelinks.each((i, el) => {
-      const title = this.elementText(el, CONFIG.title);
-      const href = this.elementHref(el, CONFIG.href);
-      const snippet = this.elementText(el, CONFIG.snippet);
       const sitelink: Sitelink = {
-        href,
-        snippet,
-        title,
+        href: this.elementHref(el, CONFIG.href),
+        snippet: this.elementText(el, CONFIG.snippet),
+        title: this.elementText(el, CONFIG.title),
         type: SitelinkType.card,
       };
       sitelinks.push(sitelink);
@@ -193,11 +187,9 @@ export class GoogleSERP {
       .closest(CONFIG.closest)
       .find(CONFIG.find);
     inlineSitelinks.each((i, el) => {
-      const title = $(el).text();
-      const href = $(el).attr('href');
       const sitelink: Sitelink = {
-        href,
-        title,
+        href: $(el).attr('href'),
+        title: $(el).text(),
         type: SitelinkType.inline,
       };
       sitelinks.push(sitelink);
@@ -266,19 +258,13 @@ export class GoogleSERP {
     }
     const videos: VideoCard[] = [];
     videosCards.each((index, element) => {
-      const title = this.elementText(element, CONFIG.title);
-      const sitelink = this.elementHref(element, CONFIG.sitelink);
-      const source = this.elementText(element, CONFIG.source);
-      const date = new Date(this.elementText(element, CONFIG.date));
-      const channel = this.elementText(element, CONFIG.channel);
-      const videoDuration = this.elementText(element, CONFIG.videoDuration);
       const videoCard = {
-        channel,
-        date,
-        sitelink,
-        source,
-        title,
-        videoDuration,
+        channel: this.elementText(element, CONFIG.channel),
+        date: new Date(this.elementText(element, CONFIG.date)),
+        sitelink: this.elementHref(element, CONFIG.sitelink),
+        source: this.elementText(element, CONFIG.source),
+        title: this.elementText(element, CONFIG.title),
+        videoDuration: this.elementText(element, CONFIG.videoDuration),
       };
       videos.push(videoCard);
     });
@@ -308,13 +294,10 @@ export class GoogleSERP {
       };
       const relatedThumbnail = $(element).find(CONFIG.relatedThumbnail);
       relatedThumbnail.each((ind, el) => {
-        const title = this.elementText(el, CONFIG.title);
-        const sitelink = this.elementHref(el, CONFIG.sitelink);
-        const thumbnail: Thumbnail = {
-          sitelink,
-          title,
-        };
-        thumbnailGroup.thumbnails.push(thumbnail);
+        thumbnailGroup.thumbnails.push({
+          sitelink: this.elementHref(el, CONFIG.sitelink),
+          title: this.elementText(el, CONFIG.title),
+        });
       });
       thumbnailGroups.push(thumbnailGroup);
     });
@@ -454,13 +437,9 @@ export class GoogleSERP {
 
     const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
     filterGroupsTitles.each((ind, el) => {
-      const title = $(el).text();
-      const explanation = $(el)
-        .next()
-        .text();
       const hotelFilters: HotelFilters = {
-        explanation,
-        title,
+        explanation: $(el).next().text(),
+        title: $(el).text(),
       };
       if ($(el).closest(CONFIG.activeFilter).length) {
         hotelFilters.isActive = true;
@@ -633,13 +612,10 @@ export class GoogleSERP {
       if ($(el).hasClass(CONFIG.test)) {
         const cardSiteLinks = $(el).find(CONFIG.card);
         cardSiteLinks.each((i, e) => {
-          const href = this.elementHref(e, CONFIG.cardHref);
-          const title = this.elementText(e, CONFIG.cardTitle);
-          const snippet = this.elementText(e, CONFIG.cardSnippet);
           const sitelink: Sitelink = {
-            href,
-            snippet,
-            title,
+            href: this.elementHref(e, CONFIG.cardHref),
+            snippet: this.elementText(e, CONFIG.cardSnippet),
+            title: this.elementText(e, CONFIG.cardTitle),
             type: SitelinkType.card,
           };
           sitelinks.push(sitelink);
@@ -647,11 +623,9 @@ export class GoogleSERP {
       } else {
         const inlineSiteLinks = $(el).find(CONFIG.inline);
         inlineSiteLinks.each((i, e) => {
-          const href = $(e).attr('href');
-          const title = $(e).text();
           const sitelink: Sitelink = {
-            href,
-            title,
+            href: $(e).attr('href'),
+            title: $(e).text(),
             type: SitelinkType.inline,
           };
           sitelinks.push(sitelink);
