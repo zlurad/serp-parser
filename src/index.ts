@@ -55,55 +55,37 @@ export class GoogleSERP {
     if ($('body').hasClass('srp')) {
       this.parseGoogle();
     } else if ($('body').hasClass('hsrp')) {
-      this.parseGoogleNojs();
+      this.parseGoogle(true);
     }
   }
 
-  private parseGoogle() {
+  private parseGoogle(nojs?: boolean) {
     const serp = this.serp;
     const $ = this.$;
     const CONFIG = {
-      currentPage: 'table#nav td.cur',
-      keyword: 'input[aria-label="Search"]',
-      resultText: '#resultStats',
-    };
-
-    serp.keyword = $(CONFIG.keyword).val();
-    const resultText = $(CONFIG.resultText).text();
-    serp.totalResults = utils.getTotalResults(resultText);
-    serp.timeTaken = utils.getTimeTaken(resultText);
-    serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
-
-    this.getOrganic();
-    this.getRelatedKeywords();
-    this.getPagination();
-    this.getVideos();
-    this.getThumbnails();
-    this.getAdwords();
-    this.getAvailableOn();
-    this.getShopResults();
-    this.getTopStories();
-    this.getHotels();
-  }
-
-  private parseGoogleNojs() {
-    const serp = this.serp;
-    const $ = this.$;
-    const CONFIG = {
-      currentPage: 'table#nav td:not(.b) > b',
-      keyword: '#sbhost',
+      currentPage: nojs ? 'table#nav td:not(.b) > b' : 'table#nav td.cur',
+      keyword: nojs? '#sbhost' : 'input[aria-label="Search"]',
       resultText: '#resultStats',
     };
 
     serp.keyword = $(CONFIG.keyword).val();
     serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
     serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
-    this.getOrganic(true);
-    this.getRelatedKeywords(true);
-    this.getPagination();
-    this.getAdwords(true);
-    this.getHotels(true);
 
+    this.getOrganic(nojs);
+    this.getRelatedKeywords(nojs);
+    this.getPagination();
+    this.getAdwords(nojs);
+    this.getHotels(nojs);
+
+    if(!nojs){
+      serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
+      this.getVideos();
+      this.getThumbnails();
+      this.getAvailableOn();
+      this.getShopResults();
+      this.getTopStories();
+    }
   }
 
   private getOrganic(nojs?: boolean) {
@@ -187,15 +169,9 @@ export class GoogleSERP {
       .closest(CONFIG.closest)
       .find(CONFIG.find);
     cardSitelinks.each((i, el) => {
-      const title = $(el)
-        .find(CONFIG.title)
-        .text();
-      const href = $(el)
-        .find(CONFIG.href)
-        .attr('href');
-      const snippet = $(el)
-        .find(CONFIG.snippet)
-        .text();
+      const title = this.elementText(el, CONFIG.title);
+      const href = this.elementHref(el, CONFIG.href);
+      const snippet = this.elementText(el, CONFIG.snippet);
       const sitelink: Sitelink = {
         href,
         snippet,
@@ -290,26 +266,12 @@ export class GoogleSERP {
     }
     const videos: VideoCard[] = [];
     videosCards.each((index, element) => {
-      const title = $(element)
-        .find(CONFIG.title)
-        .text();
-      const sitelink = $(element)
-        .find(CONFIG.sitelink)
-        .attr('href');
-      const source = $(element)
-        .find(CONFIG.source)
-        .text();
-      const date = new Date(
-        $(element)
-          .find(CONFIG.date)
-          .text(),
-      );
-      const channel = $(element)
-        .find(CONFIG.channel)
-        .text();
-      const videoDuration = $(element)
-        .find(CONFIG.videoDuration)
-        .text();
+      const title = this.elementText(element, CONFIG.title);
+      const sitelink = this.elementHref(element, CONFIG.sitelink);
+      const source = this.elementText(element, CONFIG.source);
+      const date = new Date(this.elementText(element, CONFIG.date));
+      const channel = this.elementText(element, CONFIG.channel);
+      const videoDuration = this.elementText(element, CONFIG.videoDuration);
       const videoCard = {
         channel,
         date,
@@ -339,21 +301,15 @@ export class GoogleSERP {
     }
     const thumbnailGroups: ThumbnailGroup[] = [];
     relatedGroup.each((index, element) => {
-      const heading = $(element)
-        .find(CONFIG.heading)
-        .text();
+      const heading = this.elementText(element, CONFIG.heading);
       const thumbnailGroup: ThumbnailGroup = {
         heading,
         thumbnails: [],
       };
       const relatedThumbnail = $(element).find(CONFIG.relatedThumbnail);
       relatedThumbnail.each((ind, el) => {
-        const title = $(el)
-          .find(CONFIG.title)
-          .text();
-        const sitelink = $(el)
-          .find(CONFIG.sitelink)
-          .attr('href');
+        const title = this.elementText(el, CONFIG.title);
+        const sitelink = this.elementHref(el, CONFIG.sitelink);
         const thumbnail: Thumbnail = {
           sitelink,
           title,
@@ -369,7 +325,7 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const hotelsFeature = $(nojs ? '.ksBKIe' : '.zd2Jbb');
-    if(!hotelsFeature.length) {
+    if (!hotelsFeature.length) {
       return;
     }
     // TODO: SPLIT TO getHotels and getHotelsNojs
@@ -395,14 +351,8 @@ export class GoogleSERP {
       // HOTELS
       const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
       hotelOffers.each((ind, elem) => {
-        const name = $(elem)
-          .find(CONFIG.name)
-          .text();
-        const rating = parseFloat(
-          $(elem)
-            .find(CONFIG.rating)
-            .text(),
-        );
+        const name = this.elementText(elem, CONFIG.name);
+        const rating = parseFloat(this.elementText(elem, CONFIG.rating));
         const votes = utils
           .getFirstMatch(
             $(elem)
@@ -427,18 +377,12 @@ export class GoogleSERP {
           .next()
           .next()
           .text();
-        const amenities = $(elem)
-          .find(CONFIG.amenities)
-          .text();
-        const featuredReview = $(elem)
-          .find(CONFIG.featuredReview)
-          .text()
+        const amenities = this.elementText(elem, CONFIG.amenities);
+        const featuredReview = this.elementText(elem, CONFIG.featuredReview)
           .trim()
           .slice(1, -1); // Getting rid of quotes with slice()
         // Make this better, maybe something instead of slice ?;
-        const moreInfoLink = $(elem)
-          .find(CONFIG.moreInfoLink)
-          .attr('href');
+        const moreInfoLink = this.elementHref(elem, CONFIG.moreInfoLink);
 
         const hotel: Hotel = {
           description,
@@ -555,59 +499,29 @@ export class GoogleSERP {
     const hotels: Hotel[] = [];
     const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
     hotelCards.each((ind, el) => {
-      const name = $(el)
-        .find(CONFIG.name)
-        .text();
-      const price = parseInt(
-        utils.getFirstMatch(
-          $(el)
-            .find(CONFIG.price)
-            .text(),
-          CONFIG.priceRegex,
-        ),
-        10,
-      );
+      const name = this.elementText(el, CONFIG.name);
+      const price = parseInt(utils.getFirstMatch(this.elementText(el, CONFIG.price), CONFIG.priceRegex), 10);
       const originalPrice = parseInt(
-        utils.getFirstMatch(
-          $(el)
-            .find(CONFIG.originalPrice)
-            .text(),
-          CONFIG.originalPriceRegex,
-        ),
+        utils.getFirstMatch(this.elementText(el, CONFIG.originalPrice), CONFIG.originalPriceRegex),
         10,
       );
-      const currency = utils.getFirstMatch(
-        $(el)
-          .find(CONFIG.currency)
-          .text(),
-        CONFIG.currencyRegex,
-      );
+      const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
       const ratingString = $(el)
         .find(CONFIG.rating)
         .attr('aria-label');
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
       const votes = parseInt(
-        $(el)
-          .find(CONFIG.votes)
-          .text()
+        this.elementText(el, CONFIG.votes)
           .slice(1, -1)
           .replace(',', ''),
         10,
       ); // Getting rid of parentheses with slice()
       // Make this better, maybe something instead of slice ?
 
-      const dealType = $(el)
-        .find(CONFIG.dealType)
-        .text();
-      const dealDetails = $(el)
-        .find(CONFIG.dealDetails)
-        .text();
-      const amenities = $(el)
-        .find(CONFIG.amenities)
-        .text();
-      const featuredReview = $(el)
-        .find(CONFIG.featuredReview)
-        .text()
+      const dealType = this.elementText(el, CONFIG.dealType);
+      const dealDetails = this.elementText(el, CONFIG.dealDetails);
+      const amenities = this.elementText(el, CONFIG.amenities);
+      const featuredReview = this.elementText(el, CONFIG.featuredReview)
         .trim()
         .slice(1, -1); // Getting rid of quotes with slice()
       // Make this better, maybe something instead of slice ?
@@ -681,17 +595,11 @@ export class GoogleSERP {
     $(search)
       .find(CONFIG.ads)
       .each((i, e) => {
-        const title = $(e)
-          .find(CONFIG.title)
-          .text();
-        const url = $(e)
-          .find(CONFIG.url)
-          .attr('href');
+        const title = this.elementText(e, CONFIG.title);
+        const url = this.elementHref(e, CONFIG.url);
         const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
         const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
-        const snippet = $(e)
-          .find(CONFIG.snippet)
-          .text();
+        const snippet = this.elementText(e, CONFIG.snippet);
         const sitelinks: Sitelink[] = this.getAdSitelinks(e, nojs);
         const position = i + 1;
         const ad: Ad = {
@@ -725,15 +633,9 @@ export class GoogleSERP {
       if ($(el).hasClass(CONFIG.test)) {
         const cardSiteLinks = $(el).find(CONFIG.card);
         cardSiteLinks.each((i, e) => {
-          const href = $(e)
-            .find(CONFIG.cardHref)
-            .attr('href');
-          const title = $(e)
-            .find(CONFIG.cardTitle)
-            .text();
-          const snippet = $(e)
-            .find(CONFIG.cardSnippet)
-            .text();
+          const href = this.elementHref(e, CONFIG.cardHref);
+          const title = this.elementText(e, CONFIG.cardTitle);
+          const snippet = this.elementText(e, CONFIG.cardSnippet);
           const sitelink: Sitelink = {
             href,
             snippet,
@@ -773,12 +675,8 @@ export class GoogleSERP {
     if (list.length) {
       list.each((i, e) => {
         const url = $(e).attr('href');
-        const service = $(e)
-          .find(CONFIG.service)
-          .text();
-        const price = $(e)
-          .find(CONFIG.price)
-          .text();
+        const service = this.elementText(e, CONFIG.service);
+        const price = this.elementText(e, CONFIG.price);
         availableOn.push({ url, service, price });
       });
       serp.availableOn = availableOn;
@@ -805,18 +703,10 @@ export class GoogleSERP {
     const topStories: TopStory[] = [];
     const topStory = topStoriesFeature.find(CONFIG.topStory);
     topStory.each((ind, el) => {
-      const imgLink = $(el)
-        .find(CONFIG.imgLink)
-        .attr('href');
-      const title = $(el)
-        .find(CONFIG.title)
-        .text();
-      const publisher = $(el)
-        .find(CONFIG.publisher)
-        .text();
-      const published = $(el)
-        .find(CONFIG.published)
-        .text();
+      const imgLink = this.elementHref(el, CONFIG.imgLink);
+      const title = this.elementText(el, CONFIG.title);
+      const publisher = this.elementText(el, CONFIG.publisher);
+      const published = this.elementText(el, CONFIG.published);
       topStories.push({ imgLink, title, publisher, published });
     });
     serp.topStories = topStories;
@@ -846,31 +736,13 @@ export class GoogleSERP {
       const shopResults: ShopResult[] = [];
       const shopOffer = shopFeature.find(CONFIG.shopOffer);
       shopOffer.each((ind, el) => {
-        const imgLink = $(el)
-          .find(CONFIG.imgLink)
-          .attr('href');
-        const title = $(el)
-          .find(CONFIG.title)
-          .text();
+        const imgLink = this.elementHref(el, CONFIG.imgLink);
+        const title = this.elementText(el, CONFIG.title);
         const price = parseFloat(
-          utils
-            .getFirstMatch(
-              $(el)
-                .find(CONFIG.price)
-                .text(),
-              CONFIG.priceRegex,
-            )
-            .replace(/,/g, ''),
+          utils.getFirstMatch(this.elementText(el, CONFIG.price), CONFIG.priceRegex).replace(/,/g, ''),
         );
-        const currency = utils.getFirstMatch(
-          $(el)
-            .find(CONFIG.currency)
-            .text(),
-          CONFIG.currencyRegex,
-        );
-        const shoppingSite = $(el)
-          .find(CONFIG.shoppingSite)
-          .text();
+        const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
+        const shoppingSite = this.elementText(el, CONFIG.shoppingSite);
 
         const shopResult: ShopResult = {
           currency,
@@ -893,17 +765,13 @@ export class GoogleSERP {
           const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
           shopResult.rating = rating;
         }
-        const votes = $(el)
-          .find(CONFIG.votes)
-          .text()
+        const votes = this.elementText(el, CONFIG.votes)
           .trim()
           .slice(1, -1);
         if (votes) {
           shopResult.votes = votes;
         }
-        const commodity = $(el)
-          .find(CONFIG.commodity)
-          .text();
+        const commodity = this.elementText(el, CONFIG.commodity);
         if (commodity) {
           shopResult.commodity = commodity;
         }
@@ -911,5 +779,18 @@ export class GoogleSERP {
       });
       serp.shopResults = shopResults;
     }
+  }
+
+  // Helper methods
+  private elementText(el: CheerioElement, query: string) {
+    return this.$(el)
+      .find(query)
+      .text();
+  }
+
+  private elementHref(el: CheerioElement, query: string) {
+    return this.$(el)
+      .find(query)
+      .attr('href');
   }
 }
