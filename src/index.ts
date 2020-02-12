@@ -100,11 +100,7 @@ export class GoogleSERP {
       const position = index + 1;
       const url = nojs ? utils.getUrlFromQuery($(element).prop('href')) : $(element).prop('href');
       const domain = utils.getDomain(url);
-      const title = nojs
-        ? $(element).text()
-        : $(element)
-            .find('h3')
-            .text();
+      const title = nojs ? $(element).text() : this.elementText(element, 'h3');
       const snippet = this.getSnippet(element, nojs);
       const linkType = utils.getLinkType(url);
       const result: Result = {
@@ -131,10 +127,38 @@ export class GoogleSERP {
   }
 
   private parseSitelinks(element: CheerioElement, result: Result, nojs?: boolean) {
+    const $ = this.$;
+    const CONFIG = {
+      cards: '.sld',
+      closestCards: 'div.g',
+      closestInline: nojs ? 'div.g' : '.rc',
+      href: 'a',
+      inline: '.s .osl a',
+      snippet: '.st',
+      title: 'h3 a',
+    };
     const sitelinks: Sitelink[] = [];
-    // TODO: refactor this
-    this.parseGoogleCardSitelinks(element, sitelinks);
-    this.parseGoogleInlineSitelinks(element, sitelinks, nojs);
+    let type: SitelinkType;
+
+    if($(element).closest(CONFIG.closestCards).find(CONFIG.cards).length > 0) {
+      type = SitelinkType.card;
+    } else if($(element).closest(CONFIG.closestInline).find(CONFIG.inline).length > 0) {
+      type = SitelinkType.inline;
+    } else {
+      return;
+    }
+
+    const links = $(element).closest(type === SitelinkType.card ? CONFIG.closestCards : CONFIG.closestInline)
+      .find(type === SitelinkType.card ? CONFIG.cards : CONFIG.inline);
+    links.each((i, el) => {
+      const sitelink: Sitelink = {
+        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : $(el).attr('href'),
+        snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
+        title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text(),
+        type,
+      };
+      sitelinks.push(sitelink);
+    });
     if (sitelinks.length > 0) {
       result.sitelinks = sitelinks;
     }
@@ -150,51 +174,7 @@ export class GoogleSERP {
       });
     });
     this.serp.relatedKeywords = relatedKeywords;
-  }
-
-  private parseGoogleCardSitelinks(element: CheerioElement, sitelinks: Sitelink[]) {
-    const $ = this.$;
-    const CONFIG = {
-      closest: 'div.g',
-      find: '.sld',
-      href: 'a',
-      snippet: '.st',
-      title: 'h3 a',
-    };
-
-    const cardSitelinks = $(element)
-      .closest(CONFIG.closest)
-      .find(CONFIG.find);
-    cardSitelinks.each((i, el) => {
-      const sitelink: Sitelink = {
-        href: this.elementHref(el, CONFIG.href),
-        snippet: this.elementText(el, CONFIG.snippet),
-        title: this.elementText(el, CONFIG.title),
-        type: SitelinkType.card,
-      };
-      sitelinks.push(sitelink);
-    });
-  }
-
-  private parseGoogleInlineSitelinks(element: CheerioElement, sitelinks: Sitelink[], nojs?: boolean) {
-    const $ = this.$;
-    const CONFIG = {
-      closest: nojs ? 'div.g' : '.rc',
-      find: '.s .osl a',
-    };
-
-    const inlineSitelinks = $(element)
-      .closest(CONFIG.closest)
-      .find(CONFIG.find);
-    inlineSitelinks.each((i, el) => {
-      const sitelink: Sitelink = {
-        href: $(el).attr('href'),
-        title: $(el).text(),
-        type: SitelinkType.inline,
-      };
-      sitelinks.push(sitelink);
-    });
-  }
+  };
 
   private parseCachedAndSimilarUrls(element: CheerioElement, result: Result, nojs?: boolean) {
     const $ = this.$;
@@ -306,7 +286,6 @@ export class GoogleSERP {
 
   private getHotels(nojs?: boolean) {
     const $ = this.$;
-    const serp = this.serp;
     const hotelsFeature = $(nojs ? '.ksBKIe' : '.zd2Jbb');
     if (!hotelsFeature.length) {
       return;
@@ -386,7 +365,7 @@ export class GoogleSERP {
         hotels.push(hotel);
       });
 
-      serp.hotels = {
+      this.serp.hotels = {
         hotels,
         moreHotels: moreHotelsLink,
       };
@@ -406,7 +385,7 @@ export class GoogleSERP {
       const moreHotelsText = hotelsFeature.find(CONFIG.moreHotelsText).text();
       const moreHotels = parseInt(utils.getFirstMatch(moreHotelsText, CONFIG.moreHotelsRegex).replace(',', ''), 10);
 
-      serp.hotels = {
+      this.serp.hotels = {
         hotels,
         moreHotels,
         searchFilters,
@@ -438,7 +417,9 @@ export class GoogleSERP {
     const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
     filterGroupsTitles.each((ind, el) => {
       const hotelFilters: HotelFilters = {
-        explanation: $(el).next().text(),
+        explanation: $(el)
+          .next()
+          .text(),
         title: $(el).text(),
       };
       if ($(el).closest(CONFIG.activeFilter).length) {
