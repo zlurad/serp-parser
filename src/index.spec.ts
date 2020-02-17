@@ -3,7 +3,7 @@ import { GoogleSERP } from './index';
 import { Ad, Serp } from './models';
 
 test('GoogleSERP should return empty organic array on empty html string', () => {
-  expect(GoogleSERP('').organic).toEqual([]);
+  expect(new GoogleSERP('').serp.organic).toEqual([]);
 });
 
 describe('Parsing Google page with 10 resuts', () => {
@@ -12,7 +12,7 @@ describe('Parsing Google page with 10 resuts', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/google.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('Page should have 25,270,000,000 results', () => {
@@ -107,7 +107,7 @@ describe('Parsing Google page with 100 results', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/google-100.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('serp should have 93 results', () => {
@@ -143,7 +143,7 @@ describe('Parsing nojs Google page with 10 resuts', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/google-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('Page should have 16,370,000,000 results', () => {
@@ -235,7 +235,7 @@ describe('Parsing nojs Google page with 100 resuts', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/google100-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('serp should have 97 results', () => {
@@ -271,7 +271,7 @@ describe('Parsing "The Matrix" search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/matrix.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('serp should have 8 results', () => {
@@ -324,7 +324,7 @@ describe('Parsing nojs "The Matrix" search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/matrix-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('serp should have 10 results', () => {
@@ -365,7 +365,7 @@ describe('Parsing Hotels search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/hotels.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('There should be 1417 similar hotels in the area', () => {
@@ -447,7 +447,7 @@ describe('Parsing Hotels-nojs search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/hotels-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('Name of the first featured hotel should be "Row NYC"', () => {
@@ -494,7 +494,7 @@ describe('Parsing Hotels-London search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/hotels-london.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('Second featured hotel should have originalPrice property and should have value 113', () => {
@@ -517,7 +517,7 @@ describe('Testing functions', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    serp = GoogleSERP('<body class="srp"><div></div></body>');
+    serp = new GoogleSERP('<body class="srp"><div></div></body>').serp;
   });
 
   test('testing getResults and getTime function for non existent results', () => {
@@ -536,7 +536,7 @@ describe('Parsing Domain page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/domain.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   describe('Testing ads', () => {
@@ -605,7 +605,7 @@ describe('Parsing Paris page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/paris.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   describe('Testing ads', () => {
@@ -655,7 +655,7 @@ describe('Parsing .com-domains page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/_com-domains.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('There should be all ads', () => {
@@ -703,7 +703,7 @@ describe('Parsing Domain-nojs page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/domain-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
     adwords = serp.adwords;
     if (adwords) {
       adwordsTop = adwords.adwordsTop;
@@ -751,7 +751,7 @@ describe('Parsing Dell page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/dell.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('Page should have shop feature', () => {
@@ -837,7 +837,7 @@ describe('Parsing no results page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/no-results.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('There should be 0 results', () => {
@@ -852,7 +852,7 @@ describe('Parsing no results nojs page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync('test/no-results-nojs.html', { encoding: 'utf8' });
-    serp = GoogleSERP(html);
+    serp = new GoogleSERP(html).serp;
   });
 
   test('There should be 0 results', () => {
