@@ -8,6 +8,7 @@ import {
   HotelsSearchFilters,
   RelatedKeyword,
   Result,
+  PopularProduct,
   Serp,
   ShopResult,
   Sitelink,
@@ -85,6 +86,7 @@ export class GoogleSERP {
       this.getAvailableOn();
       this.getShopResults();
       this.getTopStories();
+      this.getPopularProducts();
     }
   }
 
@@ -636,6 +638,34 @@ export class GoogleSERP {
       });
       serp.availableOn = availableOn;
     }
+  }
+
+  private getPopularProducts(){
+    const $ = this.$;
+    const serp = this.serp;
+    const CONFIG = {
+      title: '.RnJeZd',
+      price: '.e10twf.T4OwTb', 
+      seller: '.a.VZqTOd',
+      popularProductsFeature: '.c.ptJHdc.commercial-unit-desktop-top',
+      popularProduct: '.mnr-c.pla-unit',
+    };
+
+    const popularProductsFeature = $(CONFIG.popularProductsFeature);
+
+    if (!popularProductsFeature.length) {
+      return;
+    }
+
+    const popularProducts: PopularProduct[] = [];
+    const popularProduct = popularProductsFeature.find(CONFIG.popularProduct);
+    popularProduct.each((ind, el) => {
+      const title = this.elementText(el, CONFIG.title);
+      const price = this.elementText(el, CONFIG.price);
+      const seller = this.elementText(el, CONFIG.seller);
+      popularProducts.push({ title, price, seller });
+    });
+    serp.popularProducts = popularProducts;
   }
 
   private getTopStories() {

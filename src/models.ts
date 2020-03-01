@@ -14,6 +14,7 @@ export interface Serp {
   topStories?: TopStory[];
   shopResults?: ShopResult[];
   error?: string;
+  popularProducts?: PopularProduct[];
 }
 
 export interface TopStory {
@@ -21,6 +22,12 @@ export interface TopStory {
   title: string;
   publisher: string;
   published: string;
+}
+
+export interface PopularProduct {
+  title: string;
+  price: string;
+  seller: string;
 }
 
 export interface ShopResult {
