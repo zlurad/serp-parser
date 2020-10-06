@@ -14,6 +14,7 @@ export interface Serp {
   topStories?: TopStory[];
   shopResults?: ShopResult[];
   error?: string;
+  locals?: Local[];
 }
 
 export interface TopStory {
@@ -116,6 +117,17 @@ export interface HotelDeal {
   dealType: string;
   dealDetails?: string;
   originalPrice?: number;
+}
+
+export interface Local{
+  name: string;
+  rating: string;
+  reviews: string;
+  expensiveness: number;
+  type: string;
+  distance: string;
+  address: string;
+  description: string;
 }
 
 export interface Result {
