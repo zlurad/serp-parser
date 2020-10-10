@@ -11,15 +11,15 @@ describe('Parsing Google page with 10 resuts', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google.html', { encoding: 'utf8' });
+    html = fs.readFileSync('test/google-new.html', { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
-  test('Page should have 25,270,000,000 results', () => {
-    expect(serp.totalResults).toBe(25270000000);
+  test('Page should have 10,230,000,000 results', () => {
+    expect(serp.totalResults).toBe(10230000000);
   });
-  test('Search should be done in 0.6 seconds', () => {
-    expect(serp.timeTaken).toBe(0.6);
+  test('Search should be done in 0.87 seconds', () => {
+    expect(serp.timeTaken).toBe(0.87);
   });
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
@@ -32,12 +32,12 @@ describe('Parsing Google page with 10 resuts', () => {
   });
   test('1st related keyword should have path', () => {
     expect(serp.relatedKeywords[0].path).toBe(
-      'https://www.google.com/search?q=google+account&sa=X&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQ1QIoAHoECBEQAQ',
+      '/search?q=google+account&sa=X&ved=2ahUKEwj9jtai65_sAhVGQBoKHahaA0IQ1QIoAHoECCgQAQ',
     );
   });
   test(`Link to 2nd page should have path`, () => {
     expect(serp.pagination[1].path).toBe(
-      'https://www.google.com/search?q=google&ei=JI8jXuOHOdKWaNzKjLAP&start=10&sa=N&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQ8tMDegQIDhA1',
+      '/search?q=google&ei=nVF8X73MDsaAaai1jZAE&start=10&sa=N&ved=2ahUKEwj9jtai65_sAhVGQBoKHahaA0IQ8tMDegQIJxAv',
     );
   });
 
@@ -45,8 +45,8 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic).toHaveLength(6);
   });
 
-  test('4th result should have url https://about.google/', () => {
-    expect(serp.organic[3].url).toBe('https://about.google/');
+  test('4th result should have url https://blog.google/', () => {
+    expect(serp.organic[3].url).toBe('https://blog.google/');
   });
 
   test(`1st result should have cachedUrl`, () => {
@@ -56,30 +56,30 @@ describe('Parsing Google page with 10 resuts', () => {
   });
   test(`1st result should have similarUrl`, () => {
     expect(serp.organic[0].similarUrl).toBe(
-      'https://www.google.com/search?q=related:https://www.google.com/+google&tbo=1&sa=X&ved=2ahUKEwjjqdW3oY7nAhVSCxoKHVwlA_YQHzAAegQIEBAI',
+      '/search?q=related:https://www.google.com/+google&sa=X&ved=2ahUKEwj9jtai65_sAhVGQBoKHahaA0IQHzAAegQIARAH',
     );
   });
 
-  test('4th result should have domain about.google', () => {
-    expect(serp.organic[3].domain).toBe('about.google');
+  test('4th result should have domain blog.google', () => {
+    expect(serp.organic[3].domain).toBe('blog.google');
   });
 
-  test('4th result should have title "Google Domains - Google"', () => {
-    expect(serp.organic[3].title).toBe('Google: About');
+  test('4th result should have title "The Keyword | Google"', () => {
+    expect(serp.organic[3].title).toBe('The Keyword | Google');
   });
 
-  test('4th result should have snippet to start with "Get the latest news, updates,...', () => {
+  test('4th result should have snippet to start with "Discover all the latest about our products...', () => {
     expect(serp.organic[3].snippet).toBe(
-      `Get the latest news, updates, and happenings at Google. Learn about Google's core values and company philosophy.`,
+      `Discover all the latest about our products, technology, and Google culture on our official blog.`,
     );
   });
 
   test('1st result should have card sitelinks', () => {
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Google Accounts');
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://accounts.google.com/');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/account/about/');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'snippet'],
-      'Not your computer? Use Guest mode to sign in privately. Learn ...',
+      'In your Google Account, you can see and manage your info ...',
     );
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
@@ -96,7 +96,7 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing topStories property for non existent results', () => {
     expect(serp.topStories).toBeUndefined();
   });
-  test('testing Locals property for non existent results', () => {
+  xtest('testing Locals property for non existent results', () => {
     expect(serp.locals).toBeUndefined();
   });
   test('testing shop property for non existent results', () => {
@@ -113,25 +113,25 @@ describe('Parsing Google page with 100 results', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  test('serp should have 93 results', () => {
-    expect(serp.organic).toHaveLength(93);
+  test('serp should have 100 results', () => {
+    expect(serp.organic).toHaveLength(100);
   });
 
   test('all results should have domain domains.google', () => {
     expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
-  test('3rd result should have url https://about.google/', () => {
-    expect(serp.organic[2].url).toBe('https://about.google/');
+  test('3rd result should have url https://www.google.com/account/about/', () => {
+    expect(serp.organic[2].url).toBe('https://www.google.com/account/about/');
   });
 
-  test('3rd result should have title "About Google"', () => {
-    expect(serp.organic[2].title).toBe('Google: About');
+  test('3rd result should have title "Google Account"', () => {
+    expect(serp.organic[2].title).toBe('Google Account');
   });
 
-  test('3rd result should have snippet to start with "Get the latest news, updates...', () => {
+  test('3rd result should have snippet to start with "In your Google Account, you can see ...', () => {
     expect(serp.organic[2].snippet).toBe(
-      `Get the latest news, updates, and happenings at Google. Learn about Google's core values and company philosophy.`,
+      `In your Google Account, you can see and manage your info, activity, security&nbsp;...`,
     );
   });
 
@@ -149,24 +149,25 @@ describe('Parsing "The Matrix" search page', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  test('serp should have 8 results', () => {
-    expect(serp.organic).toHaveLength(8);
+  test('serp should have 9 results', () => {
+    expect(serp.organic).toHaveLength(9);
   });
 
   test('Keyword should be "The Matrix"', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
 
-  test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
-    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'title'], 'The Matrix (franchise)');
+  test('1st result should have sitelinks and first sitelink should have title "‎Franchise"', () => {
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Franchise');
     expect(serp).toHaveProperty(
-      ['organic', 1, 'sitelinks', 0, 'href'],
+      ['organic', 0, 'sitelinks', 0, 'href'],
       'https://en.wikipedia.org/wiki/The_Matrix_(franchise)',
     );
-    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
-  test('There should be Available On serp feature, 6 of them', () => {
+  // Moved to knowledge graph
+  xtest('There should be Available On serp feature, 6 of them', () => {
     expect(serp.availableOn).toHaveLength(6);
     expect(serp).toHaveProperty(['availableOn', 0, 'service'], 'YouTube');
     expect(serp).toHaveProperty(['availableOn', 0, 'price'], '$3.99');
@@ -188,7 +189,7 @@ describe('Parsing "The Matrix" search page', () => {
     expect(serp).toHaveProperty(['thumbnailGroups', 1, 'thumbnails', 0, 'title'], 'Johnny Mnemonic');
     expect(serp).toHaveProperty(
       ['thumbnailGroups', 1, 'thumbnails', 0, 'sitelink'],
-      'https://www.google.com/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwiK0Z_0xY_nAhVmxYUKHa1kD5YQxA0wIHoECBkQBQ',
+      '/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwji-vSCuarsAhVTvZ4KHa3yDYsQxA0wHHoECAYQBA',
     );
   });
 });

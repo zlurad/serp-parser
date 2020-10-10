@@ -61,9 +61,9 @@ export class GoogleSERP {
     const serp = this.serp;
     const $ = this.$;
     const CONFIG = {
-      currentPage: 'table#nav td.cur',
+      currentPage: 'table.AaVjTc td.YyVfkd',
       keyword: 'input[aria-label="Search"]',
-      resultText: '#resultStats',
+      resultText: '#result-stats',
     };
 
     serp.keyword = $(CONFIG.keyword).val();
@@ -78,7 +78,7 @@ export class GoogleSERP {
     serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());  
     this.getVideos();
     this.getThumbnails();
-    this.getAvailableOn();
+    // this.getAvailableOn();
     this.getShopResults();
     this.getTopStories();
     this.getLocals();
@@ -111,23 +111,22 @@ export class GoogleSERP {
     });
   }
 
-  private getSnippet(element: CheerioElement, nojs?: boolean): string {
+  private getSnippet(element: CheerioElement): string {
     const text = this.$(element)
-      .parent('.r')
+      .parent()
       .next()
-      .find('.st')
       .text();
-    return nojs ? text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '') : text;
+    return text;
   }
 
-  private parseSitelinks(element: CheerioElement, result: Result, nojs?: boolean) {
+  private parseSitelinks(element: CheerioElement, result: Result) {
     const $ = this.$;
     const CONFIG = {
       cards: '.sld',
       closestCards: 'div.g',
-      closestInline: nojs ? 'div.g' : '.rc',
+      closestInline: '.rc',
       href: 'a',
-      inline: '.s .osl a',
+      inline: '.St3GK a',
       snippet: '.st',
       title: 'h3 a',
     };
@@ -173,7 +172,7 @@ export class GoogleSERP {
   private parseCachedAndSimilarUrls(element: CheerioElement, result: Result) {
     const $ = this.$;
     const CONFIG = {
-      closest: '.r',
+      closest: '.yuRUbf',
       find: 'span ol > li.action-menu-item > a',
     };
 
@@ -196,8 +195,8 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      pages: 'td:not(.b) a',
-      pagination: 'table#nav',
+      pages: 'td:not(.b) a.fl',
+      pagination: 'table.AaVjTc',
     };
 
     const pagination = $(CONFIG.pagination);
@@ -223,7 +222,7 @@ export class GoogleSERP {
       source: '.zECGdd:not(.RgAZAc) .cJzOGc',
       title: 'div[role="heading"]',
       videoDuration: '.Woharf.LQFTgb',
-      videosCards: 'g-scrolling-carousel .BFJZOc g-inner-card',
+      videosCards: '.gT5me',
     };
 
     const videosCards = $(CONFIG.videosCards);
@@ -249,7 +248,7 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      heading: '[role="heading"] .VLkRKc',
+      heading: '.yp1CPe.mod.NFQFxe > [role="heading"]',
       relatedGroup: '#bres .xpdopen',
       relatedThumbnail: '.zVvuGd > div',
       sitelink: 'a',
@@ -531,6 +530,7 @@ export class GoogleSERP {
     return sitelinks;
   }
 
+  // Moved to knowledge graph
   private getAvailableOn() {
     const $ = this.$;
     const serp = this.serp;
