@@ -2,16 +2,18 @@ import * as fs from 'fs-extra';
 import { GoogleNojsSERP } from './google-nojs';
 import { Ad, Serp } from './models';
 
+const root = 'test/google/nojs/old/';
+
 test('GoogleNojsSERP should return empty organic array on empty html string', () => {
   expect(new GoogleNojsSERP('').serp.organic).toEqual([]);
 });
 
 describe('Parsing nojs Google page with 10 resuts', () => {
-  let html: string;
+  let html;
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}google-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
   });
 
@@ -103,7 +105,7 @@ describe('Parsing nojs Google page with 100 resuts', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google100-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}google100-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
   });
 
@@ -138,7 +140,7 @@ describe('Parsing nojs "The Matrix" search page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/matrix-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}matrix-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
   });
 
@@ -179,7 +181,7 @@ describe('Parsing Hotels-nojs search page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/hotels-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}hotels-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
   });
 
@@ -246,7 +248,7 @@ describe('Parsing Domain-nojs page', () => {
   let adwordsBottom: Ad[] | undefined;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/domain-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}domain-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
     adwords = serp.adwords;
     if (adwords) {
@@ -294,7 +296,7 @@ describe('Parsing no results nojs page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/no-results-nojs.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}no-results-nojs.html`, { encoding: 'utf8' });
     serp = new GoogleNojsSERP(html).serp;
   });
 
