@@ -248,7 +248,8 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      heading: '.yp1CPe.mod.NFQFxe > [role="heading"]',
+      heading: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"]',
+      headingMore: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"] .VLkRKc',
       relatedGroup: '#bres .xpdopen',
       relatedThumbnail: '.zVvuGd > div',
       sitelink: 'a',
@@ -260,7 +261,13 @@ export class GoogleSERP {
     }
     const thumbnailGroups: ThumbnailGroup[] = [];
     relatedGroup.each((index, element) => {
-      const heading = this.elementText(element, CONFIG.heading);
+      let heading = '';
+      if ($(element).find(CONFIG.headingMore).length === 1) {
+        heading = $(element).find(CONFIG.headingMore).text();
+      } else {
+        heading = $(element).find(CONFIG.heading).text();
+      }
+      // const heading = this.elementText(element, CONFIG.heading);
       const thumbnailGroup: ThumbnailGroup = {
         heading,
         thumbnails: [],
