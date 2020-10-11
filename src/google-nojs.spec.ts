@@ -29,8 +29,6 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp.currentPage).toBe(1);
   });
 
-  
-
   test('2nd result should have domain blog.google', () => {
     expect(serp.organic[1].domain).toBe('blog.google');
   });
@@ -95,7 +93,7 @@ describe('Parsing nojs Google page with 100 resuts', () => {
   });
 
   test('all results should have a domain', () => {
-    expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
+    expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
   });
 
   test('3rd result should have url https://blog.google/', () => {

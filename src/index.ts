@@ -75,7 +75,7 @@ export class GoogleSERP {
     this.getPagination();
     this.getAdwords();
     this.getHotels();
-    serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());  
+    serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
     this.getVideos();
     this.getThumbnails();
     // this.getAvailableOn();
@@ -112,10 +112,7 @@ export class GoogleSERP {
   }
 
   private getSnippet(element: CheerioElement): string {
-    const text = this.$(element)
-      .parent()
-      .next()
-      .text();
+    const text = this.$(element).parent().next().text();
     return text;
   }
 
@@ -133,15 +130,16 @@ export class GoogleSERP {
     const sitelinks: Sitelink[] = [];
     let type: SitelinkType;
 
-    if($(element).closest(CONFIG.closestCards).find(CONFIG.cards).length > 0) {
+    if ($(element).closest(CONFIG.closestCards).find(CONFIG.cards).length > 0) {
       type = SitelinkType.card;
-    } else if($(element).closest(CONFIG.closestInline).find(CONFIG.inline).length > 0) {
+    } else if ($(element).closest(CONFIG.closestInline).find(CONFIG.inline).length > 0) {
       type = SitelinkType.inline;
     } else {
       return;
     }
 
-    const links = $(element).closest(type === SitelinkType.card ? CONFIG.closestCards : CONFIG.closestInline)
+    const links = $(element)
+      .closest(type === SitelinkType.card ? CONFIG.closestCards : CONFIG.closestInline)
       .find(type === SitelinkType.card ? CONFIG.cards : CONFIG.inline);
     links.each((i, el) => {
       const sitelink: Sitelink = {
@@ -167,7 +165,7 @@ export class GoogleSERP {
       });
     });
     this.serp.relatedKeywords = relatedKeywords;
-  };
+  }
 
   private parseCachedAndSimilarUrls(element: CheerioElement, result: Result) {
     const $ = this.$;
@@ -176,9 +174,7 @@ export class GoogleSERP {
       find: 'span ol > li.action-menu-item > a',
     };
 
-    const urls = $(element)
-      .closest(CONFIG.closest)
-      .find(CONFIG.find);
+    const urls = $(element).closest(CONFIG.closest).find(CONFIG.find);
     urls.each((i, el) => {
       switch ($(el).text()) {
         case 'Cached':
@@ -338,9 +334,7 @@ export class GoogleSERP {
     const filterGroupsTitles = hotelFiltersSection.find(CONFIG.filterGroupsTitles);
     filterGroupsTitles.each((ind, el) => {
       const hotelFilters: HotelFilters = {
-        explanation: $(el)
-          .next()
-          .text(),
+        explanation: $(el).next().text(),
         title: $(el).text(),
       };
       if ($(el).closest(CONFIG.activeFilter).length) {
@@ -387,24 +381,15 @@ export class GoogleSERP {
         10,
       );
       const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
-      const ratingString = $(el)
-        .find(CONFIG.rating)
-        .attr('aria-label');
+      const ratingString = $(el).find(CONFIG.rating).attr('aria-label');
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
-      const votes = parseInt(
-        this.elementText(el, CONFIG.votes)
-          .slice(1, -1)
-          .replace(',', ''),
-        10,
-      ); // Getting rid of parentheses with slice()
+      const votes = parseInt(this.elementText(el, CONFIG.votes).slice(1, -1).replace(',', ''), 10); // Getting rid of parentheses with slice()
       // Make this better, maybe something instead of slice ?
 
       const dealType = this.elementText(el, CONFIG.dealType);
       const dealDetails = this.elementText(el, CONFIG.dealDetails);
       const amenities = this.elementText(el, CONFIG.amenities);
-      const featuredReview = this.elementText(el, CONFIG.featuredReview)
-        .trim()
-        .slice(1, -1); // Getting rid of quotes with slice()
+      const featuredReview = this.elementText(el, CONFIG.featuredReview).trim().slice(1, -1); // Getting rid of quotes with slice()
       // Make this better, maybe something instead of slice ?
 
       const hotelDeal: HotelDeal = {
@@ -572,7 +557,7 @@ export class GoogleSERP {
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
       distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
-      address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(2)',     
+      address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(2)',
       description: 'div.rllt__wrapped > span',
       localsFeature: '[data-hveid=CAoQAA]',
       local: '.C8TUKc',
@@ -589,19 +574,13 @@ export class GoogleSERP {
     local.each((ind, el) => {
       const name = this.elementText(el, CONFIG.name);
       const rating = this.elementText(el, CONFIG.rating);
-      const reviews = utils.getFirstMatch(
-        $(el).find(CONFIG.reviews).text(),
-        CONFIG.reviewsRegex,
-       );
+      const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
       const expensiveness = this.elementText(el, CONFIG.expensiveness).length;
-      const type = utils.getFirstMatch(
-       $(el).find(CONFIG.type).text(),
-       CONFIG.typeRegex,
-      );
+      const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
       const distance = this.elementText(el, CONFIG.distance);
       const address = this.elementText(el, CONFIG.address);
       const description = this.elementText(el, CONFIG.description);
-      locals.push({name, rating, reviews, expensiveness, type, distance, address, description});
+      locals.push({ name, rating, reviews, expensiveness, type, distance, address, description });
     });
     serp.locals = locals;
   }
@@ -674,23 +653,16 @@ export class GoogleSERP {
           shoppingSite,
           title,
         };
-        const specialOffer = $(el)
-          .find(CONFIG.specialOffer)
-          .first()
-          .text();
+        const specialOffer = $(el).find(CONFIG.specialOffer).first().text();
         if (specialOffer) {
           shopResult.specialOffer = specialOffer;
         }
-        const ratingString = $(el)
-          .find(CONFIG.ratingString)
-          .attr('aria-label');
+        const ratingString = $(el).find(CONFIG.ratingString).attr('aria-label');
         if (ratingString) {
           const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
           shopResult.rating = rating;
         }
-        const votes = this.elementText(el, CONFIG.votes)
-          .trim()
-          .slice(1, -1);
+        const votes = this.elementText(el, CONFIG.votes).trim().slice(1, -1);
         if (votes) {
           shopResult.votes = votes;
         }
@@ -706,14 +678,10 @@ export class GoogleSERP {
 
   // Helper methods
   private elementText(el: CheerioElement, query: string) {
-    return this.$(el)
-      .find(query)
-      .text();
+    return this.$(el).find(query).text();
   }
 
   private elementHref(el: CheerioElement, query: string) {
-    return this.$(el)
-      .find(query)
-      .attr('href');
+    return this.$(el).find(query).attr('href');
   }
 }

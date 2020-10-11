@@ -120,7 +120,7 @@ export interface HotelDeal {
   originalPrice?: number;
 }
 
-export interface Local{
+export interface Local {
   name: string;
   rating: string;
   reviews: string;

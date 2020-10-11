@@ -1,13 +1,5 @@
 import * as cheerio from 'cheerio';
-import {
-  Ad,
-  Hotel,
-  RelatedKeyword,
-  Result,
-  Serp,
-  Sitelink,
-  SitelinkType,
-} from './models';
+import { Ad, Hotel, RelatedKeyword, Result, Serp, Sitelink, SitelinkType } from './models';
 import * as utils from './utils';
 
 export class GoogleNojsSERP {
@@ -139,7 +131,7 @@ export class GoogleNojsSERP {
 
   private getHotels() {
     const $ = this.$;
-    
+
     if (!$('#main > div:not(.xpd) h2.zBAuLc').text().startsWith('Hotels')) {
       return;
     }
@@ -167,9 +159,7 @@ export class GoogleNojsSERP {
       const name = this.elementText(elem, CONFIG.name);
       const rating = parseFloat(this.elementText(elem, CONFIG.rating));
       // TODO regex replace all
-      const votes = this.elementText(elem, CONFIG.votes)
-        .slice(1, -1)
-        .replace(',', '');
+      const votes = this.elementText(elem, CONFIG.votes).slice(1, -1).replace(',', '');
       const votesNumber = parseInt(votes, 10);
       const hotelStars = utils.getFirstMatch($(elem).find(CONFIG.hotelStars).text(), CONFIG.hotelStarsRegex);
       const stars = parseInt(hotelStars, 10);
@@ -220,26 +210,25 @@ export class GoogleNojsSERP {
       url: 'a.C8nzq',
     };
 
-    $(CONFIG.ads)
-      .each((i, e) => {
-        const title = this.elementText(e, CONFIG.title);
-        const url = this.elementHref(e, CONFIG.url);
-        const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
-        const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
-        const snippet = this.elementText(e, CONFIG.snippet);
-        const sitelinks: Sitelink[] = this.getAdSitelinks(e);
-        const position = i + 1;
-        const ad: Ad = {
-          domain,
-          linkType,
-          position,
-          sitelinks,
-          snippet,
-          title,
-          url,
-        };
-        adsList.push(ad);
-      });
+    $(CONFIG.ads).each((i, e) => {
+      const title = this.elementText(e, CONFIG.title);
+      const url = this.elementHref(e, CONFIG.url);
+      const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
+      const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
+      const snippet = this.elementText(e, CONFIG.snippet);
+      const sitelinks: Sitelink[] = this.getAdSitelinks(e);
+      const position = i + 1;
+      const ad: Ad = {
+        domain,
+        linkType,
+        position,
+        sitelinks,
+        snippet,
+        title,
+        url,
+      };
+      adsList.push(ad);
+    });
   }
 
   // TODO Figure out new BLOCK sitelinks at Hotels page
@@ -249,14 +238,16 @@ export class GoogleNojsSERP {
       sitelinks: '.sJxfee a',
     };
     const sitelinks: Sitelink[] = [];
-    $(ad).find(CONFIG.sitelinks).each((i, el) => {
-      const sitelink: Sitelink = {
-        href: $(el).attr('href'),
-        title: $(el).text(),
-        type: SitelinkType.inline,
-      };
-      sitelinks.push(sitelink);
-    });
+    $(ad)
+      .find(CONFIG.sitelinks)
+      .each((i, el) => {
+        const sitelink: Sitelink = {
+          href: $(el).attr('href'),
+          title: $(el).text(),
+          type: SitelinkType.inline,
+        };
+        sitelinks.push(sitelink);
+      });
     return sitelinks;
   }
 

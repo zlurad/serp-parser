@@ -118,7 +118,7 @@ describe('Parsing Google page with 100 results', () => {
   });
 
   test('all results should have domain domains.google', () => {
-    expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
+    expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
   });
 
   test('3rd result should have url https://www.google.com/account/about/', () => {
@@ -502,38 +502,14 @@ describe('Parsing Coffee page', () => {
   });
 
   test('2nd locals card should have title "Coffee Cultures"', () => {
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'name'],
-      'Coffee Cultures',
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'rating'],
-      '4.3',
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'reviews'],
-      '272'
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'expensiveness'],
-      2
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'type'],
-      'Coffee shop'
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'distance'],
-      '0.3 mi'
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'address'],
-      '1301 Mission St'
-    );
-    expect(serp).toHaveProperty(
-      ['locals', 1, 'description'],
-      'Small cafe for coffee & frozen yogurt'
-    );
+    expect(serp).toHaveProperty(['locals', 1, 'name'], 'Coffee Cultures');
+    expect(serp).toHaveProperty(['locals', 1, 'rating'], '4.3');
+    expect(serp).toHaveProperty(['locals', 1, 'reviews'], '272');
+    expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 2);
+    expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
+    expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.3 mi');
+    expect(serp).toHaveProperty(['locals', 1, 'address'], '1301 Mission St');
+    expect(serp).toHaveProperty(['locals', 1, 'description'], 'Small cafe for coffee & frozen yogurt');
   });
 });
 
