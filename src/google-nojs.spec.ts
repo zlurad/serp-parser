@@ -2,14 +2,14 @@ import * as fs from 'fs-extra';
 import { GoogleNojsSERP } from './google-nojs';
 import { Ad, Serp } from './models';
 
-const root = 'test/google/nojs/old/';
+const root = 'test/google/nojs/';
 
 test('GoogleNojsSERP should return empty organic array on empty html string', () => {
   expect(new GoogleNojsSERP('').serp.organic).toEqual([]);
 });
 
 describe('Parsing nojs Google page with 10 resuts', () => {
-  let html;
+  let html: string;
   let serp: Serp;
 
   beforeAll(() => {
@@ -17,86 +17,67 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     serp = new GoogleNojsSERP(html).serp;
   });
 
-  test('Page should have 16,370,000,000 results', () => {
-    expect(serp.totalResults).toBe(16370000000);
+  test('keyword should be google', () => {
+    expect(serp.keyword).toBe('google');
   });
 
-  test('serp should have 7 results', () => {
-    expect(serp.organic).toHaveLength(7);
+  test('serp should have 6 results', () => {
+    expect(serp.organic).toHaveLength(6);
   });
 
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
   });
 
-  test('Page should have 8 related keywords', () => {
-    expect(serp.relatedKeywords).toHaveLength(8);
+  
+
+  test('2nd result should have domain blog.google', () => {
+    expect(serp.organic[1].domain).toBe('blog.google');
   });
-  test('1st related keyword should be "google search"', () => {
-    expect(serp.relatedKeywords[0].keyword).toBe('google search');
+
+  test('2nd result should have url https://blog.google/', () => {
+    expect(serp.organic[1].url).toBe('https://blog.google/');
   });
-  test('1st related keyword should have path', () => {
-    expect(serp.relatedKeywords[0].path).toBe(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=google+search&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQ1QIIUCgA',
+
+  test('2nd result should have title "The Keyword | Google"', () => {
+    expect(serp.organic[1].title).toBe('The Keyword | Google');
+  });
+
+  test('2nd result should have snippet start with "Discover all the latest about..."', () => {
+    expect(serp.organic[1].snippet).toBe(
+      'Discover all the latest about our products, technology, and Google culture on our official blog.',
     );
   });
 
-  test(`Link to 2nd page should have path 
-  "/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N"`, () => {
-    expect(serp.pagination[1].path).toBe(
-      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&prmd=ivnsa&ei=48kvXK_SDNOKjLsPnLWlqAU&start=10&sa=N',
+  test(`1st result should have snippet start with "Search the world's information..."`, () => {
+    expect(serp.organic[0].snippet).toBe(
+      `Search the world's information, including webpages, images, videos and more.`,
     );
   });
 
-  test('5th result should have domain domains.google', () => {
-    expect(serp.organic[4].domain).toBe('domains.google');
-  });
-
-  test('5th result should have url https://domains.google/', () => {
-    expect(serp.organic[4].url).toBe('https://domains.google/');
-  });
-  test(`1st result should have cachedUrl
-   "/url?q=http://webcache.googleusercontent.com/search%3Fq%3Dcache:y14FcUQOGl4J:https://www.google.com/%252Bgoogle%26safe%3Doff%26gl%3DUS%26pws%3D0%26nfpr%3D1%26oe%3DUTF-8%26hl%3Den%26ct%3Dclnk&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQIAgYMAA&usg=AOvVaw1kaR7fW2s73jKiXE6GOjo-"`, () => {
-    expect(serp.organic[0].cachedUrl).toBe(
-      '/url?q=http://webcache.googleusercontent.com/search%3Fq%3Dcache:y14FcUQOGl4J:https://www.google.com/%252Bgoogle%26safe%3Doff%26gl%3DUS%26pws%3D0%26nfpr%3D1%26oe%3DUTF-8%26hl%3Den%26ct%3Dclnk&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQIAgYMAA&usg=AOvVaw1kaR7fW2s73jKiXE6GOjo-',
-    );
-  });
-  test(`1st result should have similarUrl
-   "/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQHwgZMAA"`, () => {
-    expect(serp.organic[0].similarUrl).toBe(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=related:https://www.google.com/+google&tbo=1&sa=X&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQHwgZMAA',
-    );
-  });
-
-  test('5th result should have title "Google Domains - Google"', () => {
-    expect(serp.organic[4].title).toBe('Google Domains - Google');
-  });
-
-  test('5th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
-    expect(serp.organic[4].snippet).toBe(
-      'Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.',
-    );
-  });
-
-  test('1st result should have card sitelinks', () => {
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Images');
+  test('1st result should have inline sitelinks', () => {
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'href'],
-      '/url?q=https://www.google.com/imghp%3Fhl%3Den&sa=U&ved=0ahUKEwjvz7ySg9XfAhVTBWMBHZxaCVUQjBAIHDAB&usg=AOvVaw3Iif_Yr2t3-UMzTSEzaGi5',
+      '/url?q=https://www.google.com/account/about/&sa=U&ved=2ahUKEwjs8e-35ansAhWI3OAKHd2sBaIQjBAwAXoECAgQAw&usg=AOvVaw0hv4bbdFsnMBUeqJxazrC8',
     );
-    expect(serp).toHaveProperty(
-      ['organic', 0, 'sitelinks', 0, 'snippet'],
-      'AllImages. Account &middot; Assistant &middot; Search &middot; Maps &middot; YouTube ...',
-    );
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('3rd result should not have sitelinks', () => {
     expect(serp.organic[2].hasOwnProperty('sitelinks')).toBeFalsy();
   });
 
-  test('Keyword should be google', () => {
-    expect(serp.keyword).toBe('google');
+  test('Page should have 12 related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(12);
+  });
+  test('1st related keyword should be "Google account"', () => {
+    expect(serp.relatedKeywords[0].keyword).toBe('Google account');
+  });
+  test('1st related keyword should have path', () => {
+    expect(serp.relatedKeywords[0].path).toContain(
+      '/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Google+account',
+    );
   });
 });
 
@@ -109,25 +90,25 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     serp = new GoogleNojsSERP(html).serp;
   });
 
-  test('serp should have 97 results', () => {
-    expect(serp.organic).toHaveLength(97);
+  test('serp should have 48 results', () => {
+    expect(serp.organic).toHaveLength(48);
   });
 
-  test('all results should have domain domains.google', () => {
+  test('all results should have a domain', () => {
     expect(serp.organic.filter(x => x.domain === '')).toEqual([]);
   });
 
-  test('4th result should have url https://domains.google/', () => {
-    expect(serp.organic[3].url).toBe('https://domains.google/');
+  test('3rd result should have url https://blog.google/', () => {
+    expect(serp.organic[2].url).toBe('https://blog.google/');
   });
 
-  test('4th result should have title "Google Domains - Google"', () => {
-    expect(serp.organic[3].title).toBe('Google Domains - Google');
+  test('3rd result should have title "The Keyword | Google"', () => {
+    expect(serp.organic[2].title).toBe('The Keyword | Google');
   });
 
-  test('4th result should have snippet start with "Search for and register a domain, get hosting..."', () => {
-    expect(serp.organic[3].snippet).toBe(
-      'Search for and register a domain, get hosting, and build a site with Google Domains. The best of the internet backed by the security of Google.',
+  test('3rd result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+    expect(serp.organic[2].snippet).toBe(
+      'Discover all the latest about our products, technology, and Google culture on our official blog.',
     );
   });
 
@@ -135,6 +116,7 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     expect(serp.keyword).toBe('google');
   });
 });
+
 describe('Parsing nojs "The Matrix" search page', () => {
   let html: string;
   let serp: Serp;
@@ -148,9 +130,9 @@ describe('Parsing nojs "The Matrix" search page', () => {
     expect(serp.organic).toHaveLength(10);
   });
 
-  test('1th result should have snippet start with "Gloria Foster in The Matrix (1999) Carrie-Anne Moss..."', () => {
-    expect(serp.organic[0].snippet).toBe(
-      'Gloria Foster in The Matrix (1999) Carrie-Anne Moss in The Matrix (1999) Laurence Fishburne in The Matrix (1999) Joe Pantoliano in The Matrix (1999) Keanu ...',
+  test('1th result should have snippet start with "The Matrix is a 1999 American science fiction action film written and directed by the Wachowskis."', () => {
+    expect(serp.organic[0].snippet).toContain(
+      'The Matrix is a 1999 American science fiction action film written and directed by the Wachowskis.',
     );
   });
 
@@ -158,13 +140,13 @@ describe('Parsing nojs "The Matrix" search page', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
 
-  test('1st result should have sitelinks and first sitelink should have title "Plot Summary"', () => {
-    expect(serp.organic[0].sitelinks).toHaveLength(4);
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Plot Summary');
+  test('1st result should have sitelinks and first sitelink should have title "Franchise"', () => {
+    expect(serp.organic[0].sitelinks).toHaveLength(8);
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Franchise');
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'href'],
-      '/url?q=https://www.imdb.com/title/tt0133093/plotsummary&sa=U&ved=0ahUKEwj1saWR2tnfAhUC3uAKHTZcCLcQ0gIIGigAMAA&usg=AOvVaw2YlqUvAZ4bHjCBnKL6SwFY',
+      '/url?q=https://en.wikipedia.org/wiki/The_Matrix_(franchise)&sa=U&ved=2ahUKEwist4jXuKzsAhUuzYUKHcU0BXMQ0gIwGHoECAcQAg&usg=AOvVaw00V_e9CfJoi_LkrOLOlC2g',
     );
   });
 
@@ -185,40 +167,38 @@ describe('Parsing Hotels-nojs search page', () => {
     serp = new GoogleNojsSERP(html).serp;
   });
 
-  test('Name of the first featured hotel should be "Row NYC"', () => {
-    expect(serp.hotels?.hotels[0].name).toBe('Row NYC');
+  test('Name of the first featured hotel should be "Millennium Hilton New York Downtown"', () => {
+    expect(serp.hotels?.hotels[0].name).toBe('Millennium Hilton New York Downtown');
   });
-  test('Rating of the first featured hotel should be 3.7', () => {
-    expect(serp.hotels?.hotels[0].rating).toBe(3.7);
+  test('Rating of the first featured hotel should be 4.2', () => {
+    expect(serp.hotels?.hotels[0].rating).toBe(4.2);
   });
-  test('Number of votes of the first featured hotel should be 6489', () => {
-    expect(serp.hotels?.hotels[0].votes).toBe(6489);
+  test('Number of votes of the first featured hotel should be 2753', () => {
+    expect(serp.hotels?.hotels[0].votes).toBe(2753);
   });
-  test('Number of stars of the first featured hotel should be 2', () => {
-    expect(serp.hotels?.hotels[0].stars).toBe(2);
+  test('Number of stars of the first featured hotel should be 4', () => {
+    expect(serp.hotels?.hotels[0].stars).toBe(4);
   });
-  test('Description of the first featured hotel should be "Hip hotel with a trendy food court"', () => {
-    expect(serp.hotels?.hotels[0].description).toBe('Hip hotel with a trendy food court');
+  test('Description of the first featured hotel should be "Sleek hotel with dining, a spa & a pool"', () => {
+    expect(serp.hotels?.hotels[0].description).toBe('Sleek hotel with dining, a spa & a pool');
   });
-  test('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
+  xtest('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
     expect(serp.hotels?.hotels[0].featuredReview).toBe(
       'Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff',
     );
   });
-  test(`MoreInfoLink of the first featured hotel should be
-  "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA"`, () => {
+  test(`MoreInfoLink of the first featured hotel should be`, () => {
     expect(serp.hotels?.hotels[0].moreInfoLink).toBe(
-      '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=Row+NYC+New+York,+NY&ludocid=2391828921476118880&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQ_pABCEIwAA',
+      'https://www.google.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Millennium+Hilton+New+York+Downtown+New+York,+NY&ludocid=17735751118331707919&ibp=gwp;0,7&lsig=AB86z5XzVhvRx3-AsRIbzNDblrqP&phdesc=J519NBuV2wc&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QvS4wAHoECBQQBA',
     );
   });
-  test(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
+  xtest(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
     expect(serp.hotels?.hotels[1].amenities).toBe('Free Wi-Fi');
   });
 
-  test(`There should be a moreHotels link and it should have href
-  "/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw"`, () => {
+  test(`There should be a moreHotels link and it should have href "/search?sa=N&gl=us..."`, () => {
     expect(serp.hotels?.moreHotels).toBe(
-      '/search?sa=N&gl=us&hl=en&ie=UTF-8&q=hotels+NYC&npsic=0&rlst=f&rlha=1&rlla=0&rlhsc=Ch4IyamtyMPjxbh7COaI4bOI7frLRAiMk72-hdue-zkwAQ&rllag=40755324,-73968018,1746&ved=0ahUKEwj1g4bytYLhAhUDnRoKHbWnDUcQjGoIVw',
+      'https://www.google.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&ei=b_KCX8H_Nqq5gwfZsp34BA&q=hotels+NYC&rlst=f&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QjGowAHoECBQQDA',
     );
   });
 });
@@ -267,13 +247,13 @@ describe('Parsing Domain-nojs page', () => {
     if (adwordsTop) {
       const ad = adwordsTop[0];
       expect(ad.position).toBe(1);
-      expect(ad.title).toBe('Google Domains - Official Site | Fast & Secure Infrastructure');
+      expect(ad.title).toBe('Google Domain Names - Domains, Custom Emails & Sites');
       expect(ad.url).toBe(
-        'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABAAGgJ3Yg&sig=AOD64_1GGQgzaMznzDlCoRHMnpF57a6iKg&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4Q0QwIEg&adurl=',
+        'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABABGgJ3cw&sig=AOD64_174-onC0FNonRouW05eLvgf-ichg&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQ0Qx6BAgVEAE&adurl=',
       );
       expect(ad.domain).toBe('www.google.com');
       expect(ad.snippet).toBe(
-        'Shop from a wide selection of domain name endings that will help you stand out on the web. Faster and reliable connection to your website, with same DNS servers as...',
+        'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.',
       );
       expect(ad.linkType).toBe('LANDING');
     }
@@ -281,12 +261,12 @@ describe('Parsing Domain-nojs page', () => {
 
   test(`Test first top ad card sitelink`, () => {
     if (adwordsTop) {
-      const sitelink = adwordsTop[0].sitelinks[1];
-      expect(sitelink.title).toBe('Stand out with .dev');
+      const sitelink = adwordsTop[1].sitelinks[1];
+      expect(sitelink.title).toBe('Customize Easily');
       expect(sitelink.href).toBe(
-        'http://www.google.com/aclk?sa=l&ai=DChcSEwiE9bnLr4LhAhVlM9MKHbOVCnAYABACGgJ3Yg&sig=AOD64_33ueZUCXOl2-2F8tXhISqo7efG8Q&ved=0ahUKEwjyxLXLr4LhAhXp6eAKHaKPDQ4QqyQIGCgB&adurl=',
+        'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABAGGgJ3cw&sig=AOD64_2l9W5FDQtnwFl-SAL_GR7II4LX8A&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQpigoAXoECBYQBA&adurl=',
       );
-      expect(sitelink.type).toBe('CARD');
+      expect(sitelink.type).toBe('INLINE');
     }
   });
 });

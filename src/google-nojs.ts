@@ -2,9 +2,6 @@ import * as cheerio from 'cheerio';
 import {
   Ad,
   Hotel,
-  HotelDeal,
-  HotelFilters,
-  HotelsSearchFilters,
   RelatedKeyword,
   Result,
   Serp,
@@ -30,7 +27,7 @@ export class GoogleNojsSERP {
   constructor(html: string) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
-      xmlMode: true,
+      xmlMode: false,
     });
 
     this.parse();
@@ -45,8 +42,11 @@ export class GoogleNojsSERP {
       return;
     }
 
-    if ($('body').hasClass('hsrp')) {
+    if ($('body').attr('jsmodel') === 'TvHxbe') {
       this.parseGoogle();
+    } else {
+      this.serp.error = 'Not Google nojs page';
+      return;
     }
   }
 
@@ -54,18 +54,13 @@ export class GoogleNojsSERP {
     const serp = this.serp;
     const $ = this.$;
     const CONFIG = {
-      currentPage: 'table#nav td:not(.b) > b',
-      keyword: '#sbhost',
-      resultText: '#resultStats',
+      keyword: 'input[name="q"]',
     };
 
     serp.keyword = $(CONFIG.keyword).val();
-    serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
-    serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
 
     this.getOrganic();
     this.getRelatedKeywords();
-    this.getPagination();
     this.getAdwords();
     this.getHotels();
   }
@@ -73,14 +68,14 @@ export class GoogleNojsSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#ires ol .g .r a:not(.sla)',
+      results: '#main > div > div.ZINbbc.xpd.O9g5cc.uUPGi > div.kCrYT:first-child > a',
     };
 
     $(CONFIG.results).each((index, element) => {
       const position = index + 1;
       const url = utils.getUrlFromQuery($(element).prop('href'));
       const domain = utils.getDomain(url);
-      const title = $(element).text();
+      const title = $(element).children('h3').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
       const result: Result = {
@@ -92,61 +87,47 @@ export class GoogleNojsSERP {
         url,
       };
       this.parseSitelinks(element, result);
-      this.parseCachedAndSimilarUrls(element, result);
       this.serp.organic.push(result);
     });
   }
 
   private getSnippet(element: CheerioElement): string {
-    const text = this.$(element)
-      .parent('.r')
-      .next()
-      .find('.st')
-      .text();
+    let text;
+
+    if (this.$(element).parent('.kCrYT').nextAll('.kCrYT').find('.Ap5OSd').length === 0) {
+      text = this.$(element).parent('.kCrYT').nextAll('.kCrYT').text();
+    } else text = this.$(element).parent('.kCrYT').nextAll('.kCrYT').find('.Ap5OSd').text();
     return text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '');
   }
 
   private parseSitelinks(element: CheerioElement, result: Result) {
     const $ = this.$;
     const CONFIG = {
-      cards: '.sld',
-      closestCards: 'div.g',
-      closestInline: 'div.g',
-      href: 'a',
-      inline: '.s .osl a',
-      snippet: '.st',
-      title: 'h3 a',
+      next: '.kCrYT',
+      inline: 'span a',
     };
-    const sitelinks: Sitelink[] = [];
-    let type: SitelinkType;
 
-    if($(element).closest(CONFIG.closestCards).find(CONFIG.cards).length > 0) {
-      type = SitelinkType.card;
-    } else if($(element).closest(CONFIG.closestInline).find(CONFIG.inline).length > 0) {
-      type = SitelinkType.inline;
-    } else {
+    const links = $(element).parent().nextAll(CONFIG.next).find(CONFIG.inline);
+
+    if (links.length === 0) {
       return;
     }
 
-    const links = $(element).closest(type === SitelinkType.card ? CONFIG.closestCards : CONFIG.closestInline)
-      .find(type === SitelinkType.card ? CONFIG.cards : CONFIG.inline);
+    result.sitelinks = [];
+
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : $(el).attr('href'),
-        snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
-        title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text(),
-        type,
+        href: $(el).attr('href'),
+        title: $(el).text(),
+        type: SitelinkType.inline,
       };
-      sitelinks.push(sitelink);
+      result.sitelinks?.push(sitelink);
     });
-    if (sitelinks.length > 0) {
-      result.sitelinks = sitelinks;
-    }
   }
 
   private getRelatedKeywords() {
     const relatedKeywords: RelatedKeyword[] = [];
-    const query = 'p.aw5cc a';
+    const query = '.Sljvkf.iIWm4b a';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
         keyword: this.$(elem).text(),
@@ -154,171 +135,92 @@ export class GoogleNojsSERP {
       });
     });
     this.serp.relatedKeywords = relatedKeywords;
-  };
-
-  private parseCachedAndSimilarUrls(element: CheerioElement, result: Result) {
-    const $ = this.$;
-    const CONFIG = {
-      closest: '.g',
-      find: 'cite + .Pj9hGd ul .mUpfKd > a',
-    };
-
-    const urls = $(element)
-      .closest(CONFIG.closest)
-      .find(CONFIG.find);
-    urls.each((i, el) => {
-      switch ($(el).text()) {
-        case 'Cached':
-          result.cachedUrl = $(el).prop('href');
-          break;
-        case 'Similar':
-          result.similarUrl = $(el).prop('href');
-          break;
-      }
-    });
-  }
-
-  private getPagination() {
-    const $ = this.$;
-    const serp = this.serp;
-    const CONFIG = {
-      pages: 'td:not(.b) a',
-      pagination: 'table#nav',
-    };
-
-    const pagination = $(CONFIG.pagination);
-    serp.pagination.push({
-      page: serp.currentPage,
-      path: '',
-    });
-    pagination.find(CONFIG.pages).each((index, element) => {
-      serp.pagination.push({
-        page: parseInt($(element).text(), 10),
-        path: $(element).prop('href'),
-      });
-    });
   }
 
   private getHotels() {
     const $ = this.$;
-    const hotelsFeature = $('.ksBKIe');
-    if (!hotelsFeature.length) {
+    
+    if (!$('#main > div:not(.xpd) h2.zBAuLc').text().startsWith('Hotels')) {
       return;
     }
-    // TODO: SPLIT TO getHotels and getHotelsNojs
+
+    const hotelsFeature = $('#main > div:not(.xpd) h2.zBAuLc').closest('.xpd');
     // TODO: SPLIT FURTHER TO getSearchFilters, getHotelOffers
-    
-      const CONFIG = {
-        amenities: '.LPMtqb > div:last-child:not(.RHsRSe)',
-        description: '.kR1eme',
-        featuredReview: '.X0w5lc',
-        hotelOffers: '.IvtMPc',
-        hotelStars: '.kR1eme',
-        hotelStarsRegex: /\d(?=-star)/,
-        moreHotelsLink: 'a.elzrQ',
-        moreInfoLink: '.hc8x7b a',
-        name: '.kR1eme',
-        rating: '.BTtC6e',
-        votes: '.kR1eme',
-        votesRegex: /\((\d+,?)+\)/,
-      };
-      const moreHotelsLink = hotelsFeature.find(CONFIG.moreHotelsLink).attr('href');
-      const hotels: Hotel[] = [];
 
-      // HOTELS
-      const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
-      hotelOffers.each((ind, elem) => {
-        const name = this.elementText(elem, CONFIG.name);
-        const rating = parseFloat(this.elementText(elem, CONFIG.rating));
-        const votes = utils
-          .getFirstMatch(
-            $(elem)
-              .find(CONFIG.votes)
-              .next()
-              .text(),
-            CONFIG.votesRegex,
-          )
-          .slice(1, -1)
-          .replace(',', '');
-        const votesNumber = parseInt(votes, 10);
-        const hotelStars = utils.getFirstMatch(
-          $(elem)
-            .find(CONFIG.hotelStars)
-            .next()
-            .text(),
-          CONFIG.hotelStarsRegex,
-        );
-        const stars = parseInt(hotelStars, 10);
-        const description = $(elem)
-          .find(CONFIG.description)
-          .next()
-          .next()
-          .text();
-        const amenities = this.elementText(elem, CONFIG.amenities);
-        const featuredReview = this.elementText(elem, CONFIG.featuredReview)
-          .trim()
-          .slice(1, -1); // Getting rid of quotes with slice()
-        // Make this better, maybe something instead of slice ?;
-        const moreInfoLink = this.elementHref(elem, CONFIG.moreInfoLink);
+    const CONFIG = {
+      description: 'div.BNeawe',
+      hotelOffers: '.X7NTVe',
+      hotelStars: 'div.BNeawe',
+      hotelStarsRegex: /\d(?=-star)/,
+      moreInfoLink: 'a.tHmfQe',
+      name: 'h3',
+      rating: '.Eq0J8:first-child',
+      votes: '.Eq0J8:last-child',
+      votesRegex: /\((\d+,?)+\)/,
+    };
+    const moreHotelsLink = hotelsFeature.children().last().find('a').attr('href');
+    const hotels: Hotel[] = [];
 
-        const hotel: Hotel = {
-          description,
-          moreInfoLink,
-          name,
-          rating,
-          stars,
-          votes: votesNumber,
-        };
+    // HOTELS
+    const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
+    hotelOffers.each((ind, elem) => {
+      const name = this.elementText(elem, CONFIG.name);
+      const rating = parseFloat(this.elementText(elem, CONFIG.rating));
+      // TODO regex replace all
+      const votes = this.elementText(elem, CONFIG.votes)
+        .slice(1, -1)
+        .replace(',', '');
+      const votesNumber = parseInt(votes, 10);
+      const hotelStars = utils.getFirstMatch($(elem).find(CONFIG.hotelStars).text(), CONFIG.hotelStarsRegex);
+      const stars = parseInt(hotelStars, 10);
+      // const desc html
+      const description = $(elem).find(CONFIG.description).last().find('br').last()[0].nextSibling?.nodeValue;
+      const moreInfoLink = this.elementHref(elem, CONFIG.moreInfoLink);
 
-        if (amenities) {
-          hotel.amenities = amenities;
-        }
-        if (featuredReview) {
-          hotel.featuredReview = featuredReview;
-        }
-
-        hotels.push(hotel);
-      });
-
-      this.serp.hotels = {
-        hotels,
-        moreHotels: moreHotelsLink,
+      const hotel: Hotel = {
+        description,
+        moreInfoLink,
+        name,
+        rating,
+        stars,
+        votes: votesNumber,
       };
 
+      hotels.push(hotel);
+    });
+
+    this.serp.hotels = {
+      hotels,
+      moreHotels: moreHotelsLink,
+    };
   }
 
   private getAdwords() {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      bottom: '#D7Sjmd',
-      top: '#KsHht',
+      top: '.uEierd',
     };
 
     const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
     // TODO: refactor this
     if ($(CONFIG.top).length) {
       adwords.adwordsTop = [];
-      this.getAds(CONFIG.top, adwords.adwordsTop);
+      this.getAds(adwords.adwordsTop);
     }
-    if ($(CONFIG.bottom).length) {
-      adwords.adwordsBottom = [];
-      this.getAds(CONFIG.bottom, adwords.adwordsBottom);
-    }
-    serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
+    serp.adwords = adwords.adwordsTop ? adwords : undefined;
   }
 
-  private getAds(search: string, adsList: Ad[]) {
+  private getAds(adsList: Ad[]) {
     const $ = this.$;
     const CONFIG = {
-      ads: '.ads-ad',
-      snippet: '.ads-creative',
-      title: 'h3.ellip',
-      url: 'h3.ellip a',
+      ads: '.uEierd',
+      snippet: 'div.BmP5tf span',
+      title: 'div[role="heading"]',
+      url: 'a.C8nzq',
     };
 
-    $(search)
-      .find(CONFIG.ads)
+    $(CONFIG.ads)
       .each((i, e) => {
         const title = this.elementText(e, CONFIG.title);
         const url = this.elementHref(e, CONFIG.url);
@@ -340,57 +242,30 @@ export class GoogleNojsSERP {
       });
   }
 
+  // TODO Figure out new BLOCK sitelinks at Hotels page
   private getAdSitelinks(ad: CheerioElement) {
     const $ = this.$;
     const CONFIG = {
-      card: 'td',
-      cardHref: 'h3 a',
-      cardSnippet: 'h3 + div',
-      cardTitle: 'h3',
-      inline: 'a',
-      sitelinks: '.ads-creative + div',
-      test: 'DGdP9',
+      sitelinks: '.sJxfee a',
     };
-
     const sitelinks: Sitelink[] = [];
-    const adSitelinks = $(ad).find(CONFIG.sitelinks);
-    adSitelinks.each((ind, el) => {
-      if ($(el).hasClass(CONFIG.test)) {
-        const cardSiteLinks = $(el).find(CONFIG.card);
-        cardSiteLinks.each((i, e) => {
-          const sitelink: Sitelink = {
-            href: this.elementHref(e, CONFIG.cardHref),
-            snippet: this.elementText(e, CONFIG.cardSnippet),
-            title: this.elementText(e, CONFIG.cardTitle),
-            type: SitelinkType.card,
-          };
-          sitelinks.push(sitelink);
-        });
-      } else {
-        const inlineSiteLinks = $(el).find(CONFIG.inline);
-        inlineSiteLinks.each((i, e) => {
-          const sitelink: Sitelink = {
-            href: $(e).attr('href'),
-            title: $(e).text(),
-            type: SitelinkType.inline,
-          };
-          sitelinks.push(sitelink);
-        });
-      }
+    $(ad).find(CONFIG.sitelinks).each((i, el) => {
+      const sitelink: Sitelink = {
+        href: $(el).attr('href'),
+        title: $(el).text(),
+        type: SitelinkType.inline,
+      };
+      sitelinks.push(sitelink);
     });
     return sitelinks;
   }
 
   // Helper methods
   private elementText(el: CheerioElement, query: string) {
-    return this.$(el)
-      .find(query)
-      .text();
+    return this.$(el).find(query).text();
   }
 
   private elementHref(el: CheerioElement, query: string) {
-    return this.$(el)
-      .find(query)
-      .attr('href');
+    return this.$(el).find(query).attr('href');
   }
 }

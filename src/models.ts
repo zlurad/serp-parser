@@ -111,6 +111,7 @@ export interface Hotel {
   stars?: number;
   description?: string;
   moreInfoLink?: string;
+  address?: string;
 }
 
 export interface HotelDeal {
