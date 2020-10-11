@@ -8,7 +8,7 @@
     "test": "jest --config jest.json --coverage",
     "test:watch": "jest --config jest.json --watch",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
