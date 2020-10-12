@@ -213,62 +213,58 @@ describe('Parsing Hotels search page', () => {
     expect(serp).toHaveProperty(['hotels', 'moreHotels'], 1300);
   });
   
-  describe('Hotel filters', () => {
-    test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York, NY, USA"', () => {
-      expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
-    });
-    test('The checkIn date in searchFilters of hotels feature should be "Sat Oct 17 2020"', () => {
-      expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('Sat Oct 17 2020'));
-    });
-    test('The checkOut date in searchFilters of hotels feature should be "Sun Oct 18 2020"', () => {
-      expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('Sun Oct 18 2020'));
-    });
-    test('The guests number in searchFilters of hotels feature should be 2', () => {
-      expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
-    });
-    test(`First search filter should have title 'Top-rated'`, () => {
-      expect(serp).toHaveProperty(['hotels', 'searchFilters', 'filters', 0, 'title'], 'Top-rated');
-  
-      // There is no explanation on the new search filters
-      // expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
-    });
-    test('The second hotel filter should not have a property called isActive', () => {
-      expect(serp).not.toHaveProperty(['hotels', 'searchFilters', 'filters', 1, 'isActive']);
-    });
-  })
+  test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York, NY, USA"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
+  });
+  test('The checkIn date in searchFilters of hotels feature should be "Sat Oct 17 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('Sat Oct 17 2020'));
+  });
+  test('The checkOut date in searchFilters of hotels feature should be "Sun Oct 18 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('Sun Oct 18 2020'));
+  });
+  test('The guests number in searchFilters of hotels feature should be 2', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
+  });
+  test(`First search filter should have title 'Top-rated'`, () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'filters', 0, 'title'], 'Top-rated');
 
-  describe('Hotel list', () => {
-    test('There should be 4 featured hotels in the hotels feature', () => {
-      expect(serp.hotels?.hotels).toHaveLength(4);
-    });
-    test('First featured hotel should have name "The Roosevelt Hotel"', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'The Roosevelt Hotel');
-    });
-    test('First featured hotel should have currency "$"', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'currency'], '$');
-    });
-    test('First featured hotel should have price 80', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'price'], 80);
-    });
-    test('First featured hotel should have rating 4.1', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'rating'], 3.7);
-    });
-    test('First featured hotel should have 6412 votes', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'votes'], 6412);
-    });
-    test('Second featured hotel should have following amenities: "Spa"', () => {
-      expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'amenities'], 'Indoor pool');
-    });
-    test('First featured hotel should not have featuredReview property', () => {
-      expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'featuredReview']);
-    });
-    test('3rd featured hotel should not have deal property', () => {
-      expect(serp).not.toHaveProperty(['hotels', 'hotels', 2, 'deal']);
-    });
-    test('First featured hotel should not have originalPrice property', () => {
-      expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'deal', 'originalPrice']);
-    });
-  })
+    // There is no explanation on the new search filters
+    // expect(serp.hotels.searchFilters.filters[0].explanation).toBe('Based on your search, prices & quality');
+  });
+  test('The second hotel filter should not have a property called isActive', () => {
+    expect(serp).not.toHaveProperty(['hotels', 'searchFilters', 'filters', 1, 'isActive']);
+  });
+
+  test('There should be 4 featured hotels in the hotels feature', () => {
+    expect(serp.hotels?.hotels).toHaveLength(4);
+  });
+  test('First featured hotel should have name "The Roosevelt Hotel"', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'The Roosevelt Hotel');
+  });
+  test('First featured hotel should have currency "$"', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'currency'], '$');
+  });
+  test('First featured hotel should have price 80', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'price'], 80);
+  });
+  test('First featured hotel should have rating 4.1', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'rating'], 3.7);
+  });
+  test('First featured hotel should have 6412 votes', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'votes'], 6412);
+  });
+  test('Second featured hotel should have following amenities: "Spa"', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'amenities'], 'Indoor pool');
+  });
+  test('First featured hotel should not have featuredReview property', () => {
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'featuredReview']);
+  });
+  test('3rd featured hotel should not have deal property', () => {
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 2, 'deal']);
+  });
+  test('First featured hotel should not have originalPrice property', () => {
+    expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'deal', 'originalPrice']);
+  });
   
   
  // TODO there is no featured review on the new hotels page, find one to test
