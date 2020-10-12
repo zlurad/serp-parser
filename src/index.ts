@@ -290,7 +290,7 @@ export class GoogleSERP {
     // TODO: SPLIT FURTHER TO getSearchFilters, getHotelOffers
     const CONFIG = {
       moreHotelsRegex: /(\d+,?)+/,
-      moreHotelsText: '.LPOxmb',
+      moreHotelsText: '.wUrVib',
     };
     // FILTERS
     const searchFilters: HotelsSearchFilters = this.getHotelSearchFilters(hotelsFeature);
@@ -300,6 +300,7 @@ export class GoogleSERP {
 
     // MORE HOTELS
 
+    // const moreHotelsText = hotelsFeature.find(CONFIG.moreHotelsText).text();
     const moreHotelsText = hotelsFeature.find(CONFIG.moreHotelsText).text();
     const moreHotels = parseInt(utils.getFirstMatch(moreHotelsText, CONFIG.moreHotelsRegex).replace(',', ''), 10);
 
@@ -319,7 +320,7 @@ export class GoogleSERP {
       filterGroupsTitles: '.d2IDkc',
       guests: '.viupMc',
       hotelFiltersSection: '.x3UtIe',
-      searchTitle: '.BQ5Rcc',
+      searchTitle: '.gsmmde',
     };
     const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
     const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
@@ -367,7 +368,7 @@ export class GoogleSERP {
       originalPriceRegex: /\d+/,
       price: '.dv1Q3e',
       priceRegex: /\d+/,
-      rating: '.fTKmHE99XE4__star',
+      rating: 'g-review-stars span',
       ratingRegex: /\d\.\d/,
       votes: 'g-review-stars+span',
     };
