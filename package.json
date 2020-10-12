@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/zlurad/serp-parser#readme",
   "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
     "@types/cheerio": "^0.22.11",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.9.0",
