@@ -626,7 +626,7 @@ export class GoogleSERP {
       price: '.e10twf',
       priceRegex: /[\d,.]+/,
       ratingRegex: /\d\.\d/,
-      ratingString: 'a > g-review-stars > span',
+      ratingString: 'a > span > g-review-stars > span',
       shopFeature: '.top-pla-group-inner',
       shopOffer: '.pla-unit:not(.view-all-unit)',
       shoppingSite: '.LbUacb',

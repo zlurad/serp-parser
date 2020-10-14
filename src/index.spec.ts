@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { GoogleSERP } from '../lib/index';
+import { GoogleSERP } from './index';
 import { Ad, Serp } from './models';
 
 test('GoogleSERP should return empty organic array on empty html string', () => {
@@ -331,7 +331,7 @@ describe('Testing functions', () => {
   });
 });
 
-describe('Parsing Domain page', () => {
+xdescribe('Parsing Domain page', () => {
   let html: string;
   let serp: Serp;
 
@@ -409,7 +409,7 @@ xdescribe('Parsing Paris page', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  describe('Testing ads', () => {
+  xdescribe('Testing ads', () => {
     test('There should be top ads', () => {
       expect(serp.adwords).toBeDefined();
       expect(serp.adwords?.adwordsTop).toBeDefined();
@@ -521,7 +521,7 @@ xdescribe('Parsing Coffee page', () => {
   });
 });
 
-xdescribe('Parsing Dell page', () => {
+describe('Parsing Dell page', () => {
   let html: string;
   let serp: Serp;
 
@@ -535,22 +535,22 @@ xdescribe('Parsing Dell page', () => {
   });
 
   test(`Page should have shop results and the title of the first shop result should be 
-    "Dell XPS 13 9380 Business Laptop 13.3 inch Notebook - 8GB - 256GB - Windows 10 Pro"`, () => {
+    "XPS 13 Laptop - w/ 10th gen Intel Core - 13.3'' FHD screen - 8GB - 256G"`, () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'title'],
-      'Dell XPS 13 9380 Business Laptop 13.3 inch Notebook - 8GB - 256GB - Windows 10 Pro',
+      "XPS 13 Laptop - w/ 10th gen Intel Core - 13.3'' FHD screen - 8GB - 256G",
     );
   });
 
   test('First shop results on the page should have img link', () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'imgLink'],
-      'https://www.dell.com/en-us/work/shop/cty/pdp/spd/xps-13-9380-laptop/cax13w10p1c706s',
+      'https://www.dell.com/en-us/shop/dell-laptops/xps-13-laptop/spd/xps-13-7390-laptop/xn7390ehscs',
     );
   });
 
-  test('First shop result on the page should have price 1149.00', () => {
-    expect(serp).toHaveProperty(['shopResults', 0, 'price'], 1149.0);
+  test('First shop result on the page should have price 799.99', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'price'], 799.99);
   });
 
   test('First shop result on the page should have currency "$"', () => {
@@ -570,18 +570,18 @@ xdescribe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'specialOffer'], 'Special offer');
   });
 
-  test('2nd shop result on the page should not have rating, votes, but will have commodity', () => {
-    expect(serp).not.toHaveProperty(['shopResults', 1, 'votes']);
-    expect(serp).not.toHaveProperty(['shopResults', 1, 'rating']);
-    expect(serp).toHaveProperty(['shopResults', 1, 'commodity'], 'Free shipping');
+  test('1nd shop result on the page should not have rating, votes, but will have commodity', () => {
+    expect(serp).not.toHaveProperty(['shopResults', 0, 'votes']);
+    expect(serp).not.toHaveProperty(['shopResults', 0, 'rating']);
+    expect(serp).toHaveProperty(['shopResults', 0, 'commodity'], 'Free shipping');
   });
 
-  test('1st shop result on the page should have rating 3.8', () => {
-    expect(serp).toHaveProperty(['shopResults', 0, 'rating'], 3.6);
+  test('2st shop result on the page should have rating 3.8', () => {
+    expect(serp).toHaveProperty(['shopResults', 1, 'rating'], 3.8);
   });
 
-  test('1st shop result on the page should have 1k+ votes', () => {
-    expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '553');
+  test('1st shop result on the page should have less than 1k votes', () => {
+    expect(serp).toHaveProperty(['shopResults', 1, 'votes'], '616');
   });
 
   // TODO there is no 1k+ rating to test on this page, find one for testing
@@ -589,11 +589,11 @@ xdescribe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '1k+');
   });
 
-  test('Page should have topStories feature', () => {
+  xtest('Page should have topStories feature', () => {
     expect(serp.topStories).toBeDefined();
   });
 
-  test('2nd top stories card should have title "Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC"', () => {
+  xtest('2nd top stories card should have title "Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC"', () => {
     expect(serp).toHaveProperty(
       ['topStories', 1, 'title'],
       'Dell laptop deal: the XPS 13 laptop gets a massive $969 price cut',
