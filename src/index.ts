@@ -30,9 +30,6 @@ export class GoogleSERP {
   };
 
   private $: CheerioStatic;
-  private CONFIG = {
-    noResults: '.med.card-section p:contains(" - did not match any documents.")',
-  };
 
   constructor(html: string) {
     this.$ = cheerio.load(html, {
@@ -45,7 +42,13 @@ export class GoogleSERP {
 
   private parse() {
     const $ = this.$;
-    const CONFIG = this.CONFIG;
+    const serp = this.serp;
+    const CONFIG = {
+      currentPage: 'table.AaVjTc td.YyVfkd',
+      keyword: 'input[aria-label="Search"]',
+      noResults: '.med.card-section p:contains(" - did not match any documents.")',
+      resultText: '#result-stats',
+    };
     if ($(CONFIG.noResults).length === 1) {
       this.serp.error = 'No results page';
       // No need to parse anything for no results page
@@ -53,35 +56,23 @@ export class GoogleSERP {
     }
 
     if ($('body').hasClass('srp')) {
-      this.parseGoogle();
+      serp.keyword = $(CONFIG.keyword).val();
+      serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
+      serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
+
+      this.getOrganic();
+      this.getRelatedKeywords();
+      this.getPagination();
+      this.getAdwords();
+      this.getHotels();
+      serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
+      this.getVideos();
+      this.getThumbnails();
+      // this.getAvailableOn();
+      this.getShopResults();
+      this.getTopStories();
+      this.getLocals();
     }
-  }
-
-  private parseGoogle() {
-    const serp = this.serp;
-    const $ = this.$;
-    const CONFIG = {
-      currentPage: 'table.AaVjTc td.YyVfkd',
-      keyword: 'input[aria-label="Search"]',
-      resultText: '#result-stats',
-    };
-
-    serp.keyword = $(CONFIG.keyword).val();
-    serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
-    serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
-
-    this.getOrganic();
-    this.getRelatedKeywords();
-    this.getPagination();
-    this.getAdwords();
-    this.getHotels();
-    serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
-    this.getVideos();
-    this.getThumbnails();
-    // this.getAvailableOn();
-    this.getShopResults();
-    this.getTopStories();
-    this.getLocals();
   }
 
   private getOrganic() {
@@ -286,8 +277,6 @@ export class GoogleSERP {
     if (!hotelsFeature.length) {
       return;
     }
-    // TODO: SPLIT TO getHotels and getHotelsNojs
-    // TODO: SPLIT FURTHER TO getSearchFilters, getHotelOffers
     const CONFIG = {
       moreHotelsRegex: /(\d+,?)+/,
       moreHotelsText: '.wUrVib',
@@ -551,9 +540,9 @@ export class GoogleSERP {
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
       distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
-      address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(2)',
+      address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
       description: 'div.rllt__wrapped > span',
-      localsFeature: '[data-hveid=CAoQAA]',
+      localsFeature: '.AEprdc.vk_c',
       local: '.C8TUKc',
     };
 
@@ -571,9 +560,9 @@ export class GoogleSERP {
       const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
       const expensiveness = this.elementText(el, CONFIG.expensiveness).length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
-      const distance = this.elementText(el, CONFIG.distance);
+      const distance = '';
       const address = this.elementText(el, CONFIG.address);
-      const description = this.elementText(el, CONFIG.description);
+      const description = '';
       locals.push({ name, rating, reviews, expensiveness, type, distance, address, description });
     });
     serp.locals = locals;

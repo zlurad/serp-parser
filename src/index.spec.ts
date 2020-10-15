@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import { GoogleSERP } from './index';
 import { Ad, Serp } from './models';
 
+const root = 'test/google/desktop/';
+
 test('GoogleSERP should return empty organic array on empty html string', () => {
   expect(new GoogleSERP('').serp.organic).toEqual([]);
 });
@@ -11,7 +13,7 @@ describe('Parsing Google page with 10 resuts', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google-new.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}google.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -109,7 +111,7 @@ describe('Parsing Google page with 100 results', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/google-100.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}google-100.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -145,7 +147,7 @@ describe('Parsing "The Matrix" search page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/matrix.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}matrix.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -205,7 +207,7 @@ describe('Parsing Hotels search page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/hotels.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}hotels.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -328,7 +330,7 @@ xdescribe('Parsing Hotels-London search page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/hotels-london.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}hotels-london.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -376,7 +378,7 @@ describe('Parsing Domain page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/domain.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}domain.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -457,7 +459,7 @@ xdescribe('Parsing Paris page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/paris.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}paris.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -502,12 +504,12 @@ xdescribe('Parsing Paris page', () => {
   });
 });
 
-xdescribe('Parsing .com-domains page', () => {
+describe('Parsing .com-domains page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/_com-domains.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}_com-domains.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -517,43 +519,42 @@ xdescribe('Parsing .com-domains page', () => {
     expect(serp.adwords?.adwordsBottom).toBeDefined();
   });
 
-  test(`Testing first bottom ad sitelinks`, () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'title'], 'Pricing and Plan Features');
+  test(`Testing 3rd bottom ad sitelinks`, () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'title'], 'Pick Your Plan');
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'href'],
-      'https://www.squarespace.com/pricing/?channel=pnb&subchannel=go&campaign=pnb-dr-go-us-en-website-bmm&subcampaign=(website-website-build_Pricing-and-Plan-Features_sl)',
+      ['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'href'],
+      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwim47HPv7fsAhUWPmAKHeUTAqgYABAUGgJ0bQ&ohost=www.google.com&cid=CAASEuRoekkJ8_7KALOXeRdsBBNG8w&sig=AOD64_1U10eN9pFCwcAtcP-rYX4G9S_W7A&q=&ved=2ahUKEwj776rPv7fsAhXz7HMBHeCKBxwQpigoAXoECA0QEg&adurl=',
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'type'], 'INLINE');
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
     expect(serp.adwords?.adwordsBottom).toHaveLength(3);
   });
   test('First bottom ad tests', () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'title'], 'Claim Your Domain | Squarespace© Domains‎');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 0, 'url'],
-      'https://www.squarespace.com/domain-name-search',
+      ['adwords', 'adwordsBottom', 1, 'url'],
+      'https://www.networksolutions.com/network-solutions-domains.jsp?promo=35768',
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.squarespace.com');
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.networksolutions.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 0, 'snippet'],
-      `The best websites start with the right domain. Start a website for free today! Free 14-day Trial. Services: Blog Platform, Modern Templates, SEO, Social Integrations, Mobile Friendly, Content Management, Analytics, 24/7 Support.`,
+      ['adwords', 'adwordsBottom', 1, 'snippet'],
+      `Get the Domain Name You Always Wanted! Search .COM Domains Now. Over 3 Million Customers. 99.9% Uptime Rating. 30+ Years in Business. 500+ Domain Extensions. The Original Registrar. Services: Domain Registration, Cloud Hosting, SSL Certificates.`,
     );
   });
 });
 
-xdescribe('Parsing Coffee page', () => {
+describe('Parsing Coffee page', () => {
   let html: string;
   let serp: Serp;
 
 
   beforeAll(() => {
-    html = fs.readFileSync('test/coffee.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}coffee.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -561,15 +562,16 @@ xdescribe('Parsing Coffee page', () => {
     expect(serp.locals).toBeDefined();
   });
 
-  test('2nd locals card should have title "Coffee Cultures"', () => {
-    expect(serp).toHaveProperty(['locals', 1, 'name'], 'Coffee Cultures');
-    expect(serp).toHaveProperty(['locals', 1, 'rating'], '4.3');
-    expect(serp).toHaveProperty(['locals', 1, 'reviews'], '272');
+  test('2nd locals card should have title "Starbucks"', () => {
+    expect(serp).toHaveProperty(['locals', 1, 'name'], 'Starbucks');
+    expect(serp).toHaveProperty(['locals', 1, 'rating'], '3.9');
+    expect(serp).toHaveProperty(['locals', 1, 'reviews'], '403');
     expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 2);
-    expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
-    expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.3 mi');
-    expect(serp).toHaveProperty(['locals', 1, 'address'], '1301 Mission St');
-    expect(serp).toHaveProperty(['locals', 1, 'description'], 'Small cafe for coffee & frozen yogurt');
+    // expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
+    // There is no distance prop in current results
+    // expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.3 mi');
+    expect(serp).toHaveProperty(['locals', 1, 'address'], '1390 Market St UNIT 107');
+    // expect(serp).toHaveProperty(['locals', 1, 'description'], 'Small cafe for coffee & frozen yogurt');
   });
 });
 
@@ -578,7 +580,7 @@ describe('Parsing Dell page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/dell.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}dell.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
@@ -664,7 +666,7 @@ describe('Parsing no results page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync('test/no-results.html', { encoding: 'utf8' });
+    html = fs.readFileSync(`${root}no-results.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
   });
 
