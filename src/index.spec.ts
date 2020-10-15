@@ -280,10 +280,50 @@ describe('Parsing Hotels search page', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'deal', 'dealType'], 'GREAT DEAL');
     expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'deal', 'dealDetails'], '37% less than usual');
   });
+
+  describe('Testing ads', () => {
+    test('There should be top ads', () => {
+      expect(serp.adwords).toBeDefined();
+      expect(serp.adwords?.adwordsTop).toBeDefined();
+      expect(serp.adwords?.adwordsBottom).not.toBeDefined();
+    });
+
+    test('There should be 4 ads on the top of the page', () => {
+      expect(serp.adwords?.adwordsTop).toHaveLength(4);
+    });
+
+    test('Testing first ad', () => {
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'title'],
+        `New York Hotels from $29 | Cheap Hotels Up to 60% off`,
+      );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'url'],
+        'https://www.priceline.com/vacationpackages',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.priceline.com');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'snippet'],
+        `Best Price Guarantee on All Hotels. Over 1,000,000 Hotels with Great Prices! Find Incredible Deals for Hotels in New York. Save Big with Exclusive Rates! Save Big w/ Express Deals.`,
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
+    });
+
+    test('Testing 2nd ad sitelink', () => {
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Book for Tonight');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'href'],
+        'https://www.google.com/aclk?sa=l&ai=DChcSEwiA7-O9h6_sAhVpCIgJHTzzDPcYABAFGgJxbg&sig=AOD64_0hx2qloY4Q2WqN1a2KcdqXsCe7jg&rct=j&q=&ved=2ahUKEwiF4Ny9h6_sAhXopnIEHT_OBlMQpigoAXoECCEQFA&adurl=',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
+    });
+  });
   
 });
 
-describe('Parsing Hotels-London search page', () => {
+xdescribe('Parsing Hotels-London search page', () => {
   let html: string;
   let serp: Serp;
 
@@ -331,7 +371,7 @@ describe('Testing functions', () => {
   });
 });
 
-xdescribe('Parsing Domain page', () => {
+describe('Parsing Domain page', () => {
   let html: string;
   let serp: Serp;
 
@@ -347,36 +387,47 @@ xdescribe('Parsing Domain page', () => {
       expect(serp.adwords?.adwordsBottom).toBeDefined();
     });
 
-    test('There should be 4 ads on the top of the page', () => {
-      expect(serp.adwords?.adwordsTop).toHaveLength(4);
+    test('There should be 3 ads on the top of the page', () => {
+      expect(serp.adwords?.adwordsTop).toHaveLength(3);
     });
 
     test('Testing first ad', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'title'],
-        `Don't Overpay For A Domain | Get Yours For 99¢ | GoDaddy.com‎`,
+        `GoDaddy.com - Huge Domain Selection - Get the Perfect Domain`,
       );
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'url'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwju1q-toY7nAhVEyt4KHXasAeEYABAAGgJ3Yg&ggladgrp=7066528666257623986&gglcreat=18388609245422997597&ohost=www.google.com&cid=CAASE-RoHgRhrdvvlXSNdwDfHE-UoBg&sig=AOD64_3vqRXzc5r0TD5CVlw_XI--pKlztw&adurl=&q=',
+        'https://www.godaddy.com/offers/domains/names?isc=coaugau001',
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.googleadservices.com');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
-        `Find The Perfect Domain at GoDaddy & Get it Before Someone Else Does! Easy Domain Setup. 100's of New Domains. Fast Domain Forwarding. Big Savings Over Others. Trusted By 19 Million. World's Largest Registrar. Services: Private Registration, WHOIS Lookup.`,
+        `Enter the Domain You Want or Search Relevant Terms + We'll Give You a List Of Suggestions.`,
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
     test('Testing first ad sitelink', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], '$0.99 .CO or .com Sale');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], '$1.99 Professional Email');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
-        'https://www.godaddy.com/offers/domains/tlds/great-price-first-year-com-or-co-domains?isc=gdcomg01',
+        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjZjMzZiq3sAhVxPa0GHY6MD3gYABAOGgJwdg&ggladgrp=7066528666257623986&gglcreat=1209075016982593652&ohost=www.google.com&cid=CAASEuRoOUMv0LYpTSUmDlTUL-AuLA&sig=AOD64_0AhqAQShl5WGdfz_MHVtJQuFz9fQ&q=&ved=2ahUKEwjv78XZiq3sAhXFjp4KHabTB4QQqyQoAXoECCAQFA&adurl=',
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'INLINE');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'], 'Look Professional & Instill Trust.Get Email That Matches Your Domain');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
+    });
+
+    test('Testing 2nd ad sitelink', () => {
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Website Templates');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'href'],
+        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjZjMzZiq3sAhVxPa0GHY6MD3gYABAFGgJwdg&ae=2&ohost=www.google.com&cid=CAASEuRoOUMv0LYpTSUmDlTUL-AuLA&sig=AOD64_1g0V9TDulFD6DL-HKhZhBUXJLKPw&q=&ved=2ahUKEwjv78XZiq3sAhXFjp4KHabTB4QQpigoAXoECB8QEg&adurl=',
+      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
     });
 
     test('Testing adwordsBottom property', () => {
@@ -384,22 +435,23 @@ xdescribe('Parsing Domain page', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsBottom', 0, 'title'],
-        'Cheap Domains from $0.98/yr | Free WhoisGuard Forever‎',
+        '.com, .org & more - Exclusive Prices - Domain Names',
       );
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsBottom', 0, 'url'],
-        'https://www.namecheap.com/promos/amazing98s/',
+        'https://www.ionos.com/domains/domain-names',
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.namecheap.com');
+      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.ionos.com');
       expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsBottom', 0, 'snippet'],
-        `Namecheap Offers The Lowest Prices in the Market. Register at Namecheap & Save Big Now. Domains Come w Free Domains Privacy for Life & 2 Free Months of Private Email. Affordable Domains. Easy Registration Process. 2 Free Months of Email.`,
+        `.com domain only $1 in the first year. Register a .com that's all in. Limited time only! Need a...`,
       );
     });
   });
 });
 
+// There are no ADs in paris page anymore
 xdescribe('Parsing Paris page', () => {
   let html: string;
   let serp: Serp;
@@ -409,7 +461,7 @@ xdescribe('Parsing Paris page', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  xdescribe('Testing ads', () => {
+  describe('Testing ads', () => {
     test('There should be top ads', () => {
       expect(serp.adwords).toBeDefined();
       expect(serp.adwords?.adwordsTop).toBeDefined();

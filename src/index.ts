@@ -453,10 +453,10 @@ export class GoogleSERP {
   private getAds(search: string, adsList: Ad[]) {
     const $ = this.$;
     const CONFIG = {
-      ads: '.ads-ad',
-      snippet: '.ads-creative',
-      title: 'h3.sA5rQ',
-      url: '.ad_cclk a.V0MxL',
+      ads: '.uEierd',
+      snippet: '.d5oMvf',
+      title: '[role="heading"]',
+      url: 'a.Krnil'
     };
 
     $(search)
@@ -464,9 +464,9 @@ export class GoogleSERP {
       .each((i, e) => {
         const title = this.elementText(e, CONFIG.title);
         const url = this.elementHref(e, CONFIG.url);
-        const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
-        const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
-        const snippet = this.elementText(e, CONFIG.snippet);
+        const domain = utils.getDomain(url);
+        const linkType = utils.getLinkType(url);
+        const snippet = $(e).find(CONFIG.snippet).next().text();
         const sitelinks: Sitelink[] = this.getAdSitelinks(e);
         const position = i + 1;
         const ad: Ad = {
@@ -485,40 +485,33 @@ export class GoogleSERP {
   private getAdSitelinks(ad: CheerioElement) {
     const $ = this.$;
     const CONFIG = {
-      card: 'li',
+      card: '.fCBnFe',
       cardHref: 'h3 a',
-      cardSnippet: '.F95vTc',
+      cardSnippet: ':not(h3)',
       cardTitle: 'h3',
-      inline: '.OkkX2d .V0MxL',
-      sitelinks: '.ads-creative + ul',
+      inline: '.bOeY0b a',
       test: 'St0YAf',
     };
 
     const sitelinks: Sitelink[] = [];
-    const adSitelinks = $(ad).find(CONFIG.sitelinks);
-    adSitelinks.each((ind, el) => {
-      if ($(el).hasClass(CONFIG.test)) {
-        const cardSiteLinks = $(el).find(CONFIG.card);
-        cardSiteLinks.each((i, e) => {
-          const sitelink: Sitelink = {
-            href: this.elementHref(e, CONFIG.cardHref),
-            snippet: this.elementText(e, CONFIG.cardSnippet),
-            title: this.elementText(e, CONFIG.cardTitle),
-            type: SitelinkType.card,
-          };
-          sitelinks.push(sitelink);
-        });
-      } else {
-        const inlineSiteLinks = $(el).find(CONFIG.inline);
-        inlineSiteLinks.each((i, e) => {
-          const sitelink: Sitelink = {
-            href: $(e).attr('href'),
-            title: $(e).text(),
-            type: SitelinkType.inline,
-          };
-          sitelinks.push(sitelink);
-        });
-      }
+    const cardSitelinks = $(ad).find(CONFIG.card);
+    cardSitelinks.each((ind, e) => {
+        const sitelink: Sitelink = {
+          href: this.elementHref(e, CONFIG.cardHref),
+          snippet: $(e).children(CONFIG.cardSnippet).text(),
+          title: this.elementText(e, CONFIG.cardTitle),
+          type: SitelinkType.card,
+        };
+        sitelinks.push(sitelink);
+    });
+    const inlineSiteLinks = $(ad).find(CONFIG.inline);
+    inlineSiteLinks.each((i, e) => {
+      const sitelink: Sitelink = {
+        href: $(e).attr('href'),
+        title: $(e).text(),
+        type: SitelinkType.inline,
+      };
+      sitelinks.push(sitelink);
     });
     return sitelinks;
   }
