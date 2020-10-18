@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { GoogleNojsSERP } from './google-nojs';
+import { GoogleNojsSERP } from './index';
 import { Ad, Serp } from './models';
 
 const root = 'test/google/nojs/';
