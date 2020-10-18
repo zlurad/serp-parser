@@ -445,7 +445,7 @@ export class GoogleSERP {
       ads: '.uEierd',
       snippet: '.d5oMvf',
       title: '[role="heading"]',
-      url: 'a.Krnil'
+      url: 'a.Krnil',
     };
 
     $(search)
@@ -485,13 +485,13 @@ export class GoogleSERP {
     const sitelinks: Sitelink[] = [];
     const cardSitelinks = $(ad).find(CONFIG.card);
     cardSitelinks.each((ind, e) => {
-        const sitelink: Sitelink = {
-          href: this.elementHref(e, CONFIG.cardHref),
-          snippet: $(e).children(CONFIG.cardSnippet).text(),
-          title: this.elementText(e, CONFIG.cardTitle),
-          type: SitelinkType.card,
-        };
-        sitelinks.push(sitelink);
+      const sitelink: Sitelink = {
+        href: this.elementHref(e, CONFIG.cardHref),
+        snippet: $(e).children(CONFIG.cardSnippet).text(),
+        title: this.elementText(e, CONFIG.cardTitle),
+        type: SitelinkType.card,
+      };
+      sitelinks.push(sitelink);
     });
     const inlineSiteLinks = $(ad).find(CONFIG.inline);
     inlineSiteLinks.each((i, e) => {

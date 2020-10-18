@@ -214,7 +214,7 @@ describe('Parsing Hotels search page', () => {
   test('There should be 1300 similar hotels in the area', () => {
     expect(serp).toHaveProperty(['hotels', 'moreHotels'], 1300);
   });
-  
+
   test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York, NY, USA"', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
   });
@@ -267,15 +267,14 @@ describe('Parsing Hotels search page', () => {
   test('First featured hotel should not have originalPrice property', () => {
     expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'deal', 'originalPrice']);
   });
-  
-  
- // TODO there is no featured review on the new hotels page, find one to test
+
+  // TODO there is no featured review on the new hotels page, find one to test
   xtest('Fourth featured hotel should have featured review', () => {
     if (serp.hotels) {
       expect(serp.hotels.hotels[3].featuredReview).toBe('');
     }
   });
-  
+
   xtest(`First featured hotel should be labeled with deal,
    having dealType: "DEAL" and
    dealDetails: "22% less than usual"`, () => {
@@ -300,10 +299,7 @@ describe('Parsing Hotels search page', () => {
         ['adwords', 'adwordsTop', 0, 'title'],
         `New York Hotels from $29 | Cheap Hotels Up to 60% off`,
       );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'url'],
-        'https://www.priceline.com/vacationpackages',
-      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.priceline.com/vacationpackages');
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.priceline.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
@@ -327,7 +323,7 @@ describe('Parsing Hotels search page', () => {
     test('Page should have topStories feature', () => {
       expect(serp.topStories).toBeDefined();
     });
-  
+
     test('2nd top stories card should have title "The Roosevelt Hotel in Midtown Manhattan to Close Permanently"', () => {
       expect(serp).toHaveProperty(
         ['topStories', 1, 'title'],
@@ -341,7 +337,6 @@ describe('Parsing Hotels search page', () => {
       expect(serp).toHaveProperty(['topStories', 1, 'published'], '1 day ago');
     });
   });
-  
 });
 
 xdescribe('Parsing Hotels-London search page', () => {
@@ -371,8 +366,6 @@ xdescribe('Parsing Hotels-London search page', () => {
   test('4th featured hotel should not have amenities property', () => {
     expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'amenities']);
   });
-
-  
 });
 
 describe('Testing functions', () => {
@@ -437,7 +430,10 @@ describe('Parsing Domain page', () => {
         ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
         'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjZjMzZiq3sAhVxPa0GHY6MD3gYABAOGgJwdg&ggladgrp=7066528666257623986&gglcreat=1209075016982593652&ohost=www.google.com&cid=CAASEuRoOUMv0LYpTSUmDlTUL-AuLA&sig=AOD64_0AhqAQShl5WGdfz_MHVtJQuFz9fQ&q=&ved=2ahUKEwjv78XZiq3sAhXFjp4KHabTB4QQqyQoAXoECCAQFA&adurl=',
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'], 'Look Professional & Instill Trust.Get Email That Matches Your Domain');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'],
+        'Look Professional & Instill Trust.Get Email That Matches Your Domain',
+      );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
     });
 
@@ -458,10 +454,7 @@ describe('Parsing Domain page', () => {
         ['adwords', 'adwordsBottom', 0, 'title'],
         '.com, .org & more - Exclusive Prices - Domain Names',
       );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsBottom', 0, 'url'],
-        'https://www.ionos.com/domains/domain-names',
-      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
       expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.ionos.com');
       expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
       expect(serp).toHaveProperty(
@@ -571,7 +564,6 @@ describe('Parsing Coffee page', () => {
   let html: string;
   let serp: Serp;
 
-
   beforeAll(() => {
     html = fs.readFileSync(`${root}coffee.html`, { encoding: 'utf8' });
     serp = new GoogleSERP(html).serp;
@@ -661,8 +653,6 @@ describe('Parsing Dell page', () => {
   xtest('2nd shop result on the page should have 1k+ votes', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '1k+');
   });
-
-  
 });
 
 describe('Parsing no results page', () => {
