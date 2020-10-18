@@ -322,6 +322,25 @@ describe('Parsing Hotels search page', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
     });
   });
+
+  describe('Testing top stories feature', () => {
+    test('Page should have topStories feature', () => {
+      expect(serp.topStories).toBeDefined();
+    });
+  
+    test('2nd top stories card should have title "The Roosevelt Hotel in Midtown Manhattan to Close Permanently"', () => {
+      expect(serp).toHaveProperty(
+        ['topStories', 1, 'title'],
+        'The Roosevelt Hotel in Midtown Manhattan to Close Permanently',
+      );
+      expect(serp).toHaveProperty(
+        ['topStories', 1, 'url'],
+        'https://www.nbcnewyork.com/news/local/the-roosevelt-hotel-in-midtown-manhattan-to-close-permanently/2662259/',
+      );
+      expect(serp).toHaveProperty(['topStories', 1, 'publisher'], 'NBC New York');
+      expect(serp).toHaveProperty(['topStories', 1, 'published'], '1 day ago');
+    });
+  });
   
 });
 
@@ -453,7 +472,7 @@ describe('Parsing Domain page', () => {
   });
 });
 
-// There are no ADs in paris page anymore
+// There are no ADs in paris page anymore, remove this in next few iterations
 xdescribe('Parsing Paris page', () => {
   let html: string;
   let serp: Serp;
@@ -643,22 +662,7 @@ describe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '1k+');
   });
 
-  xtest('Page should have topStories feature', () => {
-    expect(serp.topStories).toBeDefined();
-  });
-
-  xtest('2nd top stories card should have title "Deals: iPad Pro, Dell XPS 13, SanDisk Extreme MicroSDXC"', () => {
-    expect(serp).toHaveProperty(
-      ['topStories', 1, 'title'],
-      'Dell laptop deal: the XPS 13 laptop gets a massive $969 price cut',
-    );
-    expect(serp).toHaveProperty(
-      ['topStories', 1, 'imgLink'],
-      'https://www.techradar.com/news/dell-laptop-deal-the-xps-13-laptop-gets-a-massive-dollar969-price-cut',
-    );
-    expect(serp).toHaveProperty(['topStories', 1, 'publisher'], 'TechRadar');
-    expect(serp).toHaveProperty(['topStories', 1, 'published'], '3 days ago');
-  });
+  
 });
 
 describe('Parsing no results page', () => {

@@ -572,12 +572,11 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      imgLink: 'g-inner-card.cv2VAd > a',
-      published: '.GJhQm > span.f',
-      publisher: '.YQPQv',
-      title: '.mRnBbe',
-      topStoriesFeature: 'g-section-with-header[data-hveid=CAEQAA]',
-      topStory: '.So9e7d',
+      published: '.K4LhXb',
+      publisher: '.wqg8ad',
+      title: 'div[role="heading"]',
+      topStoriesFeature: 'g-section-with-header [data-hveid=CA0QAQ]',
+      topStory: 'a[data-jsarwt="1"]',
     };
     const topStoriesFeature = $(CONFIG.topStoriesFeature);
 
@@ -588,11 +587,11 @@ export class GoogleSERP {
     const topStories: TopStory[] = [];
     const topStory = topStoriesFeature.find(CONFIG.topStory);
     topStory.each((ind, el) => {
-      const imgLink = this.elementHref(el, CONFIG.imgLink);
+      const url = $(el).attr('href');
       const title = this.elementText(el, CONFIG.title);
       const publisher = this.elementText(el, CONFIG.publisher);
       const published = this.elementText(el, CONFIG.published);
-      topStories.push({ imgLink, title, publisher, published });
+      topStories.push({ url, title, publisher, published });
     });
     serp.topStories = topStories;
   }
