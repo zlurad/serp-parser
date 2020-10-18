@@ -18,7 +18,7 @@ export interface Serp {
 }
 
 export interface TopStory {
-  imgLink: string;
+  url: string;
   title: string;
   publisher: string;
   published: string;
@@ -111,6 +111,7 @@ export interface Hotel {
   stars?: number;
   description?: string;
   moreInfoLink?: string;
+  address?: string;
 }
 
 export interface HotelDeal {
@@ -119,7 +120,7 @@ export interface HotelDeal {
   originalPrice?: number;
 }
 
-export interface Local{
+export interface Local {
   name: string;
   rating: string;
   reviews: string;

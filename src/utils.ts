@@ -12,6 +12,7 @@ export const getUrlFromQuery = (query: string): string => {
 };
 
 export const getFirstMatch = (str: string, reg: RegExp) => {
+  str = str ? str : '';
   const matches = str.match(reg);
   return matches ? matches[0] : '';
 };

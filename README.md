@@ -13,19 +13,19 @@ yarn add serp-parser
 
 ## Usage - Google SERP extraction
 
-GoogleSERP accepts both html that is extracted with any headless browser lib (`puppeteer`, `phantomjs`...) that have enabled javascript as well as html page structure from no-js-enabled requests from for example `request` lib.
+GoogleSERP accepts both html that is extracted with any headless browser lib (`puppeteer`, `phantomjs`...) that have enabled javascript as well as html page structure from no-js-enabled requests from for example `request` lib. For full enabled js html we use `GoogleSERP` class, and for nojs pages `GoogleNojsSERP` class.
 
-With html from headless browser
+With html from headless browser we use full `GoogleSERP` parser
 
 ```
 import { GoogleSERP } from 'serp-parser'
 
-const results = GoogleSERP(html);
+const parser = new GoogleSERP(html);
 
-console.log(results);
+console.dir(parser.serp);
 ```
 
-Or on es5 with request lib
+Or on es5 with request lib, we get nojs Google results, so we use `GoogleNojsSERP` parser that is separate class in the lib
 
 ```
 var request = require("request")
@@ -33,7 +33,8 @@ var sp = require("serp-parser")
 
 request('https://www.google.com/search?q=google', function (error, response, html) {
   if (!error && response.statusCode == 200) {
-    console.log(sp.GoogleSERP(html));
+    parser = new sp.GoogleNojsSERP(html);
+    console.dir(parser.serp);
   }
 });
 ```
