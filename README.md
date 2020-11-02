@@ -118,6 +118,6 @@ It will return serp object with array of results with domain, position, title, u
 
 ## Roadmap
 
-We are working on enriching parsed data to grab all existing and new SERP features from Google search page results, as well as knowlege graph, ads, and any related info. Also we will add more Search engines along the way.
+We are working on enriching parsed data to grab all existing and new SERP features from Google search page results, as well as knowledge graph, ads, and any related info. Also we will add more Search engines along the way.
 
 Anyone willing to help - please submit issues, feature requests, fork away and send PR's
