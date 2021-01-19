@@ -78,7 +78,7 @@ export class GoogleSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search .g .rc .yuRUbf > a',
+      results: '#search .g .tF2Cxc .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
