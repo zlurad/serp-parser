@@ -135,40 +135,40 @@ export class BingNojsSERP {
   private getHotels() {
     const $ = this.$;
 
-    if (!$('b_results > li.b_ans.b_mop .b_ilhTitle').text().startsWith('Hotels')) {
+    if (!$('#b_results > li.b_ans.b_mop .b_ilhTitle').text().startsWith('Hotels')) {
       return;
     }
 
-    const hotelsFeature = $('#b_results > li.b_ans.b_mop').closest('.xpd');
+    const hotelsFeature = $('#b_results > li.b_ans.b_mop');
     // TODO: SPLIT FURTHER TO getSearchFilters, getHotelOffers
 
     const CONFIG = {
-      description: 'div.BNeawe',
-      hotelOffers: '.X7NTVe',
-      hotelStars: 'div.BNeawe',
+      hotelOffers: '.b_scard',
+      hotelStars: '.b_factrow',
       hotelStarsRegex: /\d(?=-star)/,
-      moreInfoLink: 'a.tHmfQe',
-      name: 'h3',
-      rating: '.Eq0J8:first-child',
-      votes: '.Eq0J8:last-child',
-      votesRegex: /\((\d+,?)+\)/,
+      name: '.lc_content h2',
+      rating: '.csrc.sc_rc1',
+      ratingRegex: /\d*\.?\,?\d/,
+      votes: '.b_factrow > span[title]',
+      votesRegex: /\((.*)\)/,
     };
-    const moreHotelsLink = hotelsFeature.children().last().find('a').attr('href');
     const hotels: Hotel[] = [];
 
     // HOTELS
     const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
     hotelOffers.each((ind, elem) => {
       const name = this.elementText(elem, CONFIG.name);
-      const rating = parseFloat(this.elementText(elem, CONFIG.rating));
+      const ratingText = this.$(elem).find(CONFIG.rating).attr('aria-label');
+      const ratingMatch = (ratingText.match(CONFIG.ratingRegex) || ['0.0'])[0];
+      const rating = parseFloat(ratingMatch.replace(',', '.'));
       // TODO regex replace all
-      const votes = this.elementText(elem, CONFIG.votes).slice(1, -1).replace(',', '');
-      const votesNumber = parseInt(votes, 10);
-      const hotelStars = utils.getFirstMatch($(elem).find(CONFIG.hotelStars).text(), CONFIG.hotelStarsRegex);
+      const votesText = this.$(elem).find(CONFIG.votes).first().attr('title');
+      const votesNumber = (votesText.match(CONFIG.votesRegex) || [0, 0])[1];
+      const hotelStars = utils.getFirstMatch($($(elem).find(CONFIG.hotelStars)[1]).text(), CONFIG.hotelStarsRegex);
       const stars = parseInt(hotelStars, 10);
       // const desc html
-      const description = $(elem).find(CONFIG.description).last().find('br').last()[0].nextSibling?.nodeValue;
-      const moreInfoLink = this.elementHref(elem, CONFIG.moreInfoLink);
+      const description = '';
+      const moreInfoLink = '';
 
       const hotel: Hotel = {
         description,
@@ -184,7 +184,7 @@ export class BingNojsSERP {
 
     this.serp.hotels = {
       hotels,
-      moreHotels: moreHotelsLink,
+      moreHotels: '',
     };
   }
 

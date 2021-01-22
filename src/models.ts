@@ -103,7 +103,7 @@ export interface Hotel {
   currency?: string;
   price?: number;
   rating: number;
-  votes: number;
+  votes: number | string;
   deal?: HotelDeal;
   amenities?: string;
   featuredReview?: string;

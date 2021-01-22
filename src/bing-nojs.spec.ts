@@ -21,7 +21,7 @@ describe('Parsing nojs Bing page with 10 resuts', () => {
     expect(serp.keyword).toBe('bing');
   });
 
-  test('serp should have 6 results', () => {
+  test('serp should have 10 results', () => {
     expect(serp.organic).toHaveLength(10);
   });
 
@@ -55,10 +55,7 @@ describe('Parsing nojs Bing page with 10 resuts', () => {
 
   test('1st result should have inline sitelinks', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Bing News');
-    expect(serp).toHaveProperty(
-      ['organic', 0, 'sitelinks', 0, 'href'],
-      'https://www.bing.com/news',
-    );
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.bing.com/news');
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
@@ -142,7 +139,7 @@ describe('Parsing nojs "The Matrix" search page', () => {
   });
 });
 
-xdescribe('Parsing Hotels-nojs search page', () => {
+describe('Parsing Hotels-nojs search page', () => {
   let html: string;
   let serp: Serp;
 
@@ -151,20 +148,20 @@ xdescribe('Parsing Hotels-nojs search page', () => {
     serp = new BingNojsSERP(html).serp;
   });
 
-  test('Name of the first featured hotel should be "Millennium Hilton New York Downtown"', () => {
-    expect(serp.hotels?.hotels[0].name).toBe('Millennium Hilton New York Downtown');
+  test('Name of the first featured hotel should be "Novotel New York Times Square"', () => {
+    expect(serp.hotels?.hotels[0].name).toBe('Novotel New York Times Square');
   });
-  test('Rating of the first featured hotel should be 4.2', () => {
-    expect(serp.hotels?.hotels[0].rating).toBe(4.2);
+  test('Rating of the first featured hotel should be 4.5', () => {
+    expect(serp.hotels?.hotels[0].rating).toBe(4.5);
   });
-  test('Number of votes of the first featured hotel should be 2753', () => {
-    expect(serp.hotels?.hotels[0].votes).toBe(2753);
+  test('Number of votes of the first featured hotel should be 1.8K', () => {
+    expect(serp.hotels?.hotels[0].votes).toBe('1.8K');
   });
   test('Number of stars of the first featured hotel should be 4', () => {
     expect(serp.hotels?.hotels[0].stars).toBe(4);
   });
-  test('Description of the first featured hotel should be "Sleek hotel with dining, a spa & a pool"', () => {
-    expect(serp.hotels?.hotels[0].description).toBe('Sleek hotel with dining, a spa & a pool');
+  test('Description of the first featured hotel should be ""', () => {
+    expect(serp.hotels?.hotels[0].description).toBe('');
   });
   xtest('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
     expect(serp.hotels?.hotels[0].featuredReview).toBe(
@@ -172,18 +169,14 @@ xdescribe('Parsing Hotels-nojs search page', () => {
     );
   });
   test(`MoreInfoLink of the first featured hotel should be`, () => {
-    expect(serp.hotels?.hotels[0].moreInfoLink).toBe(
-      'https://www.bing.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Millennium+Hilton+New+York+Downtown+New+York,+NY&ludocid=17735751118331707919&ibp=gwp;0,7&lsig=AB86z5XzVhvRx3-AsRIbzNDblrqP&phdesc=J519NBuV2wc&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QvS4wAHoECBQQBA',
-    );
+    expect(serp.hotels?.hotels[0].moreInfoLink).toBe('');
   });
   xtest(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
     expect(serp.hotels?.hotels[1].amenities).toBe('Free Wi-Fi');
   });
 
   test(`There should be a moreHotels link and it should have href "/search?sa=N&gl=us..."`, () => {
-    expect(serp.hotels?.moreHotels).toBe(
-      'https://www.bing.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&ei=b_KCX8H_Nqq5gwfZsp34BA&q=hotels+NYC&rlst=f&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QjGowAHoECBQQDA',
-    );
+    expect(serp.hotels?.moreHotels).toBe('');
   });
 });
 
