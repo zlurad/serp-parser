@@ -116,6 +116,36 @@ It will return serp object with array of results with domain, position, title, u
 }
 ```
 
+## Usage - Bing SERP extraction
+
+**Note: Only BingNojsSerp is implemented so far.**
+
+BingSERP works the same as GoogleSerp. It accepts both html that is extracted with any headless browser lib (`puppeteer`, `phantomjs`...) that have enabled javascript as well as html page structure from no-js-enabled requests from for example `request` lib. For full enabled js html we use `BingSERP` class, and for nojs pages `BingNojsSERP` class.
+
+With html from headless browser we use full `BingSERP` parser
+
+```
+import { BingSERP } from 'serp-parser'
+
+const parser = new BingSERP(html);
+
+console.dir(parser.serp);
+```
+
+Or on es5 with request lib, we get nojs Bing results, so we use `BingNojsSERP` parser that is separate class in the lib
+
+```
+var request = require("request")
+var sp = require("serp-parser")
+
+request('https://www.bing.com/search?q=bing', function (error, response, html) {
+  if (!error && response.statusCode == 200) {
+    parser = new sp.BingNojsSERP(html);
+    console.dir(parser.serp);
+  }
+});
+```
+
 ## Roadmap
 
 We are working on enriching parsed data to grab all existing and new SERP features from Google search page results, as well as knowlege graph, ads, and any related info. Also we will add more Search engines along the way.
