@@ -203,13 +203,13 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      channel: '.zECGdd.RgAZAc',
-      date: '.zECGdd:not(.RgAZAc)',
+      channel: '.GlPvmc.YnLDzf',
+      date: '.rjmdhd',
       sitelink: 'a',
-      source: '.zECGdd:not(.RgAZAc) .cJzOGc',
-      title: 'div[role="heading"]',
-      videoDuration: '.Woharf.LQFTgb',
-      videosCards: '.gT5me',
+      source: '.hDeAhf',
+      title: '.fJiQld.oz3cqf.p5AXld',
+      videoDuration: '.J2i9Hd',
+      videosCards: '.VibNM',
     };
 
     const videosCards = $(CONFIG.videosCards);
@@ -219,7 +219,7 @@ export class GoogleSERP {
     const videos: VideoCard[] = [];
     videosCards.each((index, element) => {
       const videoCard = {
-        channel: this.elementText(element, CONFIG.channel),
+        channel: this.elementText(element, CONFIG.channel).substr(3),
         date: new Date(this.elementText(element, CONFIG.date)),
         sitelink: this.elementHref(element, CONFIG.sitelink),
         source: this.elementText(element, CONFIG.source),
@@ -542,7 +542,7 @@ export class GoogleSERP {
       distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
       address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
       description: 'div.rllt__wrapped > span',
-      localsFeature: '.AEprdc.vk_c',
+      localsFeature: '.AEprdc',
       local: '.C8TUKc',
     };
 
