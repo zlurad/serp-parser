@@ -242,7 +242,10 @@ describe('Parsing Hotels search page', () => {
     expect(serp.hotels?.hotels).toHaveLength(4);
   });
   test('First featured hotel should have name "Fairfield Inn & Suites by Marriott New York Midtown Manhattan/Penn Station"', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'Fairfield Inn & Suites by Marriott New York Midtown Manhattan/Penn Station');
+    expect(serp).toHaveProperty(
+      ['hotels', 'hotels', 0, 'name'],
+      'Fairfield Inn & Suites by Marriott New York Midtown Manhattan/Penn Station',
+    );
   });
   test('First featured hotel should have currency "$"', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'currency'], '$');
@@ -300,7 +303,10 @@ describe('Parsing Hotels search page', () => {
         ['adwords', 'adwordsTop', 0, 'title'],
         `The Hotel New York City - Book Now & Save with Expedia.`,
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.expedia.com/Hotel-Search?selected=18352&HotelID=18352&semcid=US.UB.GOOGLE.PT-c-EN.HOTEL&semdtl=a1391335868.b124146092948.r13d25c9d36bbb61c32d51d71cabbba1239eac6b7f71c7d3b5f5cc94c861e67ada.g1.i1.d194064136628.e1c.j1.k1.f1none.n1.l1g.h1e.m1');
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'url'],
+        'https://www.expedia.com/Hotel-Search?selected=18352&HotelID=18352&semcid=US.UB.GOOGLE.PT-c-EN.HOTEL&semdtl=a1391335868.b124146092948.r13d25c9d36bbb61c32d51d71cabbba1239eac6b7f71c7d3b5f5cc94c861e67ada.g1.i1.d194064136628.e1c.j1.k1.f1none.n1.l1g.h1e.m1',
+      );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.expedia.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
@@ -412,10 +418,7 @@ describe('Parsing Domain page', () => {
         ['adwords', 'adwordsTop', 0, 'title'],
         `GoDaddy $0.99 Domains - Get Your Domain With GoDaddy`,
       );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'url'],
-        'https://www.godaddy.com/offers/domains/names',
-      );
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domains/names');
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
@@ -548,10 +551,7 @@ describe('Parsing .com-domains page', () => {
   test('First bottom ad tests', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
-    expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 1, 'url'],
-      'https://smallbusiness.yahoo.com/domains',
-    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'url'], 'https://smallbusiness.yahoo.com/domains');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'smallbusiness.yahoo.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
