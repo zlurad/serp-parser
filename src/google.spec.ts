@@ -142,6 +142,42 @@ describe('Parsing Google page with 100 results', () => {
   });
 });
 
+describe('Parsing Google featured snippet page', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync(`${root}featured-snippet.html`, { encoding: 'utf8' });
+    serp = new GoogleSERP(html).serp;
+  });
+
+  test('serp should have 10 results', () => {
+    expect(serp.organic).toHaveLength(10);
+  });
+
+  test('expect serp', () => {
+    expect(serp).toBe("");
+  });
+
+  test('1th result should have featured snippet', () => {
+    expect(serp.organic[0]).toBe("");
+  });
+
+  test('8th result should have domain hangouts.google.com', () => {
+    expect(serp.organic[0].domain).toBe('hangouts.google.com');
+  });
+
+  test('4th result should have title "Google Account"', () => {
+    expect(serp.organic[0].title).toBe('Google Account');
+  });
+
+  test('4th result should have snippet to start with "Sign in to your Google Account, and ...', () => {
+    expect(serp.organic[0].snippet).toBe(
+      `Sign in to your Google Account, and get the most out of all the Google services&nbsp;...`,
+    );
+  });
+});
+
 describe('Parsing "The Matrix" search page', () => {
   let html: string;
   let serp: Serp;

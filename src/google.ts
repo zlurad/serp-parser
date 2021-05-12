@@ -60,6 +60,7 @@ export class GoogleSERP {
       serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
       serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
 
+      // this.getFeatured();
       this.getOrganic();
       this.getRelatedKeywords();
       this.getPagination();
@@ -78,11 +79,11 @@ export class GoogleSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search .g div .yuRUbf > a',
+      results: '#search #rso>.g div .yuRUbf > a, #search #rso>.hlcw0c div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
-      const position = index + 1;
+      const position = this.serp.organic.length + 1;
       const url = $(element).prop('href');
       const domain = utils.getDomain(url);
       const title = this.elementText(element, 'h3');
@@ -101,6 +102,34 @@ export class GoogleSERP {
       this.serp.organic.push(result);
     });
   }
+
+  private getFeatured() {
+    const $ = this.$;
+    const CONFIG = {
+      results: '#search #rso>.ULSxyf>.g.mnr-c .c2xzTb div .yuRUbf > a',
+    };
+
+    $(CONFIG.results).each((index, element) => {
+      const position = this.serp.organic.length + 1;
+      const url = $(element).prop('href');
+      const domain = utils.getDomain(url);
+      const title = this.elementText(element, 'h3');
+      const snippet = this.getSnippet(element);
+      const linkType = utils.getLinkType(url);
+      const featured = true;
+      const result: Result = {
+        domain,
+        linkType,
+        position,
+        snippet,
+        title,
+        url,
+        featured:true
+      };
+      this.serp.organic.push(result);
+    });
+  }
+
 
   private getSnippet(element: CheerioElement): string {
     const text = this.$(element).parent().next().text();
