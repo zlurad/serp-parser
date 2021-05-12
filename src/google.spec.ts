@@ -70,9 +70,9 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[3].title).toBe('Google Account');
   });
 
-  test('4th result should have snippet to start with "Sign in to your Google Account, and ...', () => {
-    expect(serp.organic[3].snippet).toBe(
-      `Sign in to your Google Account, and get the most out of all the Google services&nbsp;...`,
+  test('4th result should have snippet to start with "Safely store and share your photos, videos, files and more in the cloud.', () => {
+    expect(serp.organic[4].snippet).toBe(
+      `Safely store and share your photos, videos, files and more in the cloud.`,
     );
   });
 
@@ -131,9 +131,9 @@ describe('Parsing Google page with 100 results', () => {
     expect(serp.organic[2].title).toBe('Learn about Google Photos');
   });
 
-  test('3rd result should have snippet to be "Google Photos is the home for all your photos and videos, automatically&nbsp;...', () => {
-    expect(serp.organic[2].snippet).toBe(
-      `Google Photos is the home for all your photos and videos, automatically&nbsp;...`,
+  test('3rd result should have snippet to be "Sign in to your Google Account, and get the most out of all the Google services ...', () => {
+    expect(serp.organic[4].snippet.replace(/\s+/g, ' ').trim()).toBe(
+      'Safely store and share your photos, videos, files and more in the cloud.'.replace(/\s+/g, ' ').trim(),
     );
   });
 
@@ -155,25 +155,21 @@ describe('Parsing Google featured snippet page', () => {
     expect(serp.organic).toHaveLength(10);
   });
 
-  test('expect serp', () => {
-    expect(serp).toBe("");
-  });
-
   test('1th result should have featured snippet', () => {
-    expect(serp.organic[0]).toBe("");
+    expect(serp.organic[0].featured).toBeTruthy();
   });
 
-  test('8th result should have domain hangouts.google.com', () => {
-    expect(serp.organic[0].domain).toBe('hangouts.google.com');
+  test('1st result should have domain backlinko.com', () => {
+    expect(serp.organic[0].domain).toBe('backlinko.com');
   });
 
-  test('4th result should have title "Google Account"', () => {
-    expect(serp.organic[0].title).toBe('Google Account');
+  test('1st result should have title "What Are Featured Snippets? And How to Get Them - Backlinko"', () => {
+    expect(serp.organic[0].title).toBe('What Are Featured Snippets? And How to Get Them - Backlinko');
   });
 
-  test('4th result should have snippet to start with "Sign in to your Google Account, and ...', () => {
+  test('1st result should have snippet to start with "Featured Snippets are short snippets ...', () => {
     expect(serp.organic[0].snippet).toBe(
-      `Sign in to your Google Account, and get the most out of all the Google services&nbsp;...`,
+      `Featured Snippets are short snippets of text that appear at the top of Google's search results in order to quickly answer a searcher's query. The content that appears inside of a Featured Snippet is automatically pulled from web pages in Google's index.`,
     );
   });
 });
