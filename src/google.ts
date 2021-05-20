@@ -79,7 +79,7 @@ export class GoogleSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a',
+      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search .g div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -177,7 +177,7 @@ export class GoogleSERP {
 
   private getRelatedKeywords() {
     const relatedKeywords: RelatedKeyword[] = [];
-    const query = 'p.nVcaUb a';
+    const query = '.k8XOCe';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
         keyword: this.$(elem).text(),
@@ -472,7 +472,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       ads: '.uEierd',
-      snippet: '.d5oMvf',
+      snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc)',
       title: '[role="heading"]',
       url: 'a.Krnil',
     };
