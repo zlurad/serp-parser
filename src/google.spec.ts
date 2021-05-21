@@ -286,10 +286,7 @@ describe('Parsing Hotels search page', () => {
     expect(serp.hotels?.hotels).toHaveLength(4);
   });
   test('First featured hotel should have name "Four Seasons Hotel New York"', () => {
-    expect(serp).toHaveProperty(
-      ['hotels', 'hotels', 0, 'name'],
-      'Four Seasons Hotel New York',
-    );
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'Four Seasons Hotel New York');
   });
   test('Third featured hotel should have currency "$"', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'currency'], '$');
@@ -595,7 +592,10 @@ describe('Parsing .com-domains page', () => {
   test('First bottom ad tests', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'url'], 'https://www.godaddy.com/offers/domains/generic');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 1, 'url'],
+      'https://www.godaddy.com/offers/domains/generic',
+    );
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.godaddy.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     // expect(serp).toHaveProperty(
@@ -648,7 +648,7 @@ describe('Parsing Dell page', () => {
     "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3\" FHD Screen - 8GB - 256G"`, () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'title'],
-      "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3\" FHD Screen - 8GB - 256G",
+      'Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G',
     );
   });
 

@@ -124,12 +124,11 @@ export class GoogleSERP {
         snippet,
         title,
         url,
-        featured:true
+        featured: true,
       };
       this.serp.organic.push(result);
     });
   }
-
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
     const text = this.$(element).parent().next().text();
@@ -163,7 +162,7 @@ export class GoogleSERP {
       .find(type === SitelinkType.card ? CONFIG.cards : CONFIG.inline);
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : $(el).attr('href') as string,
+        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : ($(el).attr('href') as string),
         snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
         title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text(),
         type,
