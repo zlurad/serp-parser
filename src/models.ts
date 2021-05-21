@@ -141,6 +141,7 @@ export interface Result {
   snippet: string;
   title: string;
   url: string;
+  featured?: boolean;
 }
 
 export interface Sitelink {

@@ -11,7 +11,7 @@ export class BingNojsSERP {
     relatedKeywords: [],
   };
 
-  private $: CheerioStatic;
+  private $;
   private CONFIG = {
     noResultsNojs: '#b_results li.b_no',
   };
@@ -49,7 +49,7 @@ export class BingNojsSERP {
       keyword: 'input[name="q"]',
     };
 
-    serp.keyword = $(CONFIG.keyword).val();
+    serp.keyword = $(CONFIG.keyword).val() as string;
 
     this.getOrganic();
     this.getRelatedKeywords();
@@ -85,7 +85,7 @@ export class BingNojsSERP {
     });
   }
 
-  private getSnippet(element: CheerioElement): string {
+  private getSnippet(element: cheerio.Element | cheerio.Node): string {
     let text;
 
     text = this.$(element).find('.b_caption > p').text();
@@ -96,7 +96,7 @@ export class BingNojsSERP {
     return text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '');
   }
 
-  private parseSitelinks(element: CheerioElement, result: Result) {
+  private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
       inline: '.b_vlist2col.b_deep li a',
@@ -112,7 +112,7 @@ export class BingNojsSERP {
 
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: $(el).attr('href'),
+        href: $(el).attr('href') as string,
         title: $(el).text(),
         type: SitelinkType.inline,
       };
@@ -158,11 +158,11 @@ export class BingNojsSERP {
     const hotelOffers = hotelsFeature.find(CONFIG.hotelOffers);
     hotelOffers.each((ind, elem) => {
       const name = this.elementText(elem, CONFIG.name);
-      const ratingText = this.$(elem).find(CONFIG.rating).attr('aria-label');
+      const ratingText = this.$(elem).find(CONFIG.rating).attr('aria-label') as string;
       const ratingMatch = (ratingText.match(CONFIG.ratingRegex) || ['0.0'])[0];
       const rating = parseFloat(ratingMatch.replace(',', '.'));
       // TODO regex replace all
-      const votesText = this.$(elem).find(CONFIG.votes).first().attr('title');
+      const votesText = this.$(elem).find(CONFIG.votes).first().attr('title') as string;
       const votesNumber = (votesText.match(CONFIG.votesRegex) || [0, 0])[1];
       const hotelStars = utils.getFirstMatch($($(elem).find(CONFIG.hotelStars)[1]).text(), CONFIG.hotelStarsRegex);
       const stars = parseInt(hotelStars, 10);
@@ -215,7 +215,7 @@ export class BingNojsSERP {
 
     $(CONFIG.ads).each((i, e) => {
       const title = this.elementText(e, CONFIG.title);
-      const url = this.elementHref(e, CONFIG.url);
+      const url = this.elementHref(e, CONFIG.url) as string;
       const domain = utils.getDomain(url, 'https://www.bingadservices.com/pagead');
       const linkType = utils.getLinkType(url, 'https://www.bingadservices.com/pagead');
       const snippet = this.elementText(e, CONFIG.snippet);
@@ -235,7 +235,7 @@ export class BingNojsSERP {
   }
 
   // TODO Figure out new BLOCK sitelinks at Hotels page
-  private getAdSitelinks(ad: CheerioElement) {
+  private getAdSitelinks(ad: cheerio.Element | cheerio.Node) {
     const $ = this.$;
     const CONFIG = {
       sitelinks: '.ad_vsltitle a',
@@ -245,7 +245,7 @@ export class BingNojsSERP {
       .find(CONFIG.sitelinks)
       .each((i, el) => {
         const sitelink: Sitelink = {
-          href: $(el).attr('href'),
+          href: $(el).attr('href') as string,
           title: $(el).text(),
           type: SitelinkType.inline,
         };
@@ -255,11 +255,11 @@ export class BingNojsSERP {
   }
 
   // Helper methods
-  private elementText(el: CheerioElement, query: string) {
+  private elementText(el: cheerio.Element | cheerio.Node, query: string) {
     return this.$(el).find(query).text();
   }
 
-  private elementHref(el: CheerioElement, query: string) {
+  private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
     return this.$(el).find(query).attr('href');
   }
 }

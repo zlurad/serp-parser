@@ -29,12 +29,12 @@ export class GoogleSERP {
     relatedKeywords: [],
   };
 
-  private $: CheerioStatic;
+  private $;
 
   constructor(html: string) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
-      xmlMode: true,
+      xmlMode: false,
     });
 
     this.parse();
@@ -56,10 +56,11 @@ export class GoogleSERP {
     }
 
     if ($('body').hasClass('srp')) {
-      serp.keyword = $(CONFIG.keyword).val();
+      serp.keyword = $(CONFIG.keyword).val() as string;
       serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
       serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
 
+      this.getFeatured();
       this.getOrganic();
       this.getRelatedKeywords();
       this.getPagination();
@@ -78,11 +79,11 @@ export class GoogleSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search .g div .yuRUbf > a',
+      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search .g div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
-      const position = index + 1;
+      const position = this.serp.organic.length + 1;
       const url = $(element).prop('href');
       const domain = utils.getDomain(url);
       const title = this.elementText(element, 'h3');
@@ -102,12 +103,40 @@ export class GoogleSERP {
     });
   }
 
-  private getSnippet(element: CheerioElement): string {
+  private getFeatured() {
+    const $ = this.$;
+    const CONFIG = {
+      results: '#search #rso>.ULSxyf>.g.mnr-c .c2xzTb div .yuRUbf > a',
+    };
+    $(CONFIG.results).each((index, element) => {
+      const position = this.serp.organic.length + 1;
+      const url = $(element).prop('href');
+      const domain = utils.getDomain(url);
+      const title = this.elementText(element, 'h3');
+      const snippet = this.$(element).closest('.g').prev().text();
+      const linkType = utils.getLinkType(url);
+      const featured = true;
+
+      const result: Result = {
+        domain,
+        linkType,
+        position,
+        snippet,
+        title,
+        url,
+        featured:true
+      };
+      this.serp.organic.push(result);
+    });
+  }
+
+
+  private getSnippet(element: cheerio.Element | cheerio.Node): string {
     const text = this.$(element).parent().next().text();
     return text;
   }
 
-  private parseSitelinks(element: CheerioElement, result: Result) {
+  private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
       cards: '.sld',
@@ -134,7 +163,7 @@ export class GoogleSERP {
       .find(type === SitelinkType.card ? CONFIG.cards : CONFIG.inline);
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : $(el).attr('href'),
+        href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : $(el).attr('href') as string,
         snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
         title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text(),
         type,
@@ -148,7 +177,7 @@ export class GoogleSERP {
 
   private getRelatedKeywords() {
     const relatedKeywords: RelatedKeyword[] = [];
-    const query = 'p.nVcaUb a';
+    const query = '.k8XOCe';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
         keyword: this.$(elem).text(),
@@ -158,7 +187,7 @@ export class GoogleSERP {
     this.serp.relatedKeywords = relatedKeywords;
   }
 
-  private parseCachedAndSimilarUrls(element: CheerioElement, result: Result) {
+  private parseCachedAndSimilarUrls(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
       closest: '.yuRUbf',
@@ -300,7 +329,7 @@ export class GoogleSERP {
     };
   }
 
-  private getHotelSearchFilters(hotelsFeature: Cheerio): HotelsSearchFilters {
+  private getHotelSearchFilters(hotelsFeature: cheerio.Cheerio<any>): HotelsSearchFilters {
     const $ = this.$;
     const CONFIG = {
       activeFilter: '.CWGqFd',
@@ -342,7 +371,7 @@ export class GoogleSERP {
     };
   }
 
-  private getHotelOffers(hotelsFeature: Cheerio): Hotel[] {
+  private getHotelOffers(hotelsFeature: cheerio.Cheerio<any>): Hotel[] {
     const $ = this.$;
     const CONFIG = {
       amenities: '.I9B2He',
@@ -371,7 +400,7 @@ export class GoogleSERP {
         10,
       );
       const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
-      const ratingString = $(el).find(CONFIG.rating).attr('aria-label');
+      const ratingString = $(el).find(CONFIG.rating).attr('aria-label') as string;
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
       const votes = parseInt(this.elementText(el, CONFIG.votes).slice(1, -1).replace(',', ''), 10); // Getting rid of parentheses with slice()
       // Make this better, maybe something instead of slice ?
@@ -443,7 +472,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       ads: '.uEierd',
-      snippet: '.d5oMvf',
+      snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc)',
       title: '[role="heading"]',
       url: 'a.Krnil',
     };
@@ -471,7 +500,7 @@ export class GoogleSERP {
       });
   }
 
-  private getAdSitelinks(ad: CheerioElement) {
+  private getAdSitelinks(ad: any) {
     const $ = this.$;
     const CONFIG = {
       card: '.fCBnFe',
@@ -496,7 +525,7 @@ export class GoogleSERP {
     const inlineSiteLinks = $(ad).find(CONFIG.inline);
     inlineSiteLinks.each((i, e) => {
       const sitelink: Sitelink = {
-        href: $(e).attr('href'),
+        href: $(e).attr('href') as string,
         title: $(e).text(),
         type: SitelinkType.inline,
       };
@@ -519,7 +548,7 @@ export class GoogleSERP {
     const availableOn: AvailableOn[] = [];
     if (list.length) {
       list.each((i, e) => {
-        const url = $(e).attr('href');
+        const url = $(e).attr('href') as string;
         const service = this.elementText(e, CONFIG.service);
         const price = this.elementText(e, CONFIG.price);
         availableOn.push({ url, service, price });
@@ -587,7 +616,7 @@ export class GoogleSERP {
     const topStories: TopStory[] = [];
     const topStory = topStoriesFeature.find(CONFIG.topStory);
     topStory.each((ind, el) => {
-      const url = $(el).attr('href');
+      const url = $(el).attr('href') as string;
       const title = this.elementText(el, CONFIG.title);
       const publisher = this.elementText(el, CONFIG.publisher);
       const published = this.elementText(el, CONFIG.published);
@@ -659,11 +688,11 @@ export class GoogleSERP {
   }
 
   // Helper methods
-  private elementText(el: CheerioElement, query: string) {
-    return this.$(el).find(query).text();
+  private elementText(el: cheerio.Element | cheerio.Node, query: string) {
+    return this.$(el).find(query).text() as string;
   }
 
-  private elementHref(el: CheerioElement, query: string) {
-    return this.$(el).find(query).attr('href');
+  private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
+    return this.$(el).find(query).attr('href') as string;
   }
 }
