@@ -79,7 +79,7 @@ export class GoogleSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search .g div .yuRUbf > a',
+      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -483,7 +483,7 @@ export class GoogleSERP {
         const url = this.elementHref(e, CONFIG.url);
         const domain = utils.getDomain(url);
         const linkType = utils.getLinkType(url);
-        const snippet = $(e).find(CONFIG.snippet).next().text();
+        const snippet = $(e).find(CONFIG.snippet).text();
         const sitelinks: Sitelink[] = this.getAdSitelinks(e);
         const position = i + 1;
         const ad: Ad = {
@@ -564,11 +564,12 @@ export class GoogleSERP {
       rating: '.BTtC6e',
       reviews: '.rllt__details.lqhpac div:nth-child(1) span:nth-child(3)',
       reviewsRegex: /[0-9]+/,
-      expensiveness: '.rllt__details.lqhpac div:nth-child(1) span:nth-child(4)',
+      expensiveness: '.rllt__details.lqhpac div:nth-child(1)',
+      expensivenessRegex: /\·([^]+)\·/,
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
       distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
-      address: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
+      address: '.rllt__details.lqhpac div:nth-child(2)',
       description: 'div.rllt__wrapped > span',
       localsFeature: '.AEprdc',
       local: '.C8TUKc',
@@ -586,7 +587,7 @@ export class GoogleSERP {
       const name = this.elementText(el, CONFIG.name);
       const rating = this.elementText(el, CONFIG.rating);
       const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
-      const expensiveness = this.elementText(el, CONFIG.expensiveness).length;
+      const expensiveness = utils.getFirstMatch($(el).find(CONFIG.expensiveness).text(), CONFIG.expensivenessRegex).slice(1,-1).trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
       const distance = '';
       const address = this.elementText(el, CONFIG.address);
