@@ -163,8 +163,8 @@ describe('Parsing Google featured snippet page', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  test('serp should have 11 results', () => {
-    expect(serp.organic).toHaveLength(11);
+  test('serp should have 10 results', () => {
+    expect(serp.organic).toHaveLength(10);
   });
 
   test('1th result should have featured snippet', () => {
@@ -349,10 +349,10 @@ describe('Parsing Hotels search page', () => {
         'https://www.hilton.com/en/locations/usa/new-york/new-york/',
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.hilton.com');
-      // expect(serp).toHaveProperty(
-      //   ['adwords', 'adwordsTop', 0, 'snippet'],
-      //   `NYC Club Ambience Hotel by 5th Ave. Get Expedia's Great Travel Prices. 600,000+ Hotels Worldwide | Secure Payments | Expedia Rewards | 24/7 Customer Support | Secure Booking.`,
-      // );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'snippet'],
+        `Stay Comfortably While Exploring New York's Historical Landmarks and Modern City.`,
+      );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
@@ -461,10 +461,10 @@ describe('Parsing Domain page', () => {
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domains/names');
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
-      // expect(serp).toHaveProperty(
-      //   ['adwords', 'adwordsTop', 0, 'snippet'],
-      //   `GoDaddy is trusted by over 20 million customers, with a Trustpilot rating of 4.3 stars. Free Basic Privacy | Free 24/7 Phone Support | Trusted By Millions | Year-Round Special Offers | 100s Of Domain Endings | Simple Domain Setup | Services: Domain Privacy, WHOIS Lookup.`,
-      // );
+      expect(serp).toHaveProperty(
+        ['adwords', 'adwordsTop', 0, 'snippet'],
+        `GoDaddy is trusted by over 20 million customers, with a Trustpilot rating of 4.1 stars. Simple Domain Setup. Free 24/7 Phone Support. Year-Round Special Offers. 100s Of Domain Endings. Free Basic Privacy. Services: Domain Privacy, WHOIS Lookup, Domains Transfers.`,
+      );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
@@ -598,10 +598,10 @@ describe('Parsing .com-domains page', () => {
     );
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.godaddy.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
-    // expect(serp).toHaveProperty(
-    //   ['adwords', 'adwordsBottom', 1, 'snippet'],
-    //   `Jumpstart Your Business By Getting A Free Website & Email With Every Domain. Domain Forwarding | Friendly 24/7 Support | .COM, .ORG, .XYZ & More | Free Starter Web Page.`,
-    // );
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 1, 'snippet'],
+      `It's never been more important to be online. Browse & buy your domain in seconds! Don't wait - snag your domain before someone else does! Free 24/7 phone support. Trusted By 20 Million. Simple Domain Setup. Year-Round Special Offers. 100s of Domain Endings.`,
+    );
   });
 });
 
@@ -622,11 +622,11 @@ describe('Parsing Coffee page', () => {
     expect(serp).toHaveProperty(['locals', 1, 'name'], "Peet's Coffee");
     expect(serp).toHaveProperty(['locals', 1, 'rating'], '4.3');
     expect(serp).toHaveProperty(['locals', 1, 'reviews'], '398');
-    //expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 2);
-    // expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
+    expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 1);
+    expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
     // There is no distance prop in current results
     // expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.3 mi');
-    //expect(serp).toHaveProperty(['locals', 1, 'address'], '1390 Market St UNIT 107');
+    expect(serp).toHaveProperty(['locals', 1, 'address'], '1400 Mission St Suite 130');
     // expect(serp).toHaveProperty(['locals', 1, 'description'], 'Small cafe for coffee & frozen yogurt');
   });
 });
