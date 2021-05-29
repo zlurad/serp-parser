@@ -31,18 +31,32 @@ export class GoogleSERP {
 
   private $;
 
-  constructor(html: string) {
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    pagination: true,
+    ads: true,
+    hotels: true,
+    videos: true,
+    thumbnails: true,
+    shop: true,
+    stories: true,
+    locals: true,
+  };
+
+  constructor(html: string, options?: any) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
     });
 
-    this.parse();
+    this.parse(options);
   }
 
-  private parse() {
+  private parse(opt?: any) {
     const $ = this.$;
     const serp = this.serp;
+    const options = opt ? opt : this.#DEF_OPTIONS;
     const CONFIG = {
       currentPage: 'table.AaVjTc td.YyVfkd',
       keyword: 'input[aria-label="Search"]',
@@ -58,28 +72,50 @@ export class GoogleSERP {
     if ($('body').hasClass('srp')) {
       serp.keyword = $(CONFIG.keyword).val() as string;
       serp.totalResults = utils.getTotalResults($(CONFIG.resultText).text());
+      serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
       serp.currentPage = parseInt($(CONFIG.currentPage).text(), 10);
 
-      this.getFeatured();
-      this.getOrganic();
-      this.getRelatedKeywords();
-      this.getPagination();
-      this.getAdwords();
-      this.getHotels();
-      serp.timeTaken = utils.getTimeTaken($(CONFIG.resultText).text());
-      this.getVideos();
-      this.getThumbnails();
+      if (options.organic) {
+        this.getFeatured();
+        this.getOrganic();
+      }
+      if (options.related) {
+        this.getRelatedKeywords();
+      }
+      if (options.pagination) {
+        this.getPagination();
+      }
+      if (options.ads) {
+        this.getAdwords();
+      }
+      if (options.hotels) {
+        this.getHotels();
+      }
+      if (options.videos) {
+        this.getVideos();
+      }
+      if (options.thumbnails) {
+        this.getThumbnails();
+      }
+      if (options.shop) {
+        this.getShopResults();
+      }
+      if (options.stories) {
+        this.getTopStories();
+      }
+      if (options.locals) {
+        this.getLocals();
+      }
+
       // this.getAvailableOn();
-      this.getShopResults();
-      this.getTopStories();
-      this.getLocals();
     }
   }
 
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
+      results:
+        '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -587,7 +623,10 @@ export class GoogleSERP {
       const name = this.elementText(el, CONFIG.name);
       const rating = this.elementText(el, CONFIG.rating);
       const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
-      const expensiveness = utils.getFirstMatch($(el).find(CONFIG.expensiveness).text(), CONFIG.expensivenessRegex).slice(1,-1).trim().length;
+      const expensiveness = utils
+        .getFirstMatch($(el).find(CONFIG.expensiveness).text(), CONFIG.expensivenessRegex)
+        .slice(1, -1)
+        .trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
       const distance = '';
       const address = this.elementText(el, CONFIG.address);
