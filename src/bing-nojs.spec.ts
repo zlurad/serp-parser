@@ -262,3 +262,21 @@ describe('Parsing no results nojs page', () => {
     expect(serp.error).toBe('No results page');
   });
 });
+
+describe('Parsing nojs Google page with 10 resuts', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync(`${root}bing-nojs.html`, { encoding: 'utf8' });
+    serp = new BingNojsSERP(html, {}).serp;
+  });
+
+  test('Do not detect any module parsing', () => {
+    expect(serp.organic).toHaveLength(0);
+    expect(serp.relatedKeywords).toHaveLength(0);
+    expect(serp).not.toHaveProperty(['hotels']);
+    expect(serp).not.toHaveProperty(['adwords']);
+    expect(serp).not.toHaveProperty(['error']);
+  });
+});

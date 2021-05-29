@@ -11,23 +11,29 @@ export class BingNojsSERP {
     relatedKeywords: [],
   };
 
-  private $;
-  private CONFIG = {
-    noResultsNojs: '#b_results li.b_no',
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    ads: true,
+    hotels: true,
   };
 
-  constructor(html: string) {
+  private $;
+
+  constructor(html: string, options?: any) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
     });
 
-    this.parse();
+    this.parse(options);
   }
 
-  private parse() {
+  private parse(options?: any) {
     const $ = this.$;
-    const CONFIG = this.CONFIG;
+    const CONFIG = {
+      noResultsNojs: '#b_results li.b_no',
+    };
     if ($(CONFIG.noResultsNojs).length === 1) {
       this.serp.error = 'No results page';
       // No need to parse anything for no results page
@@ -35,15 +41,16 @@ export class BingNojsSERP {
     }
 
     if ($('body').attr('onload')) {
-      this.parseBing();
+      this.parseBing(options);
     } else {
       this.serp.error = 'Not Bing nojs page';
       return;
     }
   }
 
-  private parseBing() {
+  private parseBing(opt?: any) {
     const serp = this.serp;
+    const options = opt ? opt : this.#DEF_OPTIONS;
     const $ = this.$;
     const CONFIG = {
       keyword: 'input[name="q"]',
@@ -51,10 +58,18 @@ export class BingNojsSERP {
 
     serp.keyword = $(CONFIG.keyword).val() as string;
 
-    this.getOrganic();
-    this.getRelatedKeywords();
-    this.getAdwords();
-    this.getHotels();
+    if (options.organic) {
+      this.getOrganic();
+    }
+    if (options.related) {
+      this.getRelatedKeywords();
+    }
+    if (options.ads) {
+      this.getAdwords();
+    }
+    if (options.hotels) {
+      this.getHotels();
+    }
   }
 
   private getOrganic() {

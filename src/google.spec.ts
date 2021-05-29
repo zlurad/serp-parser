@@ -724,7 +724,7 @@ describe('Parsing Google page with 10 resuts', () => {
     serp = new GoogleSERP(html, { }).serp;
   });
 
-  test('Page should have 11,310,000,000 results', () => {
+  test('Do not detect any module parsing', () => {
     expect(serp.organic).toHaveLength(0);
     expect(serp.pagination).toHaveLength(0);
     expect(serp.relatedKeywords).toHaveLength(0);
