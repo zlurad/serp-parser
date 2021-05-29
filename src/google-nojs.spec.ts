@@ -162,7 +162,7 @@ describe('Parsing Hotels-nojs search page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}hotels-nojs.html`, { encoding: 'utf8' });
-    serp = new GoogleNojsSERP(html).serp;
+    serp = new GoogleNojsSERP(html, { hotels: true }).serp;
   });
 
   test('Name of the first featured hotel should be "Millennium Hilton New York Downtown"', () => {
@@ -227,7 +227,7 @@ describe('Parsing Domain-nojs page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}domain-nojs.html`, { encoding: 'utf8' });
-    serp = new GoogleNojsSERP(html).serp;
+    serp = new GoogleNojsSERP(html, {ads: true}).serp;
     adwords = serp.adwords;
     if (adwords) {
       adwordsTop = adwords.adwordsTop;
@@ -281,5 +281,23 @@ describe('Parsing no results nojs page', () => {
   test('There should be 0 results', () => {
     expect(serp.organic).toHaveLength(0);
     expect(serp.error).toBe('No results page');
+  });
+});
+
+describe('Parsing nojs Google page with 10 resuts', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync(`${root}google-nojs.html`, { encoding: 'utf8' });
+    serp = new GoogleNojsSERP(html, {}).serp;
+  });
+
+  test('Do not detect any module parsing', () => {
+    expect(serp.organic).toHaveLength(0);
+    expect(serp.relatedKeywords).toHaveLength(0);
+    expect(serp).not.toHaveProperty(['hotels']);
+    expect(serp).not.toHaveProperty(['adwords']);
+    expect(serp).not.toHaveProperty(['error']);
   });
 });

@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "declaration": true,
+    "importHelpers": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

@@ -714,3 +714,28 @@ xdescribe('Parsing no results page', () => {
     expect(serp.error).toBe('No results page');
   });
 });
+
+describe('Parsing Google page with 10 resuts', () => {
+  let html: string;
+  let serp: Serp;
+
+  beforeAll(() => {
+    html = fs.readFileSync(`${root}google.html`, { encoding: 'utf8' });
+    serp = new GoogleSERP(html, { }).serp;
+  });
+
+  test('Do not detect any module parsing', () => {
+    expect(serp.organic).toHaveLength(0);
+    expect(serp.pagination).toHaveLength(0);
+    expect(serp.relatedKeywords).toHaveLength(0);
+    expect(serp).not.toHaveProperty(['thumbnailGroups']);
+    expect(serp).not.toHaveProperty(['videos']);
+    expect(serp).not.toHaveProperty(['hotels']);
+    expect(serp).not.toHaveProperty(['adwords']);
+    expect(serp).not.toHaveProperty(['availableOn']);
+    expect(serp).not.toHaveProperty(['topStories']);
+    expect(serp).not.toHaveProperty(['shopResults']);
+    expect(serp).not.toHaveProperty(['locals']);
+    expect(serp).not.toHaveProperty(['error']);
+  });
+});

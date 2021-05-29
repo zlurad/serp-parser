@@ -116,6 +116,7 @@ It will return serp object with array of results with domain, position, title, u
 }
 ```
 
+
 ## Usage - Bing SERP extraction
 
 **Note: Only BingNojsSerp is implemented so far.**
@@ -125,9 +126,9 @@ BingSERP works the same as GoogleSerp. It accepts both html that is extracted wi
 With html from headless browser we use full `BingSERP` parser
 
 ```
-import { BingSERP } from 'serp-parser'
+import { BingNojsSERP } from 'serp-parser'
 
-const parser = new BingSERP(html);
+const parser = new BingNojsSERP(html);
 
 console.dir(parser.serp);
 ```
@@ -145,6 +146,41 @@ request('https://www.bing.com/search?q=bing', function (error, response, html) {
   }
 });
 ```
+
+## Parse options - specify what features to parse
+On each module you can specify the parse options as a second parameter to only parse SERP features that you want, for `GoogleSERP` here are all the options:
+
+```
+  // Options for GoogleSERP
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    pagination: true,
+    ads: true,
+    hotels: true,
+    videos: true,
+    thumbnails: true,
+    shop: true,
+    stories: true,
+    locals: true,
+  };
+  // Options for GoogleNojsSERP and BingNojsSERP
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    ads: true,
+    hotels: true,
+  };
+```
+
+Usage:
+In this example only organic feature will be parsed 
+```
+  import { GoogleSERP } from 'serp-parser'
+  const parser = new GoogleSERP(html, {organic: true});
+  console.dir(parser.serp);
+```
+
 
 ## Roadmap
 

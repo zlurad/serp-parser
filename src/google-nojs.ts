@@ -11,23 +11,29 @@ export class GoogleNojsSERP {
     relatedKeywords: [],
   };
 
-  private $;
-  private CONFIG = {
-    noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    ads: true,
+    hotels: true,
   };
 
-  constructor(html: string) {
+  private $;
+
+  constructor(html: string, options?: any) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
     });
 
-    this.parse();
+    this.parse(options);
   }
 
-  private parse() {
+  private parse(opt?: any) {
     const $ = this.$;
-    const CONFIG = this.CONFIG;
+    const CONFIG = {
+      noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
+    };
     if ($(CONFIG.noResultsNojs).length === 1) {
       this.serp.error = 'No results page';
       // No need to parse anything for no results page
@@ -35,15 +41,16 @@ export class GoogleNojsSERP {
     }
 
     if ($('body').attr('jsmodel') === 'TvHxbe') {
-      this.parseGoogle();
+      this.parseGoogle(opt);
     } else {
       this.serp.error = 'Not Google nojs page';
       return;
     }
   }
 
-  private parseGoogle() {
+  private parseGoogle(opt?: any) {
     const serp = this.serp;
+    const options = opt ? opt : this.#DEF_OPTIONS;
     const $ = this.$;
     const CONFIG = {
       keyword: 'input[name="q"]',
@@ -51,10 +58,18 @@ export class GoogleNojsSERP {
 
     serp.keyword = $(CONFIG.keyword).val() as string;
 
-    this.getOrganic();
-    this.getRelatedKeywords();
-    this.getAdwords();
-    this.getHotels();
+    if (options.organic) {
+      this.getOrganic();
+    }
+    if (options.related) {
+      this.getRelatedKeywords();
+    }
+    if (options.ads) {
+      this.getAdwords();
+    }
+    if (options.hotels) {
+      this.getHotels();
+    }
   }
 
   private getOrganic() {
