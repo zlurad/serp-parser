@@ -721,7 +721,7 @@ describe('Parsing Google page with 10 resuts', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html, { }).serp;
+    serp = new GoogleSERP(html, {}).serp;
   });
 
   test('Do not detect any module parsing', () => {

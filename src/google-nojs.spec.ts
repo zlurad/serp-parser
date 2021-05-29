@@ -227,7 +227,7 @@ describe('Parsing Domain-nojs page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}domain-nojs.html`, { encoding: 'utf8' });
-    serp = new GoogleNojsSERP(html, {ads: true}).serp;
+    serp = new GoogleNojsSERP(html, { ads: true }).serp;
     adwords = serp.adwords;
     if (adwords) {
       adwordsTop = adwords.adwordsTop;
