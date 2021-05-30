@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { GoogleSERP } from './index';
-import { Ad, Serp } from './models';
+import { Serp } from './models';
 
 const root = 'test/google/desktop/';
 
@@ -51,18 +51,18 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp.organic[2].url).toBe('https://about.google/');
   });
 
-  xtest(`1st result should have cachedUrl`, () => {
+  test.skip(`1st result should have cachedUrl`, () => {
     expect(serp.organic[0].cachedUrl).toBe(
       'https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us',
     );
   });
-  xtest(`1st result should have similarUrl`, () => {
+  test.skip(`1st result should have similarUrl`, () => {
     expect(serp.organic[0].similarUrl).toBe(
       '/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&sa=X&ved=2ahUKEwi_sOn2ztfuAhVOmK0KHZD9DjMQHzAAegQICRAG',
     );
   });
 
-  xtest('8th result should have domain hangouts.google.com', () => {
+  test.skip('8th result should have domain hangouts.google.com', () => {
     expect(serp.organic[7].domain).toBe('hangouts.google.com');
   });
 
@@ -76,7 +76,7 @@ describe('Parsing Google page with 10 resuts', () => {
     );
   });
 
-  xtest('1st result should have card sitelinks', () => {
+  test.skip('1st result should have card sitelinks', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/account/about/');
     expect(serp).toHaveProperty(
@@ -86,7 +86,7 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
   test('2nd result should not have sitelinks', () => {
-    expect(serp.organic[1].hasOwnProperty('sitelinks')).toBeFalsy();
+    expect(serp).not.toHaveProperty(['organic','1','sitelinks'])
   });
 
   test('testing videos property for non existent results', () => {
@@ -98,7 +98,7 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing topStories property for non existent results', () => {
     expect(serp.topStories).toBeUndefined();
   });
-  xtest('testing Locals property for non existent results', () => {
+  test.skip('testing Locals property for non existent results', () => {
     expect(serp.locals).toBeUndefined();
   });
   test('testing shop property for non existent results', () => {
@@ -203,7 +203,7 @@ describe('Parsing "The Matrix" search page', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
 
-  xtest('1st result should have sitelinks and first sitelink should have title "‎Franchise"', () => {
+  test.skip('1st result should have sitelinks and first sitelink should have title "‎Franchise"', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Franchise');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'href'],
@@ -213,14 +213,14 @@ describe('Parsing "The Matrix" search page', () => {
   });
 
   // Moved to knowledge graph
-  xtest('There should be Available On serp feature, 6 of them', () => {
+  test.skip('There should be Available On serp feature, 6 of them', () => {
     expect(serp.availableOn).toHaveLength(6);
     expect(serp).toHaveProperty(['availableOn', 0, 'service'], 'YouTube');
     expect(serp).toHaveProperty(['availableOn', 0, 'price'], '$3.99');
     expect(serp).toHaveProperty(['availableOn', 0, 'url'], 'http://www.youtube.com/watch?v=qEXv-rVWAu8');
   });
 
-  test('Test videoCard feature', () => {
+  test('video card feature', () => {
     expect(serp.videos).toHaveLength(4);
     expect(serp).toHaveProperty(['videos', 0, 'title'], 'Matrix Trailer HD (1999)');
     expect(serp).toHaveProperty(['videos', 0, 'sitelink'], 'https://www.youtube.com/watch?v=m8e-FF8MsqU');
@@ -229,7 +229,7 @@ describe('Parsing "The Matrix" search page', () => {
     expect(serp).toHaveProperty(['videos', 0, 'channel'], 'Face Off');
     expect(serp).toHaveProperty(['videos', 0, 'videoDuration'], '2:31');
   });
-  xtest('thumbnailGroups feature test', () => {
+  test.skip('thumbnailGroups feature test', () => {
     expect(serp.thumbnailGroups).toHaveLength(3);
     expect(serp).toHaveProperty(['thumbnailGroups', 0, 'heading'], 'The Matrix movies');
     expect(serp).toHaveProperty(['thumbnailGroups', 0, 'thumbnails', 0, 'title'], 'The Matrix Reloaded');
@@ -262,13 +262,12 @@ describe('Parsing Hotels search page', () => {
   test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York, NY, USA"', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
   });
-  // TODO fix tests for checkin-out
-  // test('The checkIn date in searchFilters of hotels feature should be "Sat Oct 17 2020"', () => {
-  //   expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('2020-10-17'));
-  // });
-  // test('The checkOut date in searchFilters of hotels feature should be "Sun Oct 18 2020"', () => {
-  //   expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('2020-10-18'));
-  // });
+  test('The checkIn date in searchFilters of hotels feature should be "Sat Oct 17 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('2021-05-28T23:00:00.000Z'));
+  });
+  test('The checkOut date in searchFilters of hotels feature should be "Sun Oct 18 2020"', () => {
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('2021-05-29T23:00:00.000Z'));
+  });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
   });
@@ -300,7 +299,7 @@ describe('Parsing Hotels search page', () => {
   test('Third featured hotel should have 3699 votes', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'votes'], 3699);
   });
-  xtest('Second featured hotel should have following amenities: "Spa"', () => {
+  test.skip('Second featured hotel should have following amenities: "Spa"', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'amenities'], 'Indoor pool');
   });
   test('First featured hotel should not have featuredReview property', () => {
@@ -314,13 +313,8 @@ describe('Parsing Hotels search page', () => {
   });
 
   // TODO there is no featured review on the new hotels page, find one to test
-  xtest('Fourth featured hotel should have featured review', () => {
-    if (serp.hotels) {
-      expect(serp.hotels.hotels[3].featuredReview).toBe('');
-    }
-  });
 
-  xtest(`First featured hotel should be labeled with deal,
+  test.skip(`First featured hotel should be labeled with deal,
    having dealType: "DEAL" and
    dealDetails: "22% less than usual"`, () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'deal', 'dealType'], 'DEAL');
@@ -356,7 +350,7 @@ describe('Parsing Hotels search page', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
-    xtest('Testing 2nd ad sitelink', () => {
+    test.skip('Testing 2nd ad sitelink', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Book for Tonight');
       expect(serp).toHaveProperty(
@@ -367,7 +361,7 @@ describe('Parsing Hotels search page', () => {
     });
   });
 
-  xdescribe('Testing top stories feature', () => {
+  describe.skip('Testing top stories feature', () => {
     test('Page should have topStories feature', () => {
       expect(serp.topStories).toBeDefined();
     });
@@ -396,7 +390,7 @@ describe('Parsing Hotels-London search page', () => {
     serp = new GoogleSERP(html).serp;
   });
 
-  xtest('Second featured hotel should have originalPrice property and should have value 113', () => {
+  test.skip('Second featured hotel should have originalPrice property and should have value 113', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'deal', 'originalPrice'], 113);
   });
 
@@ -411,7 +405,7 @@ describe('Parsing Hotels-London search page', () => {
     expect(activeFiltersNumber).toBe(1);
   });
 
-  xtest('4th featured hotel should not have amenities property', () => {
+  test.skip('4th featured hotel should not have amenities property', () => {
     expect(serp).not.toHaveProperty(['hotels', 'hotels', 0, 'amenities']);
   });
 });
@@ -443,7 +437,7 @@ describe('Parsing Domain page', () => {
   });
 
   describe('Testing ads', () => {
-    xtest('There should be top ads', () => {
+    test.skip('There should be top ads', () => {
       expect(serp.adwords).toBeDefined();
       expect(serp.adwords?.adwordsTop).toBeDefined();
       expect(serp.adwords?.adwordsBottom).toBeDefined();
@@ -482,7 +476,7 @@ describe('Parsing Domain page', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
     });
 
-    xtest('Testing 2nd ad sitelink', () => {
+    test.skip('Testing 2nd ad sitelink', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Free Website Builder');
       expect(serp).toHaveProperty(
@@ -492,7 +486,7 @@ describe('Parsing Domain page', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
     });
 
-    xtest('Testing adwordsBottom property', () => {
+    test.skip('Testing adwordsBottom property', () => {
       expect(serp.adwords?.adwordsBottom).toHaveLength(1);
       expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
       expect(serp).toHaveProperty(
@@ -511,7 +505,7 @@ describe('Parsing Domain page', () => {
 });
 
 // There are no ADs in paris page anymore, remove this in next few iterations
-xdescribe('Parsing Paris page', () => {
+describe.skip('Parsing Paris page', () => {
   let html: string;
   let serp: Serp;
 
@@ -645,7 +639,7 @@ describe('Parsing Dell page', () => {
   });
 
   test(`Page should have shop results and the title of the first shop result should be 
-    "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3\" FHD Screen - 8GB - 256G"`, () => {
+    "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G"`, () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'title'],
       'Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G',
@@ -676,7 +670,7 @@ describe('Parsing Dell page', () => {
   });
 
   // TODO there is no special offer on this page, find one to test
-  xtest('First shop result on the page should have specialOffer saying "Special offer"', () => {
+  test.skip('First shop result on the page should have specialOffer saying "Special offer"', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'specialOffer'], 'Special offer');
   });
 
@@ -700,7 +694,7 @@ describe('Parsing Dell page', () => {
   });
 });
 
-xdescribe('Parsing no results page', () => {
+describe.skip('Parsing no results page', () => {
   let html: string;
   let serp: Serp;
 
@@ -715,7 +709,7 @@ xdescribe('Parsing no results page', () => {
   });
 });
 
-describe('Parsing Google page with 10 resuts', () => {
+describe('Testing optional module parsing', () => {
   let html: string;
   let serp: Serp;
 

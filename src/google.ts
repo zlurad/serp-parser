@@ -12,7 +12,6 @@ import {
   ShopResult,
   Sitelink,
   SitelinkType,
-  Thumbnail,
   ThumbnailGroup,
   TopStory,
   VideoCard,
@@ -44,7 +43,7 @@ export class GoogleSERP {
     locals: true,
   };
 
-  constructor(html: string, options?: any) {
+  constructor(html: string, options?: Record<string, boolean>) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
@@ -53,7 +52,7 @@ export class GoogleSERP {
     this.parse(options);
   }
 
-  private parse(opt?: any) {
+  private parse(opt?: Record<string, boolean>) {
     const $ = this.$;
     const serp = this.serp;
     const options = opt ? opt : this.#DEF_OPTIONS;
@@ -160,7 +159,7 @@ export class GoogleSERP {
         snippet,
         title,
         url,
-        featured: true,
+        featured,
       };
       this.serp.organic.push(result);
     });
@@ -364,7 +363,7 @@ export class GoogleSERP {
     };
   }
 
-  private getHotelSearchFilters(hotelsFeature: cheerio.Cheerio<any>): HotelsSearchFilters {
+  private getHotelSearchFilters(hotelsFeature: cheerio.Cheerio<cheerio.Element>): HotelsSearchFilters {
     const $ = this.$;
     const CONFIG = {
       activeFilter: '.CWGqFd',
@@ -406,7 +405,7 @@ export class GoogleSERP {
     };
   }
 
-  private getHotelOffers(hotelsFeature: cheerio.Cheerio<any>): Hotel[] {
+  private getHotelOffers(hotelsFeature: cheerio.Cheerio<cheerio.Element>): Hotel[] {
     const $ = this.$;
     const CONFIG = {
       amenities: '.I9B2He',
@@ -535,7 +534,7 @@ export class GoogleSERP {
       });
   }
 
-  private getAdSitelinks(ad: any) {
+  private getAdSitelinks(ad: cheerio.Element) {
     const $ = this.$;
     const CONFIG = {
       card: '.fCBnFe',
@@ -601,7 +600,7 @@ export class GoogleSERP {
       reviews: '.rllt__details.lqhpac div:nth-child(1) span:nth-child(3)',
       reviewsRegex: /[0-9]+/,
       expensiveness: '.rllt__details.lqhpac div:nth-child(1)',
-      expensivenessRegex: /\·([^]+)\·/,
+      expensivenessRegex: /·([^]+)·/,
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
       distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',

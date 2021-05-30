@@ -20,7 +20,7 @@ export class BingNojsSERP {
 
   private $;
 
-  constructor(html: string, options?: any) {
+  constructor(html: string, options?: Record<string, boolean>) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
@@ -29,7 +29,7 @@ export class BingNojsSERP {
     this.parse(options);
   }
 
-  private parse(options?: any) {
+  private parse(options?: Record<string, boolean>) {
     const $ = this.$;
     const CONFIG = {
       noResultsNojs: '#b_results li.b_no',
@@ -48,7 +48,7 @@ export class BingNojsSERP {
     }
   }
 
-  private parseBing(opt?: any) {
+  private parseBing(opt?: Record<string, boolean>) {
     const serp = this.serp;
     const options = opt ? opt : this.#DEF_OPTIONS;
     const $ = this.$;
@@ -163,7 +163,7 @@ export class BingNojsSERP {
       hotelStarsRegex: /\d(?=-star)/,
       name: '.lc_content h2',
       rating: '.csrc.sc_rc1',
-      ratingRegex: /\d*\.?\,?\d/,
+      ratingRegex: /\d*\.?,?\d/,
       votes: '.b_factrow > span[title]',
       votesRegex: /\((.*)\)/,
     };

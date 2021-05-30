@@ -20,7 +20,7 @@ export class GoogleNojsSERP {
 
   private $;
 
-  constructor(html: string, options?: any) {
+  constructor(html: string, options?: Record<string, boolean>) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
@@ -29,7 +29,7 @@ export class GoogleNojsSERP {
     this.parse(options);
   }
 
-  private parse(opt?: any) {
+  private parse(opt?: Record<string, boolean>) {
     const $ = this.$;
     const CONFIG = {
       noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
@@ -48,7 +48,7 @@ export class GoogleNojsSERP {
     }
   }
 
-  private parseGoogle(opt?: any) {
+  private parseGoogle(opt?: Record<string, boolean>) {
     const serp = this.serp;
     const options = opt ? opt : this.#DEF_OPTIONS;
     const $ = this.$;

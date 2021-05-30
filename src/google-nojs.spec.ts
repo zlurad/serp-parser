@@ -63,7 +63,7 @@ describe('Parsing nojs Google page with 10 resuts', () => {
   });
 
   test('3rd result should not have sitelinks', () => {
-    expect(serp.organic[2].hasOwnProperty('sitelinks')).toBeFalsy();
+    expect(serp).not.toHaveProperty(['organic', 2, 'sitelinks']);
   });
 
   test('Page should have 12 related keywords', () => {
@@ -180,7 +180,7 @@ describe('Parsing Hotels-nojs search page', () => {
   test('Description of the first featured hotel should be "Sleek hotel with dining, a spa & a pool"', () => {
     expect(serp.hotels?.hotels[0].description).toBe('Sleek hotel with dining, a spa & a pool');
   });
-  xtest('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
+  test.skip('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
     expect(serp.hotels?.hotels[0].featuredReview).toBe(
       'Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff',
     );
@@ -190,7 +190,7 @@ describe('Parsing Hotels-nojs search page', () => {
       'https://www.google.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Millennium+Hilton+New+York+Downtown+New+York,+NY&ludocid=17735751118331707919&ibp=gwp;0,7&lsig=AB86z5XzVhvRx3-AsRIbzNDblrqP&phdesc=J519NBuV2wc&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QvS4wAHoECBQQBA',
     );
   });
-  xtest(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
+  test.skip(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
     expect(serp.hotels?.hotels[1].amenities).toBe('Free Wi-Fi');
   });
 
@@ -242,30 +242,23 @@ describe('Parsing Domain-nojs page', () => {
   });
 
   test('Testing first ad', () => {
-    if (adwordsTop) {
-      const ad = adwordsTop[0];
-      expect(ad.position).toBe(1);
-      expect(ad.title).toBe('Google Domain Names - Domains, Custom Emails & Sites');
-      expect(ad.url).toBe(
-        'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABABGgJ3cw&sig=AOD64_174-onC0FNonRouW05eLvgf-ichg&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQ0Qx6BAgVEAE&adurl=',
-      );
-      expect(ad.domain).toBe('www.google.com');
-      expect(ad.snippet).toBe(
-        'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.',
-      );
-      expect(ad.linkType).toBe('LANDING');
-    }
+    expect(adwordsTop).toHaveProperty(['0']);
+    expect(adwordsTop).toHaveProperty(['0', 'position'], 1);
+    expect(adwordsTop).toHaveProperty(['0', 'title'], 'Google Domain Names - Domains, Custom Emails & Sites');
+    expect(adwordsTop).toHaveProperty(
+      ['0', 'url'],
+      'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABABGgJ3cw&sig=AOD64_174-onC0FNonRouW05eLvgf-ichg&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQ0Qx6BAgVEAE&adurl=',
+    );
+    expect(adwordsTop).toHaveProperty(['0', 'domain'], 'www.google.com');
+    expect(adwordsTop).toHaveProperty(['0', 'snippet'], 'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.');
+    expect(adwordsTop).toHaveProperty(['0', 'linkType'], 'LANDING');
   });
 
-  test(`Test first top ad card sitelink`, () => {
-    if (adwordsTop) {
-      const sitelink = adwordsTop[1].sitelinks[1];
-      expect(sitelink.title).toBe('Customize Easily');
-      expect(sitelink.href).toBe(
-        'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABAGGgJ3cw&sig=AOD64_2l9W5FDQtnwFl-SAL_GR7II4LX8A&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQpigoAXoECBYQBA&adurl=',
-      );
-      expect(sitelink.type).toBe('INLINE');
-    }
+  test(`first top ad card sitelink`, () => {
+    expect(adwordsTop).toHaveProperty(['1','sitelinks','1']);
+    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','title'],'Customize Easily');
+    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','href'],'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABAGGgJ3cw&sig=AOD64_2l9W5FDQtnwFl-SAL_GR7II4LX8A&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQpigoAXoECBYQBA&adurl=');
+    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','type'],'INLINE');
   });
 });
 
@@ -284,7 +277,7 @@ describe('Parsing no results nojs page', () => {
   });
 });
 
-describe('Parsing nojs Google page with 10 resuts', () => {
+describe('Testing optional feature parsing', () => {
   let html: string;
   let serp: Serp;
 
