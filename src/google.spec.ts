@@ -263,10 +263,10 @@ describe('Parsing Hotels search page', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
   });
   test('The checkIn date in searchFilters of hotels feature should be "Sat Oct 17 2020"', () => {
-    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('2021-05-28T23:00:00.000Z'));
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('Sat, May 29 2021'));
   });
   test('The checkOut date in searchFilters of hotels feature should be "Sun Oct 18 2020"', () => {
-    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('2021-05-29T23:00:00.000Z'));
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('Sun, May 30 2021'));
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
