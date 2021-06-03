@@ -105,7 +105,7 @@ describe('Parsing Google page with 100 results', () => {
   });
 });
 
-describe.skip('Parsing Google featured snippet page', () => {
+describe('Parsing Google featured snippet page', () => {
   let html: string;
   let serp: Serp;
 
@@ -114,8 +114,8 @@ describe.skip('Parsing Google featured snippet page', () => {
     serp = new GoogleMobileSERP(html).serp;
   });
 
-  test('serp should have 10 results', () => {
-    expect(serp.organic).toHaveLength(10);
+  test('serp should have 9 results', () => {
+    expect(serp.organic).toHaveLength(9);
   });
 
   test('1th result should have featured snippet', () => {
@@ -130,10 +130,12 @@ describe.skip('Parsing Google featured snippet page', () => {
     expect(serp.organic[0].title).toBe('What Are Featured Snippets? And How to Get Them - Backlinko');
   });
 
-  test('1st result should have snippet to start with "Featured Snippets are short snippets ...', () => {
-    expect(serp.organic[0].snippet).toBe(
-      `Featured Snippets are short snippets of text that appear at the top of Google's search results in order to quickly answer a searcher's query. The content that appears inside of a Featured Snippet is automatically pulled from web pages in Google's index.`,
-    );
+  test('1st result should have snippet to start with "Featured Snippets are short snippets of', () => {
+    expect(serp.organic[0].snippet.substr(0, 40)).toBe(`Featured Snippets are short snippets of `);
+  });
+
+  test('2nd result should not have featured snippet', () => {
+    expect(serp.organic[1].featured).toBeUndefined();
   });
 });
 

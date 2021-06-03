@@ -67,7 +67,7 @@ export class GoogleMobileSERP {
     if ($('body').hasClass('srp')) {
       serp.keyword = $(CONFIG.keyword).val() as string;
       if (options.organic) {
-        // this.getFeatured();
+        this.getFeatured();
         this.getOrganic();
       }
       // if (options.ads) {
@@ -122,32 +122,32 @@ export class GoogleMobileSERP {
     });
   }
 
-  // private getFeatured() {
-  //   const $ = this.$;
-  //   const CONFIG = {
-  //     results: '#search #rso>.ULSxyf>.g.mnr-c .c2xzTb div .yuRUbf > a',
-  //   };
-  //   $(CONFIG.results).each((index, element) => {
-  //     const position = this.serp.organic.length + 1;
-  //     const url = $(element).prop('href');
-  //     const domain = utils.getDomain(url);
-  //     const title = this.elementText(element, 'h3');
-  //     const snippet = this.$(element).closest('.g').prev().text();
-  //     const linkType = utils.getLinkType(url);
-  //     const featured = true;
+  private getFeatured() {
+    const $ = this.$;
+    const CONFIG = {
+      results: '#rso .xpdopen .ifM9O .mnr-c a',
+    };
+    $(CONFIG.results).each((index, element) => {
+      const position = this.serp.organic.length + 1;
+      const url = $(element).prop('href');
+      const domain = utils.getDomain(url);
+      const title = $(element).text();
+      const snippet = this.$(element).closest('.mnr-c').prev().text();
+      const linkType = utils.getLinkType(url);
+      const featured = true;
 
-  //     const result: Result = {
-  //       domain,
-  //       linkType,
-  //       position,
-  //       snippet,
-  //       title,
-  //       url,
-  //       featured,
-  //     };
-  //     this.serp.organic.push(result);
-  //   });
-  // }
+      const result: Result = {
+        domain,
+        linkType,
+        position,
+        snippet,
+        title,
+        url,
+        featured,
+      };
+      this.serp.organic.push(result);
+    });
+  }
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
     const text = this.$(element).closest('.mnr-c').find('div.MUxGbd.yDYNvb').text().replace(/\s+/g, ' ').trim();
