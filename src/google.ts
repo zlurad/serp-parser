@@ -251,7 +251,7 @@ export class GoogleSERP {
 
     const pagination = $(CONFIG.pagination);
     serp.pagination.push({
-      page: serp.currentPage,
+      page: serp.currentPage || 1,
       path: '',
     });
     pagination.find(CONFIG.pages).each((index, element) => {
