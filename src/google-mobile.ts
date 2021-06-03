@@ -32,7 +32,7 @@ export class GoogleMobileSERP {
   #DEF_OPTIONS = {
     organic: true,
     related: false,
-    ads: false,
+    ads: true,
     hotels: false,
     videos: false,
     thumbnails: false,
@@ -70,9 +70,9 @@ export class GoogleMobileSERP {
         this.getFeatured();
         this.getOrganic();
       }
-      // if (options.ads) {
-      //   this.getAdwords();
-      // }
+      if (options.ads) {
+        this.getAdwords();
+      }
       // if (options.hotels) {
       //   this.getHotels();
       // }
@@ -397,94 +397,78 @@ export class GoogleMobileSERP {
   //   return hotels;
   // }
 
-  // private getAdwords() {
-  //   const $ = this.$;
-  //   const serp = this.serp;
-  //   const CONFIG = {
-  //     bottom: '#tadsb',
-  //     top: '#tads',
-  //   };
+  private getAdwords() {
+    const $ = this.$;
+    const serp = this.serp;
+    const CONFIG = {
+      bottom: '#tadsb',
+      top: '#tads',
+    };
 
-  //   const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
-  //   // TODO: refactor this
-  //   if ($(CONFIG.top).length) {
-  //     adwords.adwordsTop = [];
-  //     this.getAds(CONFIG.top, adwords.adwordsTop);
-  //   }
-  //   if ($(CONFIG.bottom).length) {
-  //     adwords.adwordsBottom = [];
-  //     this.getAds(CONFIG.bottom, adwords.adwordsBottom);
-  //   }
-  //   serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
-  // }
+    const adwords: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] } = {};
+    // TODO: refactor this
+    if ($(CONFIG.top).length) {
+      adwords.adwordsTop = [];
+      this.getAds(CONFIG.top, adwords.adwordsTop);
+    }
+    if ($(CONFIG.bottom).length) {
+      adwords.adwordsBottom = [];
+      this.getAds(CONFIG.bottom, adwords.adwordsBottom);
+    }
+    serp.adwords = adwords.adwordsTop || adwords.adwordsBottom ? adwords : undefined;
+  }
 
-  // private getAds(search: string, adsList: Ad[]) {
-  //   const $ = this.$;
-  //   const CONFIG = {
-  //     ads: '.uEierd',
-  //     snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc)',
-  //     title: '[role="heading"]',
-  //     url: 'a.Krnil',
-  //   };
+  private getAds(search: string, adsList: Ad[]) {
+    const $ = this.$;
+    const CONFIG = {
+      ads: '.uEierd',
+      snippet: '.MUxGbd.yDYNvb.lEBKkf',
+      title: '[role="heading"]',
+      url: 'a.C8nzq.d5oMvf.BmP5tf',
+    };
 
-  //   $(search)
-  //     .find(CONFIG.ads)
-  //     .each((i, e) => {
-  //       const title = this.elementText(e, CONFIG.title);
-  //       const url = this.elementHref(e, CONFIG.url);
-  //       const domain = utils.getDomain(url);
-  //       const linkType = utils.getLinkType(url);
-  //       const snippet = $(e).find(CONFIG.snippet).text();
-  //       const sitelinks: Sitelink[] = this.getAdSitelinks(e);
-  //       const position = i + 1;
-  //       const ad: Ad = {
-  //         domain,
-  //         linkType,
-  //         position,
-  //         sitelinks,
-  //         snippet,
-  //         title,
-  //         url,
-  //       };
-  //       adsList.push(ad);
-  //     });
-  // }
+    $(search)
+      .find(CONFIG.ads)
+      .each((i, e) => {
+        const title = this.elementText(e, CONFIG.title);
+        const url = this.elementHref(e, CONFIG.url);
+        const domain = utils.getDomain(url);
+        const linkType = utils.getLinkType(url);
+        const snippet = $(e).find(CONFIG.snippet).text();
+        const sitelinks: Sitelink[] = this.getAdSitelinks(e);
+        const position = i + 1;
+        const ad: Ad = {
+          domain,
+          linkType,
+          position,
+          sitelinks,
+          snippet,
+          title,
+          url,
+        };
+        adsList.push(ad);
+      });
+  }
 
-  // private getAdSitelinks(ad: cheerio.Element) {
-  //   const $ = this.$;
-  //   const CONFIG = {
-  //     card: '.fCBnFe',
-  //     cardHref: 'h3 a',
-  //     cardSnippet: ':not(h3)',
-  //     cardTitle: 'h3',
-  //     inline: '.bOeY0b a',
-  //     test: 'St0YAf',
-  //   };
+  private getAdSitelinks(ad: cheerio.Element) {
+    const $ = this.$;
+    const CONFIG = {
+      inline: '.MUxGbd.v0nnCb.lyLwlc a,.Uq7H1 a',
+    };
+    const sitelinks: Sitelink[] = [];
+    const inlineSiteLinks = $(ad).find(CONFIG.inline);
+    inlineSiteLinks.each((i, e) => {
+      const sitelink: Sitelink = {
+        href: $(e).attr('href') as string,
+        title: $(e).text(),
+        type: SitelinkType.inline,
+      };
+      sitelinks.push(sitelink);
+    });
+    return sitelinks;
+  }
 
-  //   const sitelinks: Sitelink[] = [];
-  //   const cardSitelinks = $(ad).find(CONFIG.card);
-  //   cardSitelinks.each((ind, e) => {
-  //     const sitelink: Sitelink = {
-  //       href: this.elementHref(e, CONFIG.cardHref),
-  //       snippet: $(e).children(CONFIG.cardSnippet).text(),
-  //       title: this.elementText(e, CONFIG.cardTitle),
-  //       type: SitelinkType.card,
-  //     };
-  //     sitelinks.push(sitelink);
-  //   });
-  //   const inlineSiteLinks = $(ad).find(CONFIG.inline);
-  //   inlineSiteLinks.each((i, e) => {
-  //     const sitelink: Sitelink = {
-  //       href: $(e).attr('href') as string,
-  //       title: $(e).text(),
-  //       type: SitelinkType.inline,
-  //     };
-  //     sitelinks.push(sitelink);
-  //   });
-  //   return sitelinks;
-  // }
-
-  // // Moved to knowledge graph
+  // Moved to knowledge graph
   // private getAvailableOn() {
   //   const $ = this.$;
   //   const serp = this.serp;
@@ -646,7 +630,7 @@ export class GoogleMobileSERP {
     return this.$(el).find(query).text() as string;
   }
 
-  // private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
-  //   return this.$(el).find(query).attr('href') as string;
-  // }
+  private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
+    return this.$(el).find(query).attr('href') as string;
+  }
 }

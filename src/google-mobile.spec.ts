@@ -68,7 +68,7 @@ describe('Parsing Google page with 100 results', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google-100.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html).serp;
+    serp = new GoogleMobileSERP(html, {organic: true}).serp;
   });
 
   test('Keyword should be google', () => {
@@ -111,7 +111,7 @@ describe('Parsing Google featured snippet page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}featured-snippets.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html).serp;
+    serp = new GoogleMobileSERP(html, {organic: true}).serp;
   });
 
   test('serp should have 9 results', () => {
@@ -120,17 +120,8 @@ describe('Parsing Google featured snippet page', () => {
 
   test('1th result should have featured snippet', () => {
     expect(serp.organic[0].featured).toBeTruthy();
-  });
-
-  test('1st result should have domain backlinko.com', () => {
     expect(serp.organic[0].domain).toBe('backlinko.com');
-  });
-
-  test('1st result should have title "What Are Featured Snippets? And How to Get Them - Backlinko"', () => {
     expect(serp.organic[0].title).toBe('What Are Featured Snippets? And How to Get Them - Backlinko');
-  });
-
-  test('1st result should have snippet to start with "Featured Snippets are short snippets of', () => {
     expect(serp.organic[0].snippet.substr(0, 40)).toBe(`Featured Snippets are short snippets of `);
   });
 
@@ -380,83 +371,6 @@ describe('Testing functions', () => {
   });
 });
 
-describe.skip('Parsing Domain page', () => {
-  let html: string;
-  let serp: Serp;
-
-  beforeAll(() => {
-    html = fs.readFileSync(`${root}domain.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html).serp;
-  });
-
-  describe('Testing ads', () => {
-    test.skip('There should be top ads', () => {
-      expect(serp.adwords).toBeDefined();
-      expect(serp.adwords?.adwordsTop).toBeDefined();
-      expect(serp.adwords?.adwordsBottom).toBeDefined();
-    });
-
-    test('There should be 1 ad on the top of the page', () => {
-      expect(serp.adwords?.adwordsTop).toHaveLength(1);
-    });
-
-    test('Testing first ad', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'title'],
-        `GoDaddy $2.99 Domain Names - The Perfect Domain is Waiting`,
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domains/names');
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'snippet'],
-        `GoDaddy is trusted by over 20 million customers, with a Trustpilot rating of 4.1 stars. Simple Domain Setup. Free 24/7 Phone Support. Year-Round Special Offers. 100s Of Domain Endings. Free Basic Privacy. Services: Domain Privacy, WHOIS Lookup, Domains Transfers.`,
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
-    });
-
-    test('Testing first ad sitelink', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], 'Domain Protection');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiI4NPtrdjwAhUZi8gKHXV2Cz8YABADGgJxdQ&ae=2&ggladgrp=7066528666257623986&gglcreat=17637698502619250955&ohost=www.google.com&cid=CAASE-RoWLc6kn9jPzcRcyX5AXMXa6E&sig=AOD64_0NVthcuhbArI2OnFI6CrN-Rvmy8w&q=&ved=2ahUKEwiAqMjtrdjwAhXmq5UCHebRDn0QqyQoAXoECAMQEg&adurl=',
-      );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'],
-        'Make Sure Your Domain isFully Protected. Learn More!',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
-    });
-
-    test.skip('Testing 2nd ad sitelink', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Free Website Builder');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjoncbYz9fuAhXk9uMHHWxMBkwYABAEGgJ5bQ&ohost=www.google.com&cid=CAASE-RoTmz35Rpu4uzIWISLJ9IrC_k&sig=AOD64_1e5MphLk-aznmb3kxMjnysQzFlew&q=&ved=2ahUKEwjuxr7Yz9fuAhUFDKwKHdvICiYQpigoAXoECAYQFg&adurl=',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
-    });
-
-    test.skip('Testing adwordsBottom property', () => {
-      expect(serp.adwords?.adwordsBottom).toHaveLength(1);
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsBottom', 0, 'title'],
-        '.com, .org & more - Exclusive Prices - Domain Names',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.ionos.com');
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsBottom', 0, 'snippet'],
-        `.com domain only $1 in the first year. Register a .com that's all in. Limited time only! Need a...`,
-      );
-    });
-  });
-});
-
 // There are no ADs in paris page anymore, remove this in next few iterations
 describe.skip('Parsing Paris page', () => {
   let html: string;
@@ -508,13 +422,13 @@ describe.skip('Parsing Paris page', () => {
   });
 });
 
-describe.skip('Parsing .com-domains page', () => {
+describe('Parsing .com-domains page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}_com-domains.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html).serp;
+    serp = new GoogleMobileSERP(html, {ads: true}).serp;
   });
 
   test('There should be all ads', () => {
@@ -523,32 +437,60 @@ describe.skip('Parsing .com-domains page', () => {
     expect(serp.adwords?.adwordsBottom).toBeDefined();
   });
 
-  test(`Testing 3rd bottom ad sitelinks`, () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'title'], 'Renew Your Domain');
+  test('There should be 1 ad on the top of the page', () => {
+    expect(serp.adwords?.adwordsTop).toHaveLength(4);
+  });
+
+  test('Testing first ad', () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'href'],
-      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwivjtSnrdjwAhWB4bMKHRofD2UYABAMGgJxbg&ae=2&ohost=www.google.com&cid=CAASE-RoPrYtA8dM2UVLjyFIkQLF8BY&sig=AOD64_1pjuJTaB2HPcQOdlG-v8EDvQXm-A&q=&ved=2ahUKEwin78inrdjwAhVzqZUCHYEfBqoQpigoAXoECAUQEg&adurl=',
+      ['adwords', 'adwordsTop', 0, 'title'],
+      `Domains From Only $1/Year - .com, .org & more for $1/Year`,
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.ionos.com');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsTop', 0, 'snippet'],
+      `Free email address, wildcard ssl certificate, domain lock, 10,000 subdomains & many more! Need a perfect domain? Includes email, privacy, SSL & 24/7 support. Score a deal...`,
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
+  });
+
+  test('Testing first ad sitelink', () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], '.com Domain From $1/Year');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'href'],
+      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABAKGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_2t0zioT87_jgUqhmcUAKu6sGWwIw&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQwgUoAHoECAUQDQ&adurl=https://www.ionos.com/domains/com-domain%3Fac%3DOM.US.USo42K356154T7073a%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAAYASABEgII1_D_BwE',
+    );
+    expect(serp).not.toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'snippet']);
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
     expect(serp.adwords?.adwordsBottom).toHaveLength(3);
   });
+
   test('First bottom ad tests', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
-    expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 1, 'url'],
-      'https://www.godaddy.com/offers/domains/generic',
-    );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.godaddy.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'url'], 'https://www.hostgator.com/web-hosting');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.hostgator.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsBottom', 1, 'snippet'],
-      `It's never been more important to be online. Browse & buy your domain in seconds! Don't wait - snag your domain before someone else does! Free 24/7 phone support. Trusted By 20 Million. Simple Domain Setup. Year-Round Special Offers. 100s of Domain Endings.`,
+      `HostGator® Is The Perfect Solution For You. We Are With You Every Step Of The Way. Powerful Web Hosting Made Easy and Affordable. Great Bundle with Every Plan! Free SSL. Free Website Templates. Unmetered Disk Space.`,
     );
+  });
+
+  test(`Testing bottom ad sitelinks`, () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'title'], 'App Hosting');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'href'],
+      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABALGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_1mq-gMpp58rz745u0yej7PlvoKTQ&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQvrcBegQIAxAN&adurl=https://www.hostgator.com/apps%3Futm_source%3Dgoogle%26utm_medium%3Dgenericsearch%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAMYAiACEgIhx_D_BwE',
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'type'], 'INLINE');
   });
 });
 
