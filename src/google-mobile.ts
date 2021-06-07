@@ -31,7 +31,7 @@ export class GoogleMobileSERP {
 
   #DEF_OPTIONS = {
     organic: true,
-    related: false,
+    related: true,
     ads: true,
     hotels: false,
     videos: false,
@@ -72,6 +72,9 @@ export class GoogleMobileSERP {
       }
       if (options.ads) {
         this.getAdwords();
+      }
+      if (options.related) {
+        this.getRelatedKeywords();
       }
       // if (options.hotels) {
       //   this.getHotels();
@@ -176,6 +179,18 @@ export class GoogleMobileSERP {
     if (sitelinks.length > 0) {
       result.sitelinks = sitelinks;
     }
+  }
+
+  private getRelatedKeywords() {
+    const relatedKeywords: RelatedKeyword[] = [];
+    const query = 'a.F3dFTe';
+    this.$(query).each((i, elem) => {
+      relatedKeywords.push({
+        keyword: this.$(elem).text(),
+        path: this.$(elem).prop('href'),
+      });
+    });
+    this.serp.relatedKeywords = relatedKeywords;
   }
 
   // private getVideos() {

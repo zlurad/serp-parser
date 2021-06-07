@@ -41,8 +41,18 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp).not.toHaveProperty(['organic', 0, 'sitelinks', 0, 'snippet']);
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
+
   test('2nd result should not have sitelinks', () => {
     expect(serp).not.toHaveProperty(['organic', '1', 'sitelinks']);
+  });
+
+  test('Testing related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(3);
+    expect(serp.relatedKeywords).toHaveProperty(['0', 'keyword'], 'Google Docs');
+    expect(serp.relatedKeywords).toHaveProperty(
+      ['0', 'path'],
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=Google+Docs&sa=X&ved=2ahUKEwivoKacpvvwAhX4JzQIHQLKABoQ1QJ6BAglEAQ',
+    );
   });
 
   test('testing videos property for non existent results', () => {
@@ -68,7 +78,7 @@ describe('Parsing Google page with 100 results', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google-100.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html, {organic: true}).serp;
+    serp = new GoogleMobileSERP(html, { organic: true }).serp;
   });
 
   test('Keyword should be google', () => {
@@ -111,7 +121,7 @@ describe('Parsing Google featured snippet page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}featured-snippets.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html, {organic: true}).serp;
+    serp = new GoogleMobileSERP(html, { organic: true, related: true }).serp;
   });
 
   test('serp should have 9 results', () => {
@@ -127,6 +137,11 @@ describe('Parsing Google featured snippet page', () => {
 
   test('2nd result should not have featured snippet', () => {
     expect(serp.organic[1].featured).toBeUndefined();
+  });
+
+  test('Testing related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(12);
+    expect(serp.relatedKeywords).toHaveProperty(['1', 'keyword'], 'Why are featured snippets important');
   });
 });
 
@@ -428,7 +443,7 @@ describe('Parsing .com-domains page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}_com-domains.html`, { encoding: 'utf8' });
-    serp = new GoogleMobileSERP(html, {ads: true}).serp;
+    serp = new GoogleMobileSERP(html, { ads: true }).serp;
   });
 
   test('There should be all ads', () => {
