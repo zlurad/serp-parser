@@ -3,7 +3,7 @@ export interface Serp {
   organic: Result[];
   totalResults?: number;
   timeTaken?: number;
-  currentPage: number;
+  currentPage?: number;
   pagination: Pagination[];
   thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
