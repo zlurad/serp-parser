@@ -141,8 +141,9 @@ export interface Result {
   snippet: string;
   title: string;
   url: string;
-  displayedUrl: string;
+  displayedUrl?: string;
   featured?: boolean;
+  tld?: string;
 }
 
 export interface Sitelink {

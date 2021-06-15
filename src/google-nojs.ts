@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { Ad, Hotel, RelatedKeyword, Result, Serp, Sitelink, SitelinkType } from './models';
 import * as utils from './utils';
-
+const tldParser = require('tld-extract');
 export class GoogleNojsSERP {
   public serp: Serp = {
     currentPage: 1,
@@ -82,6 +82,7 @@ export class GoogleNojsSERP {
       const position = index + 1;
       const url = utils.getUrlFromQuery($(element).prop('href'));
       const domain = utils.getDomain(url);
+		const tld = tldParser(url).domain;
       const title = $(element).children('h3').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
@@ -94,6 +95,7 @@ export class GoogleNojsSERP {
         title,
         url,
 		  displayedUrl,
+		  tld,
       };
       this.parseSitelinks(element, result);
       this.serp.organic.push(result);

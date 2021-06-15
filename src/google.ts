@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+const tldParser = require('tld-extract');
 import {
   Ad,
   AvailableOn,
@@ -121,8 +122,9 @@ export class GoogleSERP {
       const position = this.serp.organic.length + 1;
       const url = $(element).prop('href');
       const domain = utils.getDomain(url);
-      const title = this.elementText(element, 'h3');
-      const snippet = this.getSnippet(element);
+		const tld = tldParser(url).domain;
+      const title = this.elementText(element, 'h3').trim();
+      const snippet = this.getSnippet(element).trim();
       const linkType = utils.getLinkType(url);
 		const displayedUrl = $(element).children('div').text();
       const result: Result = {
@@ -133,6 +135,7 @@ export class GoogleSERP {
         title,
         url,
 		  displayedUrl,
+		  tld,
       };
       this.parseSitelinks(element, result);
       this.parseCachedAndSimilarUrls(element, result);
