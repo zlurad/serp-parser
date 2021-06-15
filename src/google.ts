@@ -124,6 +124,7 @@ export class GoogleSERP {
       const title = this.elementText(element, 'h3');
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
+		const displayedUrl = $(element).children('div').text();
       const result: Result = {
         domain,
         linkType,
@@ -131,6 +132,7 @@ export class GoogleSERP {
         snippet,
         title,
         url,
+		  displayedUrl,
       };
       this.parseSitelinks(element, result);
       this.parseCachedAndSimilarUrls(element, result);
