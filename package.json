@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-	 "url": "github:brentonhouse/serp-parser"
+    "url": "github:brentonhouse/serp-parser"
   },
   "keywords": [
     "SERP",
@@ -30,12 +30,12 @@
   ],
   "author": "Zlurad",
   "maintainers": [
-	{
-		"name": "Brenton House",
-		"email": "brenton.house@gmail.com",
-		"url": "https://brenton.house"
-	}
-],
+    {
+      "name": "Brenton House",
+      "email": "brenton.house@gmail.com",
+      "url": "https://brenton.house"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zlurad/serp-parser/issues"
@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.9",
+    "query-string": "^7.0.0",
     "tld-extract": "^2.0.1",
     "tslib": "^2.2.0"
   }

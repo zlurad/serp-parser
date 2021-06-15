@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 const tldParser = require('tld-extract');
+const queryString = require('query-string');
 import {
   Ad,
   AvailableOn,
@@ -263,7 +264,15 @@ export class GoogleSERP {
       serp.pagination.push({
         page: parseInt($(element).text(), 10),
         path: $(element).prop('href'),
+        url: 'https://google.com' + $(element).prop('href'),
       });
+		if(! serp.pagination[0].url && serp.pagination[1].url){
+			const parsed = queryString.parseUrl(serp.pagination[1].url);
+			delete(parsed.query.start);
+			serp.pagination[0].url = queryString.stringifyUrl(parsed);
+			serp.pagination[0].path = '/search/' + queryString.stringify(parsed.query);
+
+		}
     });
   }
 

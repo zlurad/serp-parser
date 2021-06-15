@@ -55,6 +55,7 @@ export interface AvailableOn {
 export interface Pagination {
   page: number;
   path: string;
+  url?: string;
 }
 export interface VideoCard {
   title: string;
