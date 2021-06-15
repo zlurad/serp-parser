@@ -219,7 +219,7 @@ export class GoogleSERP {
     const query = '.k8XOCe';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
-        keyword: this.$(elem).text(),
+        keyword: this.$(elem).text().trim(),
         path: this.$(elem).prop('href'),
       });
     });

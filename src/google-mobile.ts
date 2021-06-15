@@ -191,7 +191,7 @@ export class GoogleMobileSERP {
     const query = 'a.F3dFTe';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
-        keyword: this.$(elem).text(),
+        keyword: this.$(elem).text().trim(),
         path: this.$(elem).prop('href'),
       });
     });

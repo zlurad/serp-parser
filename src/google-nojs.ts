@@ -141,7 +141,7 @@ export class GoogleNojsSERP {
     const query = '.Sljvkf.iIWm4b a';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
-        keyword: this.$(elem).text(),
+        keyword: this.$(elem).text().trim(),
         path: this.$(elem).prop('href'),
       });
     });
