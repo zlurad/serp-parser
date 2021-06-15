@@ -70,6 +70,7 @@ export class GoogleNojsSERP {
       const title = $(element).children('h3').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
+		const displayedUrl = $(element).children('div').text();
       const result: Result = {
         domain,
         linkType,
@@ -77,6 +78,7 @@ export class GoogleNojsSERP {
         snippet,
         title,
         url,
+		  displayedUrl,
       };
       this.parseSitelinks(element, result);
       this.serp.organic.push(result);
