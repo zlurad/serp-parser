@@ -11,23 +11,29 @@ export class GoogleNojsSERP {
     relatedKeywords: [],
   };
 
-  private $: CheerioStatic;
-  private CONFIG = {
-    noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
+  #DEF_OPTIONS = {
+    organic: true,
+    related: true,
+    ads: true,
+    hotels: true,
   };
 
-  constructor(html: string) {
+  private $;
+
+  constructor(html: string, options?: Record<string, boolean>) {
     this.$ = cheerio.load(html, {
       normalizeWhitespace: true,
       xmlMode: false,
     });
 
-    this.parse();
+    this.parse(options);
   }
 
-  private parse() {
+  private parse(opt?: Record<string, boolean>) {
     const $ = this.$;
-    const CONFIG = this.CONFIG;
+    const CONFIG = {
+      noResultsNojs: 'span.r0bn4c.rQMQod:contains(" - did not match any documents.")',
+    };
     if ($(CONFIG.noResultsNojs).length === 1) {
       this.serp.error = 'No results page';
       // No need to parse anything for no results page
@@ -35,26 +41,35 @@ export class GoogleNojsSERP {
     }
 
     if ($('body').attr('jsmodel') === 'TvHxbe') {
-      this.parseGoogle();
+      this.parseGoogle(opt);
     } else {
       this.serp.error = 'Not Google nojs page';
       return;
     }
   }
 
-  private parseGoogle() {
+  private parseGoogle(opt?: Record<string, boolean>) {
     const serp = this.serp;
+    const options = opt ? opt : this.#DEF_OPTIONS;
     const $ = this.$;
     const CONFIG = {
       keyword: 'input[name="q"]',
     };
 
-    serp.keyword = $(CONFIG.keyword).val();
+    serp.keyword = $(CONFIG.keyword).val() as string;
 
-    this.getOrganic();
-    this.getRelatedKeywords();
-    this.getAdwords();
-    this.getHotels();
+    if (options.organic) {
+      this.getOrganic();
+    }
+    if (options.related) {
+      this.getRelatedKeywords();
+    }
+    if (options.ads) {
+      this.getAdwords();
+    }
+    if (options.hotels) {
+      this.getHotels();
+    }
   }
 
   private getOrganic() {
@@ -85,7 +100,7 @@ export class GoogleNojsSERP {
     });
   }
 
-  private getSnippet(element: CheerioElement): string {
+  private getSnippet(element: cheerio.Element | cheerio.Node): string {
     let text;
 
     if (this.$(element).parent('.kCrYT').nextAll('.kCrYT').find('.Ap5OSd').length === 0) {
@@ -94,7 +109,7 @@ export class GoogleNojsSERP {
     return text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '');
   }
 
-  private parseSitelinks(element: CheerioElement, result: Result) {
+  private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
       next: '.kCrYT',
@@ -111,7 +126,7 @@ export class GoogleNojsSERP {
 
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: $(el).attr('href'),
+        href: $(el).attr('href') as string,
         title: $(el).text(),
         type: SitelinkType.inline,
       };
@@ -152,7 +167,7 @@ export class GoogleNojsSERP {
       votes: '.Eq0J8:last-child',
       votesRegex: /\((\d+,?)+\)/,
     };
-    const moreHotelsLink = hotelsFeature.children().last().find('a').attr('href');
+    const moreHotelsLink = hotelsFeature.children().last().find('a').attr('href') as string;
     const hotels: Hotel[] = [];
 
     // HOTELS
@@ -166,7 +181,8 @@ export class GoogleNojsSERP {
       const hotelStars = utils.getFirstMatch($(elem).find(CONFIG.hotelStars).text(), CONFIG.hotelStarsRegex);
       const stars = parseInt(hotelStars, 10);
       // const desc html
-      const description = $(elem).find(CONFIG.description).last().find('br').last()[0].nextSibling?.nodeValue;
+      const descriptionNode = $(elem).find(CONFIG.description).last().find('br').last()[0].nextSibling;
+      const description = descriptionNode ? $(descriptionNode).text() : undefined;
       const moreInfoLink = this.elementHref(elem, CONFIG.moreInfoLink);
 
       const hotel: Hotel = {
@@ -214,7 +230,7 @@ export class GoogleNojsSERP {
 
     $(CONFIG.ads).each((i, e) => {
       const title = this.elementText(e, CONFIG.title);
-      const url = this.elementHref(e, CONFIG.url);
+      const url = this.elementHref(e, CONFIG.url) as string;
       const domain = utils.getDomain(url, 'https://www.googleadservices.com/pagead');
       const linkType = utils.getLinkType(url, 'https://www.googleadservices.com/pagead');
       const snippet = this.elementText(e, CONFIG.snippet);
@@ -234,7 +250,7 @@ export class GoogleNojsSERP {
   }
 
   // TODO Figure out new BLOCK sitelinks at Hotels page
-  private getAdSitelinks(ad: CheerioElement) {
+  private getAdSitelinks(ad: cheerio.Element | cheerio.Node) {
     const $ = this.$;
     const CONFIG = {
       sitelinks: '.sJxfee a',
@@ -244,7 +260,7 @@ export class GoogleNojsSERP {
       .find(CONFIG.sitelinks)
       .each((i, el) => {
         const sitelink: Sitelink = {
-          href: $(el).attr('href'),
+          href: $(el).attr('href') as string,
           title: $(el).text(),
           type: SitelinkType.inline,
         };
@@ -254,11 +270,11 @@ export class GoogleNojsSERP {
   }
 
   // Helper methods
-  private elementText(el: CheerioElement, query: string) {
+  private elementText(el: cheerio.Element | cheerio.Node, query: string) {
     return this.$(el).find(query).text();
   }
 
-  private elementHref(el: CheerioElement, query: string) {
+  private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
     return this.$(el).find(query).attr('href');
   }
 }

@@ -3,7 +3,7 @@ export interface Serp {
   organic: Result[];
   totalResults?: number;
   timeTaken?: number;
-  currentPage: number;
+  currentPage?: number;
   pagination: Pagination[];
   thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
@@ -142,6 +142,7 @@ export interface Result {
   title: string;
   url: string;
   displayedUrl: string;
+  featured?: boolean;
 }
 
 export interface Sitelink {

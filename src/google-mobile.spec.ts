@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
-import { GoogleSERP } from './index';
+import { GoogleMobileSERP } from './index';
 import { Serp } from './models';
 
-const root = 'test/google/desktop/';
+const root = 'test/google/mobile/';
 
-test('GoogleSERP should return empty organic array on empty html string', () => {
-  expect(new GoogleSERP('').serp.organic).toEqual([]);
+test('GoogleMobileSERP should return empty organic array on empty html string', () => {
+  expect(new GoogleMobileSERP('').serp.organic).toEqual([]);
 });
 
 describe('Parsing Google page with 10 resuts', () => {
@@ -14,79 +14,45 @@ describe('Parsing Google page with 10 resuts', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
-  test('Page should have 11,310,000,000 results', () => {
-    expect(serp.totalResults).toBe(11310000000);
-  });
-  test('Search should be done in 1.17 seconds', () => {
-    expect(serp.timeTaken).toBe(1.17);
-  });
-  test('Current page should be 1', () => {
-    expect(serp.currentPage).toBe(1);
-  });
-  test('Page should have 8 related keywords', () => {
-    expect(serp.relatedKeywords).toHaveLength(8);
-  });
-  test('1st related keyword should be "google gravity"', () => {
-    expect(serp.relatedKeywords[0].keyword).toBe('google gravity');
-  });
-  test('1st related keyword should have path', () => {
-    expect(serp.relatedKeywords[0].path).toBe(
-      '/search?rlz=1C1CHBF_en&gl=us&q=Google+Gravity&sa=X&ved=2ahUKEwigq5P7rdjwAhVClJUCHSatDmUQ1QIwHHoECC8QAQ',
-    );
-  });
-  test(`Link to 2nd page should have path`, () => {
-    expect(serp.pagination[1].path).toBe(
-      '/search?q=google&rlz=1C1CHBF_en&gl=us&ei=NmOmYKC4OMKo1sQPptq6qAY&start=10&sa=N&ved=2ahUKEwigq5P7rdjwAhVClJUCHSatDmUQ8tMDegQIARA1',
-    );
+  test('Keyword should be google', () => {
+    expect(serp.keyword).toBe('google');
   });
 
   test('serp should have 5 results', () => {
-    expect(serp.organic).toHaveLength(5);
+    expect(serp.organic).toHaveLength(9);
   });
 
-  test('3th result should have url https://about.google/', () => {
-    expect(serp.organic[2].url).toBe('https://about.google/');
-  });
-
-  test.skip(`1st result should have cachedUrl`, () => {
-    expect(serp.organic[0].cachedUrl).toBe(
-      'https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=us',
-    );
-  });
-  test.skip(`1st result should have similarUrl`, () => {
-    expect(serp.organic[0].similarUrl).toBe(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&q=related:https://www.google.com/+google&sa=X&ved=2ahUKEwi_sOn2ztfuAhVOmK0KHZD9DjMQHzAAegQICRAG',
+  test('result test', () => {
+    expect(serp.organic[6].url).toBe('https://hangouts.google.com/');
+    expect(serp.organic[6].domain).toBe('hangouts.google.com');
+    expect(serp.organic[6].title).toBe('Google Hangouts - Get Started with Hangouts on Desktop or Mobile');
+    expect(serp.organic[6].snippet).toBe(
+      `Use Google Hangouts to keep in touch with one person or a group. Available ...`,
     );
   });
 
-  test.skip('8th result should have domain hangouts.google.com', () => {
-    expect(serp.organic[7].domain).toBe('hangouts.google.com');
+  test('1st result should have inline sitelinks', () => {
+    expect(serp.organic[0].sitelinks).toHaveLength(7);
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'To continue to Gmail');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/gmail/');
+    expect(serp).not.toHaveProperty(['organic', 0, 'sitelinks', 0, 'snippet']);
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
-  test('4th result should have title "Google - Wikipedia"', () => {
-    expect(serp.organic[3].title).toBe('Google - Wikipedia');
-  });
-
-  test('4th result should have snippet to start with "Learn how Google.org uses the best of Google to help nonprofits and social...', () => {
-    expect(serp.organic[4].snippet).toBe(
-      `Learn how Google.org uses the best of Google to help nonprofits and social enterprises solve humanity's biggest challenges.`,
-    );
-  });
-
-  test.skip('1st result should have card sitelinks', () => {
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/account/about/');
-    expect(serp).toHaveProperty(
-      ['organic', 0, 'sitelinks', 0, 'snippet'],
-      'In your Google Account, you can see and manage your info ...',
-    );
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
-  });
   test('2nd result should not have sitelinks', () => {
-    expect(serp).not.toHaveProperty(['organic','1','sitelinks'])
+    expect(serp).not.toHaveProperty(['organic', '1', 'sitelinks']);
+  });
+
+  test('Testing related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(3);
+    expect(serp.relatedKeywords).toHaveProperty(['0', 'keyword'], 'Google Docs');
+    expect(serp.relatedKeywords).toHaveProperty(
+      ['0', 'path'],
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=Google+Docs&sa=X&ved=2ahUKEwivoKacpvvwAhX4JzQIHQLKABoQ1QJ6BAglEAQ',
+    );
   });
 
   test('testing videos property for non existent results', () => {
@@ -98,7 +64,7 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing topStories property for non existent results', () => {
     expect(serp.topStories).toBeUndefined();
   });
-  test.skip('testing Locals property for non existent results', () => {
+  test('testing Locals property for non existent results', () => {
     expect(serp.locals).toBeUndefined();
   });
   test('testing shop property for non existent results', () => {
@@ -112,45 +78,40 @@ describe('Parsing Google page with 100 results', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google-100.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
-  });
-
-  test('serp should have 99 results', () => {
-    expect(serp.organic).toHaveLength(99);
-  });
-
-  test('all results should have domain domains.google', () => {
-    expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
-  });
-
-  test(`1st result should have cachedUrl`, () => {
-    expect(serp.organic[0].cachedUrl).toBe(
-      'https://webcache.googleusercontent.com/search?q=cache:y14FcUQOGl4J:https://www.google.com/+&cd=1&hl=en&ct=clnk&gl=me',
-    );
-  });
-
-  test(`1st result should have similarUrl`, () => {
-    expect(serp.organic[0].similarUrl).toBe(
-      '/search?rlz=1C1CHBF_en&gl=me&biw=1920&bih=937&q=related:https://www.google.com/+google&sa=X&ved=2ahUKEwjXlcrVrtjwAhVPmIsKHYWtDMkQHzAAegQIBRAH',
-    );
-  });
-
-  test('3rd result should have url https://www.google.com/photos/about/', () => {
-    expect(serp.organic[2].url).toBe('https://www.google.com/photos/about/');
-  });
-
-  test('3rd result should have title "Google Photos"', () => {
-    expect(serp.organic[2].title).toBe('Google Photos');
-  });
-
-  test('3rd result should have snippet to be "Use Google Hangouts to keep in touch with one person or a group. Available ...', () => {
-    expect(serp.organic[4].snippet.replace(/\s+/g, ' ').trim()).toBe(
-      'Use Google Hangouts to keep in touch with one person or a group. Available ...'.replace(/\s+/g, ' ').trim(),
-    );
+    serp = new GoogleMobileSERP(html, { organic: true }).serp;
   });
 
   test('Keyword should be google', () => {
     expect(serp.keyword).toBe('google');
+  });
+
+  test('serp should have 99 results', () => {
+    expect(serp.organic).toHaveLength(98);
+  });
+
+  test('Testing domains', () => {
+    expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
+    expect(serp.organic[0].domain).toBe('www.google.com');
+    expect(serp.organic[5].domain).toBe('blog.google');
+  });
+
+  test('Testing urls', () => {
+    expect(serp.organic[0].url).toBe('https://www.google.com/');
+    expect(serp.organic[5].url).toBe('https://blog.google/');
+  });
+
+  test('Testing titles', () => {
+    expect(serp.organic[1].title).toBe('Google Account');
+    expect(serp.organic[97].title).toBe('Google Meet: Video Conferencing for Business | Google Workspace');
+  });
+
+  test('Testing snippets', () => {
+    expect(serp.organic[0].snippet).toBe(
+      `Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for .`,
+    );
+    expect(serp.organic[5].snippet).toBe(
+      `Discover all the latest about our products, technology, and Google culture on our official blog.`,
+    );
   });
 });
 
@@ -159,40 +120,38 @@ describe('Parsing Google featured snippet page', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    html = fs.readFileSync(`${root}featured-snippet.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    html = fs.readFileSync(`${root}featured-snippets.html`, { encoding: 'utf8' });
+    serp = new GoogleMobileSERP(html, { organic: true, related: true }).serp;
   });
 
-  test('serp should have 10 results', () => {
-    expect(serp.organic).toHaveLength(10);
+  test('serp should have 9 results', () => {
+    expect(serp.organic).toHaveLength(9);
   });
 
   test('1th result should have featured snippet', () => {
     expect(serp.organic[0].featured).toBeTruthy();
-  });
-
-  test('1st result should have domain backlinko.com', () => {
     expect(serp.organic[0].domain).toBe('backlinko.com');
-  });
-
-  test('1st result should have title "What Are Featured Snippets? And How to Get Them - Backlinko"', () => {
     expect(serp.organic[0].title).toBe('What Are Featured Snippets? And How to Get Them - Backlinko');
+    expect(serp.organic[0].snippet.substr(0, 40)).toBe(`Featured Snippets are short snippets of `);
   });
 
-  test('1st result should have snippet to start with "Featured Snippets are short snippets ...', () => {
-    expect(serp.organic[0].snippet).toBe(
-      `Featured Snippets are short snippets of text that appear at the top of Google's search results in order to quickly answer a searcher's query. The content that appears inside of a Featured Snippet is automatically pulled from web pages in Google's index.`,
-    );
+  test('2nd result should not have featured snippet', () => {
+    expect(serp.organic[1].featured).toBeUndefined();
+  });
+
+  test('Testing related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(12);
+    expect(serp.relatedKeywords).toHaveProperty(['1', 'keyword'], 'Why are featured snippets important');
   });
 });
 
-describe('Parsing "The Matrix" search page', () => {
+describe.skip('Parsing "The Matrix" search page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}matrix.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test('serp should have 8 results', () => {
@@ -246,13 +205,13 @@ describe('Parsing "The Matrix" search page', () => {
   });
 });
 
-describe('Parsing Hotels search page', () => {
+describe.skip('Parsing Hotels search page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}hotels.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test('There should be 1228 similar hotels in the area', () => {
@@ -381,13 +340,13 @@ describe('Parsing Hotels search page', () => {
   });
 });
 
-describe('Parsing Hotels-London search page', () => {
+describe.skip('Parsing Hotels-London search page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}hotels-london.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test.skip('Second featured hotel should have originalPrice property and should have value 113', () => {
@@ -414,7 +373,7 @@ describe('Testing functions', () => {
   let serp: Serp;
 
   beforeAll(() => {
-    serp = new GoogleSERP('<body class="srp"><div></div></body>').serp;
+    serp = new GoogleMobileSERP('<body class="srp"><div></div></body>').serp;
   });
 
   test('testing getResults and getTime function for non existent results', () => {
@@ -427,83 +386,6 @@ describe('Testing functions', () => {
   });
 });
 
-describe('Parsing Domain page', () => {
-  let html: string;
-  let serp: Serp;
-
-  beforeAll(() => {
-    html = fs.readFileSync(`${root}domain.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
-  });
-
-  describe('Testing ads', () => {
-    test.skip('There should be top ads', () => {
-      expect(serp.adwords).toBeDefined();
-      expect(serp.adwords?.adwordsTop).toBeDefined();
-      expect(serp.adwords?.adwordsBottom).toBeDefined();
-    });
-
-    test('There should be 1 ad on the top of the page', () => {
-      expect(serp.adwords?.adwordsTop).toHaveLength(1);
-    });
-
-    test('Testing first ad', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'title'],
-        `GoDaddy $2.99 Domain Names - The Perfect Domain is Waiting`,
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domains/names');
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'snippet'],
-        `GoDaddy is trusted by over 20 million customers, with a Trustpilot rating of 4.1 stars. Simple Domain Setup. Free 24/7 Phone Support. Year-Round Special Offers. 100s Of Domain Endings. Free Basic Privacy. Services: Domain Privacy, WHOIS Lookup, Domains Transfers.`,
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
-    });
-
-    test('Testing first ad sitelink', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], 'Domain Protection');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiI4NPtrdjwAhUZi8gKHXV2Cz8YABADGgJxdQ&ae=2&ggladgrp=7066528666257623986&gglcreat=17637698502619250955&ohost=www.google.com&cid=CAASE-RoWLc6kn9jPzcRcyX5AXMXa6E&sig=AOD64_0NVthcuhbArI2OnFI6CrN-Rvmy8w&q=&ved=2ahUKEwiAqMjtrdjwAhXmq5UCHebRDn0QqyQoAXoECAMQEg&adurl=',
-      );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'],
-        'Make Sure Your Domain isFully Protected. Learn More!',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
-    });
-
-    test.skip('Testing 2nd ad sitelink', () => {
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'title'], 'Free Website Builder');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjoncbYz9fuAhXk9uMHHWxMBkwYABAEGgJ5bQ&ohost=www.google.com&cid=CAASE-RoTmz35Rpu4uzIWISLJ9IrC_k&sig=AOD64_1e5MphLk-aznmb3kxMjnysQzFlew&q=&ved=2ahUKEwjuxr7Yz9fuAhUFDKwKHdvICiYQpigoAXoECAYQFg&adurl=',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 1, 'sitelinks', 1, 'type'], 'INLINE');
-    });
-
-    test.skip('Testing adwordsBottom property', () => {
-      expect(serp.adwords?.adwordsBottom).toHaveLength(1);
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsBottom', 0, 'title'],
-        '.com, .org & more - Exclusive Prices - Domain Names',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.ionos.com');
-      expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsBottom', 0, 'snippet'],
-        `.com domain only $1 in the first year. Register a .com that's all in. Limited time only! Need a...`,
-      );
-    });
-  });
-});
-
 // There are no ADs in paris page anymore, remove this in next few iterations
 describe.skip('Parsing Paris page', () => {
   let html: string;
@@ -511,7 +393,7 @@ describe.skip('Parsing Paris page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}paris.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   describe('Testing ads', () => {
@@ -561,7 +443,7 @@ describe('Parsing .com-domains page', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}_com-domains.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html, { ads: true }).serp;
   });
 
   test('There should be all ads', () => {
@@ -570,42 +452,70 @@ describe('Parsing .com-domains page', () => {
     expect(serp.adwords?.adwordsBottom).toBeDefined();
   });
 
-  test(`Testing 3rd bottom ad sitelinks`, () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'title'], 'Renew Your Domain');
+  test('There should be 1 ad on the top of the page', () => {
+    expect(serp.adwords?.adwordsTop).toHaveLength(4);
+  });
+
+  test('Testing first ad', () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'href'],
-      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwivjtSnrdjwAhWB4bMKHRofD2UYABAMGgJxbg&ae=2&ohost=www.google.com&cid=CAASE-RoPrYtA8dM2UVLjyFIkQLF8BY&sig=AOD64_1pjuJTaB2HPcQOdlG-v8EDvQXm-A&q=&ved=2ahUKEwin78inrdjwAhVzqZUCHYEfBqoQpigoAXoECAUQEg&adurl=',
+      ['adwords', 'adwordsTop', 0, 'title'],
+      `Domains From Only $1/Year - .com, .org & more for $1/Year`,
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.ionos.com');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsTop', 0, 'snippet'],
+      `Free email address, wildcard ssl certificate, domain lock, 10,000 subdomains & many more! Need a perfect domain? Includes email, privacy, SSL & 24/7 support. Score a deal...`,
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
+  });
+
+  test('Testing first ad sitelink', () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], '.com Domain From $1/Year');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'href'],
+      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABAKGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_2t0zioT87_jgUqhmcUAKu6sGWwIw&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQwgUoAHoECAUQDQ&adurl=https://www.ionos.com/domains/com-domain%3Fac%3DOM.US.USo42K356154T7073a%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAAYASABEgII1_D_BwE',
+    );
+    expect(serp).not.toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'snippet']);
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
     expect(serp.adwords?.adwordsBottom).toHaveLength(3);
   });
+
   test('First bottom ad tests', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
-    expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 1, 'url'],
-      'https://www.godaddy.com/offers/domains/generic',
-    );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.godaddy.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'url'], 'https://www.hostgator.com/web-hosting');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.hostgator.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsBottom', 1, 'snippet'],
-      `It's never been more important to be online. Browse & buy your domain in seconds! Don't wait - snag your domain before someone else does! Free 24/7 phone support. Trusted By 20 Million. Simple Domain Setup. Year-Round Special Offers. 100s of Domain Endings.`,
+      `HostGator® Is The Perfect Solution For You. We Are With You Every Step Of The Way. Powerful Web Hosting Made Easy and Affordable. Great Bundle with Every Plan! Free SSL. Free Website Templates. Unmetered Disk Space.`,
     );
+  });
+
+  test(`Testing bottom ad sitelinks`, () => {
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'title'], 'App Hosting');
+    expect(serp).toHaveProperty(
+      ['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'href'],
+      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABALGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_1mq-gMpp58rz745u0yej7PlvoKTQ&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQvrcBegQIAxAN&adurl=https://www.hostgator.com/apps%3Futm_source%3Dgoogle%26utm_medium%3Dgenericsearch%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAMYAiACEgIhx_D_BwE',
+    );
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'type'], 'INLINE');
   });
 });
 
-describe('Parsing Coffee page', () => {
+describe.skip('Parsing Coffee page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}coffee.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test('Page should have locals feature', () => {
@@ -625,13 +535,13 @@ describe('Parsing Coffee page', () => {
   });
 });
 
-describe('Parsing Dell page', () => {
+describe.skip('Parsing Dell page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}dell.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test('Page should have shop feature', () => {
@@ -694,13 +604,13 @@ describe('Parsing Dell page', () => {
   });
 });
 
-describe.skip('Parsing no results page', () => {
+describe('Parsing no results page', () => {
   let html: string;
   let serp: Serp;
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}no-results.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html).serp;
+    serp = new GoogleMobileSERP(html).serp;
   });
 
   test('There should be 0 results', () => {
@@ -715,7 +625,7 @@ describe('Testing optional module parsing', () => {
 
   beforeAll(() => {
     html = fs.readFileSync(`${root}google.html`, { encoding: 'utf8' });
-    serp = new GoogleSERP(html, {}).serp;
+    serp = new GoogleMobileSERP(html, {}).serp;
   });
 
   test('Do not detect any module parsing', () => {

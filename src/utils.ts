@@ -11,24 +11,24 @@ export const getUrlFromQuery = (query: string): string => {
   return searchParams.get('q') || 'https://google.com' + query;
 };
 
-export const getFirstMatch = (str: string, reg: RegExp) => {
+export const getFirstMatch = (str: string, reg: RegExp): string => {
   str = str ? str : '';
   const matches = str.match(reg);
   return matches ? matches[0] : '';
 };
 
-export const getLinkType = (url: string, base?: string) => {
+export const getLinkType = (url: string, base?: string): LinkType => {
   const href = new URL(url, base);
   return href.pathname !== '/' ? LinkType.landing : LinkType.home;
 };
 
-export const getTotalResults = (text: string) => {
+export const getTotalResults = (text: string): number | undefined => {
   const resultsRegex = /[\d,]+(?= results)/g;
   const resultsMatched: string = getFirstMatch(text, resultsRegex).replace(/,/g, '');
   return resultsMatched !== '' ? parseInt(resultsMatched, 10) : undefined;
 };
 
-export const getTimeTaken = (text: string) => {
+export const getTimeTaken = (text: string): number | undefined => {
   const timeRegex = /[\d.]+(?= seconds)/g;
   const timeMatched: string = getFirstMatch(text, timeRegex);
   return timeMatched !== '' ? parseFloat(timeMatched) : undefined;
