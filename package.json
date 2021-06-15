@@ -11,10 +11,10 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint .",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "prepublishOnly2": "npm test && npm run lint",
+    "preversion2": "npm run lint",
+    "version2": "npm run format && git add -A src",
+    "postversion2": "git push && git push --tags"
   },
   "files": [
     "lib/**/*"

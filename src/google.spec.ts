@@ -86,7 +86,7 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
   test('2nd result should not have sitelinks', () => {
-    expect(serp).not.toHaveProperty(['organic','1','sitelinks'])
+    expect(serp).not.toHaveProperty(['organic', '1', 'sitelinks']);
   });
 
   test('testing videos property for non existent results', () => {

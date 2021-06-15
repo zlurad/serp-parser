@@ -82,11 +82,11 @@ export class GoogleNojsSERP {
       const position = index + 1;
       const url = utils.getUrlFromQuery($(element).prop('href'));
       const domain = utils.getDomain(url);
-		const tld = tldParser(url).domain;
+      const tld = tldParser(url).domain;
       const title = $(element).children('h3').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
-		const displayedUrl = $(element).children('div').text();
+      const displayedUrl = $(element).children('div').text();
       const result: Result = {
         domain,
         linkType,
@@ -94,8 +94,8 @@ export class GoogleNojsSERP {
         snippet,
         title,
         url,
-		  displayedUrl,
-		  tld,
+        displayedUrl,
+        tld,
       };
       this.parseSitelinks(element, result);
       this.serp.organic.push(result);

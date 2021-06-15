@@ -250,15 +250,21 @@ describe('Parsing Domain-nojs page', () => {
       'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABABGgJ3cw&sig=AOD64_174-onC0FNonRouW05eLvgf-ichg&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQ0Qx6BAgVEAE&adurl=',
     );
     expect(adwordsTop).toHaveProperty(['0', 'domain'], 'www.google.com');
-    expect(adwordsTop).toHaveProperty(['0', 'snippet'], 'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.');
+    expect(adwordsTop).toHaveProperty(
+      ['0', 'snippet'],
+      'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.',
+    );
     expect(adwordsTop).toHaveProperty(['0', 'linkType'], 'LANDING');
   });
 
   test(`first top ad card sitelink`, () => {
-    expect(adwordsTop).toHaveProperty(['1','sitelinks','1']);
-    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','title'],'Customize Easily');
-    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','href'],'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABAGGgJ3cw&sig=AOD64_2l9W5FDQtnwFl-SAL_GR7II4LX8A&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQpigoAXoECBYQBA&adurl=');
-    expect(adwordsTop).toHaveProperty(['1','sitelinks','1','type'],'INLINE');
+    expect(adwordsTop).toHaveProperty(['1', 'sitelinks', '1']);
+    expect(adwordsTop).toHaveProperty(['1', 'sitelinks', '1', 'title'], 'Customize Easily');
+    expect(adwordsTop).toHaveProperty(
+      ['1', 'sitelinks', '1', 'href'],
+      'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABAGGgJ3cw&sig=AOD64_2l9W5FDQtnwFl-SAL_GR7II4LX8A&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQpigoAXoECBYQBA&adurl=',
+    );
+    expect(adwordsTop).toHaveProperty(['1', 'sitelinks', '1', 'type'], 'INLINE');
   });
 });
 
