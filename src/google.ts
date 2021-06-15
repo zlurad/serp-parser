@@ -266,13 +266,12 @@ export class GoogleSERP {
         path: $(element).prop('href'),
         url: 'https://google.com' + $(element).prop('href'),
       });
-		if(! serp.pagination[0].url && serp.pagination[1].url){
-			const parsed = queryString.parseUrl(serp.pagination[1].url);
-			delete(parsed.query.start);
-			serp.pagination[0].url = queryString.stringifyUrl(parsed);
-			serp.pagination[0].path = '/search/' + queryString.stringify(parsed.query);
-
-		}
+      if (!serp.pagination[0].url && serp.pagination[1].url) {
+        const parsed = queryString.parseUrl(serp.pagination[1].url);
+        delete parsed.query.start;
+        serp.pagination[0].url = queryString.stringifyUrl(parsed);
+        serp.pagination[0].path = '/search/' + queryString.stringify(parsed.query);
+      }
     });
   }
 
