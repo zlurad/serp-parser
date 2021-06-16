@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { URL } from 'url';
 import { Ad, Hotel, RelatedKeyword, Result, Serp, Sitelink, SitelinkType } from './models';
 import * as utils from './utils';
 const tldParser = require('tld-extract');
@@ -82,11 +83,15 @@ export class GoogleNojsSERP {
       const position = index + 1;
       const url = utils.getUrlFromQuery($(element).prop('href'));
       const domain = utils.getDomain(url);
-      const tld = tldParser(url).domain;
+      const domain_tld = tldParser(url).tld;
+      const domain_root = tldParser(url).domain;
+      const domain_sub = tldParser(url).sub;
       const title = $(element).children('h3').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
-      const displayedUrl = $(element).children('div').text();
+		const uri = new URL(url);
+      const url_clean = uri.hostname + uri.pathname;
+      const url_displayed = $(element).children('div').text();
       const result: Result = {
         domain,
         linkType,
@@ -94,8 +99,11 @@ export class GoogleNojsSERP {
         snippet,
         title,
         url,
-        displayedUrl,
-        tld,
+        domain_root,
+        domain_sub,
+		  domain_tld,
+		  url_clean,
+		  url_displayed,
       };
       this.parseSitelinks(element, result);
       this.serp.organic.push(result);

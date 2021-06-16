@@ -142,9 +142,12 @@ export interface Result {
   snippet: string;
   title: string;
   url: string;
-  displayedUrl?: string;
   featured?: boolean;
-  tld?: string;
+  domain_root?: string;
+  domain_sub?: string;
+  domain_tld?: string;
+  url_clean?: string;
+  url_displayed?: string;
 }
 
 export interface Sitelink {
@@ -157,6 +160,7 @@ export interface Sitelink {
 export enum LinkType {
   landing = 'LANDING',
   home = 'HOME',
+  blog = 'BLOG',
 }
 
 export enum SitelinkType {

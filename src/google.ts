@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { URL } from 'url';
 const tldParser = require('tld-extract');
 const queryString = require('query-string');
 import {
@@ -123,11 +124,15 @@ export class GoogleSERP {
       const position = this.serp.organic.length + 1;
       const url = $(element).prop('href');
       const domain = utils.getDomain(url);
-      const tld = tldParser(url).domain;
+      const domain_tld = tldParser(url).tld;
+      const domain_root = tldParser(url).domain;
+      const domain_sub = tldParser(url).sub;
       const title = this.elementText(element, 'h3').trim();
       const snippet = this.getSnippet(element).trim();
       const linkType = utils.getLinkType(url);
-      const displayedUrl = $(element).children('div').text();
+		const uri = new URL(url);
+      const url_clean = uri.hostname + uri.pathname;
+      const url_displayed = $(element).children('div').text();
       const result: Result = {
         domain,
         linkType,
@@ -135,8 +140,11 @@ export class GoogleSERP {
         snippet,
         title,
         url,
-        displayedUrl,
-        tld,
+        domain_root,
+        domain_sub,
+		  domain_tld,
+		  url_clean,
+		  url_displayed,
       };
       this.parseSitelinks(element, result);
       this.parseCachedAndSimilarUrls(element, result);
