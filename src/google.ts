@@ -598,9 +598,11 @@ export class GoogleSERP {
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
       address: '.rllt__details.lqhpac div:nth-child(2)',
+      addressRegex: /[^·]*$/,
       localsFeature: '.AEprdc',
       local: '.C8TUKc',
-      distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
+      distance: '.rllt__details.lqhpac div:nth-child(2)',
+      distanceRegex: /^([^·])+/,
       description: 'div.rllt__wrapped > span',
     };
 
@@ -621,9 +623,13 @@ export class GoogleSERP {
         .slice(1, -1)
         .trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
-      const distance = '';
-      const address = this.elementText(el, CONFIG.address);
-      const description = '';
+      const distance = utils
+      .getFirstMatch($(el).find(CONFIG.distance).text(), CONFIG.distanceRegex)
+      .trim();
+      const address = utils
+      .getFirstMatch($(el).find(CONFIG.address).text(), CONFIG.addressRegex)
+      .trim();
+      const description = this.elementText(el, CONFIG.description);
       locals.push({ name, rating, reviews, expensiveness, type, address, distance, description });
     });
     serp.locals = locals;

@@ -515,16 +515,15 @@ describe('Parsing Coffee page', () => {
     expect(serp.locals).toBeDefined();
   });
 
-  test('2nd locals card should have title "Peets Coffee"', () => {
-    expect(serp).toHaveProperty(['locals', 1, 'name'], "Peet's Coffee");
-    expect(serp).toHaveProperty(['locals', 1, 'rating'], '4.3');
-    expect(serp).toHaveProperty(['locals', 1, 'reviews'], '398');
-    expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 1);
-    expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
-    expect(serp).toHaveProperty(['locals', 1, 'address'], '1400 Mission St Suite 130');
-    // There is no distance and desc in current results
-    // expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.3 mi');
-    // expect(serp).toHaveProperty(['locals', 1, 'description'], 'Small cafe for coffee & frozen yogurt');
+  test('3rd locals card should have title "Peets Coffee"', () => {
+    expect(serp).toHaveProperty(['locals', 2, 'name'], "Peet's Coffee");
+    expect(serp).toHaveProperty(['locals', 2, 'rating'], '4.3');
+    expect(serp).toHaveProperty(['locals', 2, 'reviews'], '401');
+    expect(serp).toHaveProperty(['locals', 2, 'expensiveness'], 1);
+    expect(serp).toHaveProperty(['locals', 2, 'type'], 'Coffee shop');
+    expect(serp).toHaveProperty(['locals', 2, 'address'], '1400 Mission St Suite 130');
+    expect(serp).toHaveProperty(['locals', 2, 'distance'], '0.2 mi');
+    expect(serp).toHaveProperty(['locals', 2, 'description'], 'Coffeehouse chain also known for its tea');
   });
 });
 
