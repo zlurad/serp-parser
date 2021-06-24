@@ -2,7 +2,6 @@ import { LinkType } from './models';
 import { getDomain, getFirstMatch, getLinkType, getTimeTaken, getTotalResults, getUrlFromQuery } from './utils';
 
 describe('Testing getDomain utility', () => {
-
   test('for url input it should return lowercase domain name', () => {
     expect(getDomain('https://google.com/test')).toEqual('google.com');
     expect(getDomain('https://GOOGLE.COM/something')).toEqual('google.com');

@@ -69,7 +69,7 @@ describe('Parsing Google page with 10 resuts', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
   });
   test('2nd result should not have sitelinks', () => {
-    expect(serp).not.toHaveProperty(['organic','1','sitelinks'])
+    expect(serp).not.toHaveProperty(['organic', '1', 'sitelinks']);
   });
 
   test('testing videos property for non existent results', () => {
@@ -214,10 +214,7 @@ describe('Parsing "The Matrix" search page', () => {
         ['topStories', 1, 'title'],
         '15 Movies To Watch To Get Excited For Matrix 4 | ScreenRant',
       );
-      expect(serp).toHaveProperty(
-        ['topStories', 1, 'url'],
-        'https://screenrant.com/matrix-4-movies-watch-before/',
-      );
+      expect(serp).toHaveProperty(['topStories', 1, 'url'], 'https://screenrant.com/matrix-4-movies-watch-before/');
       expect(serp).toHaveProperty(['topStories', 1, 'publisher'], '');
       expect(serp).toHaveProperty(['topStories', 1, 'published'], '3 weeks ago');
     });
@@ -340,25 +337,25 @@ describe('Parsing Hotels search page', () => {
     });
   });
 
-    describe('Testing top stories feature', () => {
-      test('Page should have topStories feature', () => {
-        expect(serp.topStories).toBeDefined();
-      });
-  
-      test('1st top stories card should have title "De Blasio: NYC ready to 8,000 homeless out of hotels, back into shelters"', () => {
-        expect(serp).toHaveProperty(
-          ['topStories', 0, 'title'],
-          'De Blasio: NYC ready to 8,000 homeless out of hotels, back into shelters',
-        );
-        expect(serp).toHaveProperty(
-          ['topStories', 0, 'url'],
-          'https://www.nydailynews.com/news/politics/new-york-elections-government/ny-nyc-de-blasio-homeless-relocation-hotels-shelters-20210616-ys23jfsiffcf5b4encjzcka55a-story.html',
-        );
-        expect(serp).toHaveProperty(['topStories', 0, 'publisher'], '');
-        expect(serp).toHaveProperty(['topStories', 0, 'published'], '1 day ago');
-      });
+  describe('Testing top stories feature', () => {
+    test('Page should have topStories feature', () => {
+      expect(serp.topStories).toBeDefined();
+    });
+
+    test('1st top stories card should have title "De Blasio: NYC ready to 8,000 homeless out of hotels, back into shelters"', () => {
+      expect(serp).toHaveProperty(
+        ['topStories', 0, 'title'],
+        'De Blasio: NYC ready to 8,000 homeless out of hotels, back into shelters',
+      );
+      expect(serp).toHaveProperty(
+        ['topStories', 0, 'url'],
+        'https://www.nydailynews.com/news/politics/new-york-elections-government/ny-nyc-de-blasio-homeless-relocation-hotels-shelters-20210616-ys23jfsiffcf5b4encjzcka55a-story.html',
+      );
+      expect(serp).toHaveProperty(['topStories', 0, 'publisher'], '');
+      expect(serp).toHaveProperty(['topStories', 0, 'published'], '1 day ago');
     });
   });
+});
 
 describe('Parsing Hotels-London search page', () => {
   let html: string;
@@ -456,7 +453,6 @@ describe('Parsing Domain page', () => {
     });
   });
 });
-
 
 describe('Parsing .com-domains page', () => {
   let html: string;

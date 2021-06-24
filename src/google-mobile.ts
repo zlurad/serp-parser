@@ -170,7 +170,7 @@ export class GoogleMobileSERP {
 
     links.each((i, el) => {
       const sitelink: Sitelink = {
-        href: ($(el).attr('href') as string),
+        href: $(el).attr('href') as string,
         title: $(el).text(),
         type,
       };

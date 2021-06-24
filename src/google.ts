@@ -199,7 +199,8 @@ export class GoogleSERP {
       const sitelink: Sitelink = {
         href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : ($(el).attr('href') as string),
         snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
-        title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text().replace(/\s+/g, ' ').trim(),
+        title:
+          type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text().replace(/\s+/g, ' ').trim(),
         type,
       };
       sitelinks.push(sitelink);
@@ -623,12 +624,8 @@ export class GoogleSERP {
         .slice(1, -1)
         .trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
-      const distance = utils
-      .getFirstMatch($(el).find(CONFIG.distance).text(), CONFIG.distanceRegex)
-      .trim();
-      const address = utils
-      .getFirstMatch($(el).find(CONFIG.address).text(), CONFIG.addressRegex)
-      .trim();
+      const distance = utils.getFirstMatch($(el).find(CONFIG.distance).text(), CONFIG.distanceRegex).trim();
+      const address = utils.getFirstMatch($(el).find(CONFIG.address).text(), CONFIG.addressRegex).trim();
       const description = this.elementText(el, CONFIG.description);
       locals.push({ name, rating, reviews, expensiveness, type, address, distance, description });
     });
