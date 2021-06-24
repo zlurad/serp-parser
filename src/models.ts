@@ -111,6 +111,7 @@ export interface Hotel {
   description?: string;
   moreInfoLink?: string;
   address?: string;
+  featuredReview?: string;
 }
 
 export interface HotelDeal {
