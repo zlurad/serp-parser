@@ -62,7 +62,7 @@ export class GoogleSERP {
     const CONFIG = {
       currentPage: 'table.AaVjTc td.YyVfkd',
       keyword: 'input[aria-label="Search"]',
-      noResults: '.med.card-section p:contains(" - did not match any documents.")',
+      noResults: "#topstuff .card-section p:contains(' - did not match any documents.')",
       resultText: '#result-stats',
     };
     if ($(CONFIG.noResults).length === 1) {
@@ -96,9 +96,9 @@ export class GoogleSERP {
       if (options.videos) {
         this.getVideos();
       }
-      if (options.thumbnails) {
-        this.getThumbnails();
-      }
+      // if (options.thumbnails) {
+      //   this.getThumbnails();
+      // }
       if (options.shop) {
         this.getShopResults();
       }
@@ -117,7 +117,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       results:
-        '#search #rso > .g div .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
+        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -199,11 +199,11 @@ export class GoogleSERP {
   private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
-      cards: '.sld',
+      cards: '.usJj9c',
       closestCards: 'div.g',
-      closestInline: '.rc',
+      closestInline: '.tF2Cxc',
       href: 'a',
-      inline: '.St3GK a',
+      inline: '.HiHjCd a',
       snippet: '.st',
       title: 'h3 a',
     };
@@ -225,7 +225,8 @@ export class GoogleSERP {
       const sitelink: Sitelink = {
         href: type === SitelinkType.card ? this.elementHref(el, CONFIG.href) : ($(el).attr('href') as string),
         snippet: type === SitelinkType.card ? this.elementText(el, CONFIG.snippet) : undefined,
-        title: type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text(),
+        title:
+          type === SitelinkType.card ? this.elementText(el, CONFIG.title) : $(el).text().replace(/\s+/g, ' ').trim(),
         type,
       };
       sitelinks.push(sitelink);
@@ -327,45 +328,45 @@ export class GoogleSERP {
     serp.videos = videos;
   }
 
-  private getThumbnails() {
-    const $ = this.$;
-    const serp = this.serp;
-    const CONFIG = {
-      heading: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"]',
-      headingMore: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"] .VLkRKc',
-      relatedGroup: '#bres .xpdopen',
-      relatedThumbnail: '.zVvuGd > div',
-      sitelink: 'a',
-      title: '.fl',
-    };
-    const relatedGroup = $(CONFIG.relatedGroup);
-    if (relatedGroup.length === 0) {
-      return;
-    }
-    const thumbnailGroups: ThumbnailGroup[] = [];
-    relatedGroup.each((index, element) => {
-      let heading = '';
-      if ($(element).find(CONFIG.headingMore).length === 1) {
-        heading = $(element).find(CONFIG.headingMore).text();
-      } else {
-        heading = $(element).find(CONFIG.heading).text();
-      }
-      // const heading = this.elementText(element, CONFIG.heading);
-      const thumbnailGroup: ThumbnailGroup = {
-        heading,
-        thumbnails: [],
-      };
-      const relatedThumbnail = $(element).find(CONFIG.relatedThumbnail);
-      relatedThumbnail.each((ind, el) => {
-        thumbnailGroup.thumbnails.push({
-          sitelink: this.elementHref(el, CONFIG.sitelink),
-          title: this.elementText(el, CONFIG.title),
-        });
-      });
-      thumbnailGroups.push(thumbnailGroup);
-    });
-    serp.thumbnailGroups = thumbnailGroups;
-  }
+  // private getThumbnails() {
+  //   const $ = this.$;
+  //   const serp = this.serp;
+  //   const CONFIG = {
+  //     heading: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"]',
+  //     headingMore: '.sV2QOc.Ss2Faf.zbA8Me.mfMhoc[role="heading"] .VLkRKc',
+  //     relatedGroup: '#bres .xpdopen',
+  //     relatedThumbnail: '.zVvuGd > div',
+  //     sitelink: 'a',
+  //     title: '.fl',
+  //   };
+  //   const relatedGroup = $(CONFIG.relatedGroup);
+  //   if (relatedGroup.length === 0) {
+  //     return;
+  //   }
+  //   const thumbnailGroups: ThumbnailGroup[] = [];
+  //   relatedGroup.each((index, element) => {
+  //     let heading = '';
+  //     if ($(element).find(CONFIG.headingMore).length === 1) {
+  //       heading = $(element).find(CONFIG.headingMore).text();
+  //     } else {
+  //       heading = $(element).find(CONFIG.heading).text();
+  //     }
+  //     // const heading = this.elementText(element, CONFIG.heading);
+  //     const thumbnailGroup: ThumbnailGroup = {
+  //       heading,
+  //       thumbnails: [],
+  //     };
+  //     const relatedThumbnail = $(element).find(CONFIG.relatedThumbnail);
+  //     relatedThumbnail.each((ind, el) => {
+  //       thumbnailGroup.thumbnails.push({
+  //         sitelink: this.elementHref(el, CONFIG.sitelink),
+  //         title: this.elementText(el, CONFIG.title),
+  //       });
+  //     });
+  //     thumbnailGroups.push(thumbnailGroup);
+  //   });
+  //   serp.thumbnailGroups = thumbnailGroups;
+  // }
 
   private getHotels() {
     const $ = this.$;
@@ -446,7 +447,6 @@ export class GoogleSERP {
       currencyRegex: /\D+/,
       dealDetails: '.kOTJue.jj25pf',
       dealType: '.NNPnSe',
-      featuredReview: '.DabgJ .gisIHb',
       hotelCards: '.ntKMYc .hmHBZd',
       name: '.BTPx6e',
       originalPrice: '.AfCRQd',
@@ -475,8 +475,6 @@ export class GoogleSERP {
       const dealType = this.elementText(el, CONFIG.dealType);
       const dealDetails = this.elementText(el, CONFIG.dealDetails);
       const amenities = this.elementText(el, CONFIG.amenities);
-      const featuredReview = this.elementText(el, CONFIG.featuredReview).trim().slice(1, -1); // Getting rid of quotes with slice()
-      // Make this better, maybe something instead of slice ?
 
       const hotelDeal: HotelDeal = {
         dealType,
@@ -503,9 +501,6 @@ export class GoogleSERP {
 
       if (amenities) {
         hotel.amenities = amenities;
-      }
-      if (featuredReview) {
-        hotel.featuredReview = featuredReview;
       }
 
       hotels.push(hotel);
@@ -602,27 +597,27 @@ export class GoogleSERP {
   }
 
   // Moved to knowledge graph
-  private getAvailableOn() {
-    const $ = this.$;
-    const serp = this.serp;
-    const CONFIG = {
-      price: '.V8xno span',
-      query: 'a.JkUS4b',
-      service: '.i3LlFf',
-    };
+  // private getAvailableOn() {
+  //   const $ = this.$;
+  //   const serp = this.serp;
+  //   const CONFIG = {
+  //     price: '.V8xno span',
+  //     query: 'a.JkUS4b',
+  //     service: '.i3LlFf',
+  //   };
 
-    const list = $(CONFIG.query);
-    const availableOn: AvailableOn[] = [];
-    if (list.length) {
-      list.each((i, e) => {
-        const url = $(e).attr('href') as string;
-        const service = this.elementText(e, CONFIG.service);
-        const price = this.elementText(e, CONFIG.price);
-        availableOn.push({ url, service, price });
-      });
-      serp.availableOn = availableOn;
-    }
-  }
+  //   const list = $(CONFIG.query);
+  //   const availableOn: AvailableOn[] = [];
+  //   if (list.length) {
+  //     list.each((i, e) => {
+  //       const url = $(e).attr('href') as string;
+  //       const service = this.elementText(e, CONFIG.service);
+  //       const price = this.elementText(e, CONFIG.price);
+  //       availableOn.push({ url, service, price });
+  //     });
+  //     serp.availableOn = availableOn;
+  //   }
+  // }
 
   private getLocals() {
     const $ = this.$;
@@ -636,11 +631,13 @@ export class GoogleSERP {
       expensivenessRegex: /·([^]+)·/,
       type: '.rllt__details.lqhpac div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
-      distance: '.rllt__details.lqhpac div:nth-child(2) > span:nth-child(1)',
       address: '.rllt__details.lqhpac div:nth-child(2)',
-      description: 'div.rllt__wrapped > span',
+      addressRegex: /[^·]*$/,
       localsFeature: '.AEprdc',
       local: '.C8TUKc',
+      distance: '.rllt__details.lqhpac div:nth-child(2)',
+      distanceRegex: /^([^·])+/,
+      description: 'div.rllt__wrapped > span',
     };
 
     const localsFeature = $(CONFIG.localsFeature);
@@ -660,10 +657,10 @@ export class GoogleSERP {
         .slice(1, -1)
         .trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
-      const distance = '';
-      const address = this.elementText(el, CONFIG.address);
-      const description = '';
-      locals.push({ name, rating, reviews, expensiveness, type, distance, address, description });
+      const distance = utils.getFirstMatch($(el).find(CONFIG.distance).text(), CONFIG.distanceRegex).trim();
+      const address = utils.getFirstMatch($(el).find(CONFIG.address).text(), CONFIG.addressRegex).trim();
+      const description = this.elementText(el, CONFIG.description);
+      locals.push({ name, rating, reviews, expensiveness, type, address, distance, description });
     });
     serp.locals = locals;
   }
@@ -672,11 +669,11 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      published: '.K4LhXb',
-      publisher: '.wqg8ad',
-      title: 'div[role="heading"]',
-      topStoriesFeature: 'g-section-with-header [data-hveid=CA0QAQ]',
-      topStory: 'a[data-jsarwt="1"]',
+      published: '.S1FAPd',
+      publisher: '.CEMjEf',
+      title: '.mCBkyc.oz3cqf.p5AXld.nDgy9d',
+      topStoriesFeature: '.F8yfEe',
+      topStory: '.WlydOe',
     };
     const topStoriesFeature = $(CONFIG.topStoriesFeature);
 
@@ -711,7 +708,7 @@ export class GoogleSERP {
       shopFeature: '.top-pla-group-inner',
       shopOffer: '.pla-unit:not(.view-all-unit)',
       shoppingSite: '.LbUacb',
-      specialOffer: '.gyXcee',
+      // specialOffer: '.gyXcee',
       title: 'a > .pymv4e',
       votes: '.nbd1Bd .QhqGkb.RnJeZd',
     };
@@ -735,10 +732,10 @@ export class GoogleSERP {
           shoppingSite,
           title,
         };
-        const specialOffer = $(el).find(CONFIG.specialOffer).first().text();
-        if (specialOffer) {
-          shopResult.specialOffer = specialOffer;
-        }
+        // const specialOffer = $(el).find(CONFIG.specialOffer).first().text();
+        // if (specialOffer) {
+        //   shopResult.specialOffer = specialOffer;
+        // }
         const ratingString = $(el).find(CONFIG.ratingString).attr('aria-label');
         if (ratingString) {
           const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));

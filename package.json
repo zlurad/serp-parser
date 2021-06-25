@@ -1,12 +1,12 @@
 {
   "name": "@geek/serp-parser",
-  "version": "1.3.0-1",
+  "version": "1.4.0-0",
   "description": "SERP Parser for Google",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "jest --config jest.json --coverage",
-    "test:watch": "jest --config jest.json --watch",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint .",
@@ -51,10 +51,11 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.3.6",
     "fs-extra": "^10.0.0",
-    "jest": "^27.0.4",
+    "jest": "^27.0.5",
     "prettier": "^2.3.0",
-    "ts-jest": "^27.0.2",
-    "typescript": "^4.3.2"
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4"
   },
   "dependencies": {
     "@geek/tld": "^2.0.1-1",

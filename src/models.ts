@@ -30,7 +30,7 @@ export interface ShopResult {
   price: number;
   currency: string;
   shoppingSite: string;
-  specialOffer?: string;
+  // specialOffer?: string;
   rating?: number;
   votes?: string;
   commodity?: string;
@@ -107,12 +107,12 @@ export interface Hotel {
   votes: number | string;
   deal?: HotelDeal;
   amenities?: string;
-  featuredReview?: string;
   // nojs features
   stars?: number;
   description?: string;
   moreInfoLink?: string;
   address?: string;
+  featuredReview?: string;
 }
 
 export interface HotelDeal {
@@ -127,8 +127,8 @@ export interface Local {
   reviews: string;
   expensiveness: number;
   type: string;
-  distance: string;
   address: string;
+  distance: string;
   description: string;
 }
 
