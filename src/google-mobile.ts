@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { URL } from 'url';
-const tldParser = require('tld-extract');
+const tldParser = require('@geek/tld');
 import {
   Ad,
   AvailableOn,

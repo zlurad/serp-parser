@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import { URL } from 'url';
 import { Ad, Hotel, RelatedKeyword, Result, Serp, Sitelink, SitelinkType } from './models';
 import * as utils from './utils';
-const tldParser = require('tld-extract');
+const tldParser = require('@geek/tld');
 export class GoogleNojsSERP {
   public serp: Serp = {
     currentPage: 1,

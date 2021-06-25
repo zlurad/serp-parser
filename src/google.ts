@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { URL } from 'url';
-const tldParser = require('tld-extract');
+const tldParser = require('@geek/tld');
 const queryString = require('query-string');
 import {
   Ad,
@@ -123,10 +123,20 @@ export class GoogleSERP {
     $(CONFIG.results).each((index, element) => {
       const position = this.serp.organic.length + 1;
       const url = $(element).prop('href');
+		console.debug("url: " + url);
       const domain = utils.getDomain(url);
-      const domain_tld = tldParser(url).tld;
-      const domain_root = tldParser(url).domain;
-      const domain_sub = tldParser(url).sub;
+		// let parsed_domain;
+		// try {
+		// 	parsed_domain = tldParser(url, {allowUnknownTLD: true});
+		// } catch (error){
+		// 		console.error(error);
+		// }
+
+		const parsed_domain = tldParser(url);
+
+      const domain_tld = parsed_domain.tld;
+      const domain_root = parsed_domain.domain;
+      const domain_sub = parsed_domain.sub;
       const title = this.elementText(element, 'h3').trim();
       const snippet = this.getSnippet(element).trim();
       const linkType = utils.getLinkType(url);
@@ -180,6 +190,8 @@ export class GoogleSERP {
   }
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
+	//   console.error(this.$(element));
+	//   console.debug(`🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨`);
     const text = this.$(element).parent().next().text();
     return text;
   }

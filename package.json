@@ -57,9 +57,9 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "@geek/tld": "^2.0.1-1",
     "cheerio": "^1.0.0-rc.9",
     "query-string": "^7.0.0",
-    "tld-extract": "^2.0.1",
     "tslib": "^2.2.0"
   }
 }
