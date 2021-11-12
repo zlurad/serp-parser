@@ -525,10 +525,7 @@ describe('Parsing Dell page', () => {
 
   test(`Page should have shop results and the title of the first shop result should be 
     "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G"`, () => {
-    expect(serp).toHaveProperty(
-      ['shopResults', 0, 'title'],
-      'Dell XPS 13 Laptop - w/ Windows 11 & 11th gen Intel ...',
-    );
+    expect(serp).toHaveProperty(['shopResults', 0, 'title'], 'Dell XPS 13 Laptop - w/ Windows 11 & 11th gen Intel ...');
   });
 
   test('First shop results on the page should have img link', () => {
