@@ -18,10 +18,10 @@ describe('Parsing Google page with 10 resuts', () => {
   });
 
   test('Page should have 11,310,000,000 results', () => {
-    expect(serp.totalResults).toBe(11310000000);
+    expect(serp.totalResults).toBe(11910000000);
   });
   test('Search should be done in 1.17 seconds', () => {
-    expect(serp.timeTaken).toBe(1.17);
+    expect(serp.timeTaken).toBe(0.66);
   });
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
@@ -29,44 +29,42 @@ describe('Parsing Google page with 10 resuts', () => {
   test('Page should have 8 related keywords', () => {
     expect(serp.relatedKeywords).toHaveLength(8);
   });
-  test('1st related keyword should be "google gravity"', () => {
-    expect(serp.relatedKeywords[0].keyword).toBe('google gravity');
+  test('1st related keyword', () => {
+    expect(serp.relatedKeywords[0].keyword).toBe('google drive');
   });
   test('1st related keyword should have path', () => {
     expect(serp.relatedKeywords[0].path).toBe(
-      '/search?rlz=1C1CHBF_en&gl=us&q=Google+Gravity&sa=X&ved=2ahUKEwigq5P7rdjwAhVClJUCHSatDmUQ1QIwHHoECC8QAQ',
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=Google+Drive&sa=X&ved=2ahUKEwiEq7bs7ZL0AhX3TjABHUAFBVUQ1QJ6BAgaEAE',
     );
   });
   test(`Link to 2nd page should have path`, () => {
     expect(serp.pagination[1].path).toBe(
-      '/search?q=google&rlz=1C1CHBF_en&gl=us&ei=NmOmYKC4OMKo1sQPptq6qAY&start=10&sa=N&ved=2ahUKEwigq5P7rdjwAhVClJUCHSatDmUQ8tMDegQIARA1',
+      '/search?q=google&safe=off&gl=US&pws=0&nfpr=1&ei=cGKOYYSzEPedwbkPwIqUqAU&start=10&sa=N&filter=0&ved=2ahUKEwiEq7bs7ZL0AhX3TjABHUAFBVUQ8tMDegQIARA6',
     );
   });
-  test('serp should have 5 results', () => {
-    expect(serp.organic).toHaveLength(5);
+  test('serp should have 8 results', () => {
+    expect(serp.organic).toHaveLength(8);
   });
-  test('3th result should have url https://about.google/', () => {
-    expect(serp.organic[2].url).toBe('https://about.google/');
+  test('2nd result should have url https://www.google.com/account/about/', () => {
+    expect(serp.organic[1].url).toBe('https://www.google.com/account/about/');
   });
 
-  test('4th result should have title "Google - Wikipedia"', () => {
-    expect(serp.organic[3].title).toBe('Google - Wikipedia');
+  test('4th result should have title "Google My Business - Manage Your Business Profile"', () => {
+    expect(serp.organic[3].title).toBe('Google My Business - Manage Your Business Profile');
   });
 
   test('4th result should have snippet to start with "Learn how Google.org uses the best of Google to help nonprofits and social...', () => {
-    expect(serp.organic[4].snippet).toBe(
-      `Learn how Google.org uses the best of Google to help nonprofits and social enterprises solve humanity's biggest challenges.`,
-    );
+    expect(serp.organic[4].snippet).toBe(`Google Images. The most comprehensive image search on the web.`);
   });
 
   test('1st result should have card sitelinks', () => {
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/account/about/');
-    expect(serp).toHaveProperty(
-      ['organic', 0, 'sitelinks', 0, 'snippet'],
-      'In your Google Account, you can see and manage your info ...',
-    );
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'CARD');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Docs');
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'href'], 'https://www.google.com/docs/about/');
+    // expect(serp).toHaveProperty(
+    //   ['organic', 0, 'sitelinks', 0, 'snippet'],
+    //   'In your Google Account, you can see and manage your info ...',
+    // );
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
   test('2nd result should not have sitelinks', () => {
     expect(serp).not.toHaveProperty(['organic', '1', 'sitelinks']);
@@ -84,6 +82,25 @@ describe('Parsing Google page with 10 resuts', () => {
   test('testing shop property for non existent results', () => {
     expect(serp.shopResults).toBeUndefined();
   });
+
+  describe('Testing top stories feature', () => {
+    test('Page should have topStories feature', () => {
+      expect(serp.topStories).toBeDefined();
+    });
+
+    test('2nd top stories card should have title "Google loses challenge against EU antitrust ruling, $2.8-bln fine"', () => {
+      expect(serp).toHaveProperty(
+        ['topStories', 1, 'title'],
+        'Google loses challenge against EU antitrust ruling, $2.8-bln fine',
+      );
+      expect(serp).toHaveProperty(
+        ['topStories', 1, 'url'],
+        'https://www.reuters.com/technology/eu-court-upholds-eu-antitrust-ruling-against-google-2021-11-10/',
+      );
+      expect(serp).toHaveProperty(['topStories', 1, 'publisher'], 'Reuters');
+      expect(serp).toHaveProperty(['topStories', 1, 'published'], '1 day ago');
+    });
+  });
 });
 
 describe('Parsing Google page with 100 results', () => {
@@ -96,24 +113,24 @@ describe('Parsing Google page with 100 results', () => {
   });
 
   test('serp should have 99 results', () => {
-    expect(serp.organic).toHaveLength(99);
+    expect(serp.organic).toHaveLength(97);
   });
 
   test('all results should have domain domains.google', () => {
     expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
   });
 
-  test('3rd result should have url https://www.google.com/photos/about/', () => {
-    expect(serp.organic[2].url).toBe('https://www.google.com/photos/about/');
+  test('3rd result should have url https://www.google.com/docs/about/', () => {
+    expect(serp.organic[2].url).toBe('https://www.google.com/docs/about/');
   });
 
-  test('3rd result should have title "Google Photos"', () => {
-    expect(serp.organic[2].title).toBe('Google Photos');
+  test('3rd result should have title "Google Docs: Free Online Document Editor"', () => {
+    expect(serp.organic[2].title).toBe('Google Docs: Free Online Document Editor');
   });
 
-  test('3rd result should have snippet to be "Use Google Hangouts to keep in touch with one person or a group. Available ...', () => {
+  test('3rd result should have snippet to be "Google Images. The most comprehensive image search on the web.', () => {
     expect(serp.organic[4].snippet.replace(/\s+/g, ' ').trim()).toBe(
-      'Use Google Hangouts to keep in touch with one person or a group. Available ...'.replace(/\s+/g, ' ').trim(),
+      'Google Images. The most comprehensive image search on the web.'.replace(/\s+/g, ' ').trim(),
     );
   });
 
@@ -164,30 +181,30 @@ describe('Parsing "The Matrix" search page', () => {
   });
 
   test('serp should have 8 results', () => {
-    expect(serp.organic).toHaveLength(8);
+    expect(serp.organic).toHaveLength(6);
   });
 
   test('Keyword should be "The Matrix"', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
 
-  test('1st result should have sitelinks and second sitelink should have title "‎Plot Summary"', () => {
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title']);
+  test('2nd result should have sitelinks and second sitelink should have title "‎Plot Summary"', () => {
+    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'title']);
     expect(serp).toHaveProperty(
-      ['organic', 0, 'sitelinks', 0, 'href'],
-      'https://www.imdb.com/title/tt0133093/plotsummary',
+      ['organic', 1, 'sitelinks', 0, 'href'],
+      'https://en.wikipedia.org/wiki/The_Matrix_(franchise)',
     );
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['organic', 1, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('video card feature', () => {
     expect(serp.videos).toHaveLength(4);
-    expect(serp).toHaveProperty(['videos', 0, 'title'], 'Matrix Trailer HD (1999)');
-    expect(serp).toHaveProperty(['videos', 0, 'sitelink'], 'https://www.youtube.com/watch?v=m8e-FF8MsqU');
+    expect(serp).toHaveProperty(['videos', 0, 'title'], 'The Matrix Resurrections – Official Trailer 1');
+    expect(serp).toHaveProperty(['videos', 0, 'sitelink'], 'https://www.youtube.com/watch?v=9ix7TUGVYIo');
     expect(serp).toHaveProperty(['videos', 0, 'source'], 'YouTube');
     // expect(serp).toHaveProperty(['videos', 0, 'date'], new Date('2013-11-19'));
-    expect(serp).toHaveProperty(['videos', 0, 'channel'], 'Face Off');
-    expect(serp).toHaveProperty(['videos', 0, 'videoDuration'], '2:31');
+    expect(serp).toHaveProperty(['videos', 0, 'channel'], 'Warner Bros. Pictures · ');
+    expect(serp).toHaveProperty(['videos', 0, 'videoDuration'], '2:53');
   });
   test.skip('thumbnailGroups feature test', () => {
     expect(serp.thumbnailGroups).toHaveLength(3);
@@ -204,24 +221,6 @@ describe('Parsing "The Matrix" search page', () => {
       '/search?q=Johnny+Mnemonic&stick=H4sIAAAAAAAAAONgFuLQz9U3ME-uMlICs7JLUpK0pLKTrfTTMnNywYRVUWpOYklqikJxaknxKkbJNKvs1Mry_KIUq9z8sszUYiuQPhNzy6RFrPxe-Rl5eZUKvnmpufl5mckAmNNcvGAAAAA&sa=X&ved=2ahUKEwji-vSCuarsAhVTvZ4KHa3yDYsQxA0wHHoECAYQBA',
     );
   });
-  describe('Testing top stories feature', () => {
-    test('Page should have topStories feature', () => {
-      expect(serp.topStories).toBeDefined();
-    });
-
-    test('2nd top stories card should have title "15 Movies To Watch To Get Excited For Matrix 4 | ScreenRant"', () => {
-      expect(serp).toHaveProperty(
-        ['topStories', 1, 'title'],
-        '15 Movies To Watch To Get Excited For Matrix 4 | ScreenRant',
-      );
-      expect(serp).toHaveProperty(['topStories', 1, 'url'], 'https://screenrant.com/matrix-4-movies-watch-before/');
-      expect(serp).toHaveProperty(['topStories', 1, 'publisher'], '');
-      expect(serp).toHaveProperty(['topStories', 1, 'published'], '3 weeks ago');
-    });
-    test('1st top stories card should have publisher "BuzzFeed"', () => {
-      expect(serp).toHaveProperty(['topStories', 0, 'publisher'], 'BuzzFeed');
-    });
-  });
 });
 
 describe('Parsing Hotels search page', () => {
@@ -234,17 +233,17 @@ describe('Parsing Hotels search page', () => {
   });
 
   test('There should be 1231 similar hotels in the area', () => {
-    expect(serp).toHaveProperty(['hotels', 'moreHotels'], 1231);
+    expect(serp).toHaveProperty(['hotels', 'moreHotels'], 1219);
   });
 
   test('The searchTitle in searchFilters of hotels feature should be "Hotels | New York City, NY"', () => {
-    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York City, NY');
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'searchTitle'], 'Hotels | New York, NY');
   });
   test('The checkIn date in searchFilters of hotels feature should be "Mon, Jun 21 2021"', () => {
-    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('Mon, Jun 21 2021'));
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkIn'], new Date('2021-11-24T00:00:00.000Z'));
   });
   test('The checkOut date in searchFilters of hotels feature should be "Tue, June 22 2021"', () => {
-    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('Tue, June 22 2021'));
+    expect(serp).toHaveProperty(['hotels', 'searchFilters', 'checkOut'], new Date('2021-11-25T00:00:00.000Z'));
   });
   test('The guests number in searchFilters of hotels feature should be 2', () => {
     expect(serp).toHaveProperty(['hotels', 'searchFilters', 'guests'], 2);
@@ -263,24 +262,21 @@ describe('Parsing Hotels search page', () => {
     expect(serp.hotels?.hotels).toHaveLength(4);
   });
   test('First featured hotel should have name "Made Hotel"', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'Made Hotel');
+    expect(serp).toHaveProperty(['hotels', 'hotels', 0, 'name'], 'Arlo Midtown');
   });
   test('Third featured hotel should have currency "$"', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'currency'], '$');
   });
   test('Third featured hotel should have price 153', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'price'], 153);
+    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'price'], 111);
   });
-  test('Third featured hotel should have rating 4.2', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'rating'], 4.2);
+  test('Third featured hotel should have rating 3.4', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'rating'], 3.4);
   });
-  test('Third featured hotel should have 1588 votes', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'votes'], 1588);
+  test('Third featured hotel should have 862 votes', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'votes'], 862);
   });
-  // TODO separate amenities
-  test('Fourth featured hotel should have following amenities: "Free Wi-Fi"', () => {
-    expect(serp).toHaveProperty(['hotels', 'hotels', 3, 'amenities'], 'Free Wi-FiFree breakfast');
-  });
+
   test('3rd featured hotel should have deal property', () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'deal']);
   });
@@ -292,9 +288,9 @@ describe('Parsing Hotels search page', () => {
 
   test(`Third featured hotel should be labeled with deal,
    having dealType: "GREAT DEAL" and
-   dealDetails: "27% less than usual"`, () => {
+   dealDetails: "65% less than usual"`, () => {
     expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'deal', 'dealType'], 'GREAT DEAL');
-    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'deal', 'dealDetails'], '27% less than usual');
+    expect(serp).toHaveProperty(['hotels', 'hotels', 2, 'deal', 'dealDetails'], '65% less than usual');
   });
 
   describe('Testing ads', () => {
@@ -305,39 +301,33 @@ describe('Parsing Hotels search page', () => {
     });
 
     test('There should be 3 ads on the top of the page', () => {
-      expect(serp.adwords?.adwordsTop).toHaveLength(3);
+      expect(serp.adwords?.adwordsTop).toHaveLength(2);
     });
 
     test('Testing first ad', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'title'],
-        `Hotel Rooms in New York, USA - Fast and Easy. Book in Minutes`,
-      );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'url'],
-        'https://www.hotels.com/sa10233226/hotels-in-new-york-united-states-of-america/',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.hotels.com');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'title'], `Hotels in New York, NY - Booking.com`);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.booking.com/city/us/new-york.html');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.booking.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
-        `Book Your Hotel Room in New York, USA. Browse Reviews. Check Out Our Price Guarantee.`,
+        `Book your Hotel in New York City now. Quick, Easy Booking. No Reservation Costs. Choose from a wide range of properties which Booking.com offers. Search now! Save 10% with Genius. Motels. We speak your language. Hostels. Bed and Breakfasts. Villas.Find deals for your budget and be a Booker today.Book now. No cancellation fees on most rooms. You stay in control.`,
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
     test('Testing 1st ad sitelink', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], 'Last-minute Deals');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], 'Deals for any Budget');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiO6a7uzqHxAhWJrO0KHbKABWMYABADGgJkZw&ae=2&ohost=www.google.com&cid=CAASE-RosUUQf0MVx0A6AqLv69qcDoc&sig=AOD64_13l5aT46ME1PnbftvNnl_To848pQ&q=&ved=2ahUKEwj_y6buzqHxAhUjmFwKHeerBjIQqyQoAHoECAQQEw&adurl=',
+        'https://www.google.com/aclk?sa=l&ai=DChcSEwier8Ds7ZL0AhWabG8EHd1WA_oYABACGgJqZg&ae=2&sig=AOD64_2UgzaMX79jlT6GsMbghBTlJfhP6A&ved=2ahUKEwjJ_bfs7ZL0AhX8TjABHS2XD3oQqyQoAHoECAQQBw&adurl=',
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'type'], 'CARD');
     });
   });
 
-  describe('Testing top stories feature', () => {
+  describe.skip('Testing top stories feature', () => {
     test('Page should have topStories feature', () => {
       expect(serp.topStories).toBeDefined();
     });
@@ -381,8 +371,8 @@ describe('Parsing Hotels-London search page', () => {
     expect(activeFiltersNumber).toBe(1);
   });
 
-  test('Second featured hotel should not have amenities property', () => {
-    expect(serp).not.toHaveProperty(['hotels', 'hotels', 1, 'amenities']);
+  test('Second featured hotel should have have amenities property', () => {
+    expect(serp).toHaveProperty(['hotels', 'hotels', 1, 'amenities'], 'SpaIndoor pool');
   });
 });
 
@@ -420,36 +410,33 @@ describe('Parsing Domain page', () => {
     });
 
     test('There should be 1 ad on the top of the page', () => {
-      expect(serp.adwords?.adwordsTop).toHaveLength(1);
+      expect(serp.adwords?.adwordsTop).toHaveLength(4);
     });
 
     test('Testing first ad', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'title'],
-        `GoDaddy $2.99 Domain Names - The Perfect Domain is Waiting`,
+        `Cheap Domain Names From $0.80 - Free Private Registration`,
       );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domains/names');
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.ionos.com');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'snippet'],
-        `GoDaddy is trusted by over 20 million customers, with a Trustpilot rating of 4.1 stars. Simple Domain Setup. Free 24/7 Phone Support. Year-Round Special Offers. 100s Of Domain Endings. Free Basic Privacy. Services: Domain Privacy, WHOIS Lookup, Domains Transfers.`,
+        `Also included: 1 email account with 2 GB mailbox space. Find your perfect domain now! New Domain Extensions. Email Account Included. One-click activation. Up to 10,000 subdomains. Personal Consultant. 24/7 Support. Easy Domain Transfer.`,
       );
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
     });
 
     test('Testing first ad sitelink', () => {
       expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1]);
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], 'Domain Protection');
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'title'], '$0.50 Web Hosting');
       expect(serp).toHaveProperty(
         ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'href'],
-        'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiI4NPtrdjwAhUZi8gKHXV2Cz8YABADGgJxdQ&ae=2&ggladgrp=7066528666257623986&gglcreat=17637698502619250955&ohost=www.google.com&cid=CAASE-RoWLc6kn9jPzcRcyX5AXMXa6E&sig=AOD64_0NVthcuhbArI2OnFI6CrN-Rvmy8w&q=&ved=2ahUKEwiAqMjtrdjwAhXmq5UCHebRDn0QqyQoAXoECAMQEg&adurl=',
+        'https://www.google.com/aclk?sa=l&ai=DChcSEwj3-L3s7ZL0AhWZoIYKHWwPBDsYABAJGgJ2dQ&ae=1&sig=AOD64_0PegvCphWbulkNGBiIMg8sepBd6Q&q=&ved=2ahUKEwiL_Lfs7ZL0AhUeQzABHbfABQ8QpigoAXoECAUQCg&adurl=https://www.ionos.com/hosting/web-hosting%3Fac%3DOM.US.USo42K356154T7073a%26utm_source%3Dgoogle%26utm_medium%3Dcpc%26utm_campaign%3DDOMAIN_NAME_INFO_GEN_USA-GE-EX-SEA%26utm_term%3Ddomain%26utm_content%3DEX-Domain%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMI9_i97O2S9AIVmaCGCh1sDwQ7EAAYASACEgLBMvD_BwE',
       );
-      expect(serp).toHaveProperty(
-        ['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet'],
-        'Make Sure Your Domain isFully Protected. Learn More!',
-      );
-      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'CARD');
+      expect(serp).not.toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'snippet']);
+      expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 1, 'type'], 'INLINE');
     });
   });
 });
@@ -471,10 +458,10 @@ describe('Parsing .com-domains page', () => {
 
   test(`Testing 3rd bottom ad sitelinks`, () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'title'], 'Renew Your Domain');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'title'], 'Free Domain with Hosting');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'href'],
-      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwivjtSnrdjwAhWB4bMKHRofD2UYABAMGgJxbg&ae=2&ohost=www.google.com&cid=CAASE-RoPrYtA8dM2UVLjyFIkQLF8BY&sig=AOD64_1pjuJTaB2HPcQOdlG-v8EDvQXm-A&q=&ved=2ahUKEwin78inrdjwAhVzqZUCHYEfBqoQpigoAXoECAUQEg&adurl=',
+      'https://www.google.com/aclk?sa=l&ai=DChcSEwjor73s7ZL0AhVLfG8EHfffBYMYABAMGgJqZg&ae=1&sig=AOD64_3iTRiW_HptXNrXKs2LPVE_Na0-Gg&q=&ved=2ahUKEwjLkbbs7ZL0AhU5RjABHXyXAa0QpigoAXoECAQQCg&adurl=https://www.hostgator.com/web-hosting%3Futm_source%3Dgoogle%26utm_medium%3Dgenericsearch%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMI6K-97O2S9AIVS3xvBB333wWDEAMYAyACEgK67fD_BwE',
     );
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 2, 'sitelinks', 1, 'type'], 'INLINE');
   });
@@ -487,13 +474,13 @@ describe('Parsing .com-domains page', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsBottom', 1, 'url'],
-      'https://www.godaddy.com/offers/domains/generic',
+      'https://www.networksolutions.com/domain-name-registration/index.jsp',
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.godaddy.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.networksolutions.com');
     expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsBottom', 1, 'snippet'],
-      `It's never been more important to be online. Browse & buy your domain in seconds! Don't wait - snag your domain before someone else does! Free 24/7 phone support. Trusted By 20 Million. Simple Domain Setup. Year-Round Special Offers. 100s of Domain Endings.`,
+      `Get the right extension for your domain name. Search .COM .NET .ORG .BIZ & .INFO domains. Get the most out of your domain with private registration and website forwarding. 30+ Years in Business. Premium Domains Available. Find Expiring Domains.`,
     );
   });
 });
@@ -512,14 +499,14 @@ describe('Parsing Coffee page', () => {
   });
 
   test('3rd locals card should have title "Peets Coffee"', () => {
-    expect(serp).toHaveProperty(['locals', 2, 'name'], "Peet's Coffee");
-    expect(serp).toHaveProperty(['locals', 2, 'rating'], '4.3');
-    expect(serp).toHaveProperty(['locals', 2, 'reviews'], '401');
-    expect(serp).toHaveProperty(['locals', 2, 'expensiveness'], 1);
-    expect(serp).toHaveProperty(['locals', 2, 'type'], 'Coffee shop');
-    expect(serp).toHaveProperty(['locals', 2, 'address'], '1400 Mission St Suite 130');
-    expect(serp).toHaveProperty(['locals', 2, 'distance'], '0.2 mi');
-    expect(serp).toHaveProperty(['locals', 2, 'description'], 'Coffeehouse chain also known for its tea');
+    expect(serp).toHaveProperty(['locals', 1, 'name'], "Peet's Coffee");
+    expect(serp).toHaveProperty(['locals', 1, 'rating'], '4.3');
+    expect(serp).toHaveProperty(['locals', 1, 'reviews'], '419');
+    expect(serp).toHaveProperty(['locals', 1, 'expensiveness'], 1);
+    expect(serp).toHaveProperty(['locals', 1, 'type'], 'Coffee shop');
+    expect(serp).toHaveProperty(['locals', 1, 'address'], '1400 Mission St Suite 130');
+    // expect(serp).toHaveProperty(['locals', 1, 'distance'], '0.2 mi');
+    expect(serp).toHaveProperty(['locals', 0, 'description'], '"Good value filter coffee"');
   });
 });
 
@@ -540,19 +527,19 @@ describe('Parsing Dell page', () => {
     "Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G"`, () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'title'],
-      'Dell XPS 13 Laptop - w/ 11th gen Intel Core - 13.3" FHD Screen - 8GB - 256G',
+      'Dell XPS 13 Laptop - w/ Windows 11 & 11th gen Intel ...',
     );
   });
 
   test('First shop results on the page should have img link', () => {
     expect(serp).toHaveProperty(
       ['shopResults', 0, 'imgLink'],
-      'https://www.dell.com/en-us/shop/dell-laptops/xps-13-laptop/spd/xps-13-9305-laptop/mktxn9305epfns',
+      'https://www.dell.com/en-us/shop/dell-laptops/xps-13-laptop/spd/xps-13-9305-laptop/xn9305ezwkh',
     );
   });
 
   test('First shop result on the page should have price 899.99', () => {
-    expect(serp).toHaveProperty(['shopResults', 0, 'price'], 899.99);
+    expect(serp).toHaveProperty(['shopResults', 0, 'price'], 649.99);
   });
 
   test('First shop result on the page should have currency "$"', () => {
@@ -572,22 +559,22 @@ describe('Parsing Dell page', () => {
     expect(serp).toHaveProperty(['shopResults', 0, 'specialOffer'], 'Special offer');
   });
 
-  test('1nd shop result on the page should not have rating, votes, but will have commodity', () => {
-    expect(serp).not.toHaveProperty(['shopResults', 0, 'votes']);
-    expect(serp).not.toHaveProperty(['shopResults', 0, 'rating']);
-    expect(serp).toHaveProperty(['shopResults', 0, 'commodity'], 'Free shipping');
+  test('3rd shop result on the page should not have rating, votes, but will have commodity', () => {
+    expect(serp).not.toHaveProperty(['shopResults', 2, 'votes']);
+    expect(serp).not.toHaveProperty(['shopResults', 2, 'rating']);
+    expect(serp).toHaveProperty(['shopResults', 2, 'commodity'], 'Free shipping');
   });
 
-  test('3rd shop result on the page should have rating 3.9', () => {
-    expect(serp).toHaveProperty(['shopResults', 2, 'rating'], 3.9);
+  test.skip('3rd shop result on the page should have rating 3.9', () => {
+    expect(serp).toHaveProperty(['shopResults', 0, 'rating'], 3.9);
   });
 
   test('5th shop result on the page should have less than 1k votes', () => {
-    expect(serp).toHaveProperty(['shopResults', 4, 'votes'], '168');
+    expect(serp).toHaveProperty(['shopResults', 0, 'votes'], '596');
   });
 
   test('3rd shop result on the page should have 2k+ votes', () => {
-    expect(serp).toHaveProperty(['shopResults', 2, 'votes'], '2k+');
+    expect(serp).toHaveProperty(['shopResults', 1, 'votes'], '5k+');
   });
 });
 

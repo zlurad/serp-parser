@@ -114,7 +114,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       results:
-        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a',
+        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a, #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -267,13 +267,13 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      channel: '.GlPvmc.YnLDzf',
-      date: '.rjmdhd',
+      channel: '.pcJO7e span',
+      date: '.hMJ0yc span',
       sitelink: 'a',
-      source: '.hDeAhf',
-      title: '.fJiQld.oz3cqf.p5AXld',
-      videoDuration: '.J2i9Hd',
-      videosCards: '.VibNM',
+      source: '.pcJO7e cite',
+      title: '.fc9yUc.oz3cqf.p5AXld',
+      videoDuration: '.J1mWY',
+      videosCards: '.RzdJxc',
     };
 
     const videosCards = $(CONFIG.videosCards);
@@ -420,9 +420,9 @@ export class GoogleSERP {
       originalPriceRegex: /\d+/,
       price: '.dv1Q3e',
       priceRegex: /\d+/,
-      rating: 'g-review-stars span',
+      rating: '.YDIN4c.YrbPuc',
       ratingRegex: /\d\.\d/,
-      votes: 'g-review-stars+span',
+      votes: '.HypWnf.YrbPuc',
     };
     const hotels: Hotel[] = [];
     const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
@@ -434,7 +434,7 @@ export class GoogleSERP {
         10,
       );
       const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
-      const ratingString = $(el).find(CONFIG.rating).attr('aria-label') as string;
+      const ratingString = $(el).find(CONFIG.rating).text();
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
       const votes = parseInt(this.elementText(el, CONFIG.votes).slice(1, -1).replace(',', ''), 10); // Getting rid of parentheses with slice()
       // Make this better, maybe something instead of slice ?
@@ -503,7 +503,7 @@ export class GoogleSERP {
       ads: '.uEierd',
       snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc)',
       title: '[role="heading"]',
-      url: 'a.Krnil',
+      url: 'a.sVXRqc',
     };
 
     $(search)
@@ -532,7 +532,7 @@ export class GoogleSERP {
   private getAdSitelinks(ad: cheerio.Element) {
     const $ = this.$;
     const CONFIG = {
-      card: '.fCBnFe',
+      card: '.fCBnFe,.MhgNwc',
       cardHref: 'h3 a',
       cardSnippet: ':not(h3)',
       cardTitle: 'h3',
@@ -591,18 +591,18 @@ export class GoogleSERP {
     const serp = this.serp;
     const CONFIG = {
       name: '.dbg0pd',
-      rating: '.BTtC6e',
-      reviews: '.rllt__details.lqhpac div:nth-child(1) span:nth-child(3)',
+      rating: '.YDIN4c.YrbPuc',
+      reviews: '.HypWnf.YrbPuc',
       reviewsRegex: /[0-9]+/,
-      expensiveness: '.rllt__details.lqhpac div:nth-child(1)',
+      expensiveness: '[role="img"]',
       expensivenessRegex: /·([^]+)·/,
-      type: '.rllt__details.lqhpac div:nth-child(1)',
+      type: '.rllt__details div:nth-child(1)',
       typeRegex: /\w+\s\w+/,
-      address: '.rllt__details.lqhpac div:nth-child(2)',
+      address: '.rllt__details div:nth-child(2)',
       addressRegex: /[^·]*$/,
-      localsFeature: '.AEprdc',
+      localsFeature: '[data-hveid="CBYQAQ"]',
       local: '.C8TUKc',
-      distance: '.rllt__details.lqhpac div:nth-child(2)',
+      distance: '.rllt__details div:nth-child(2)',
       distanceRegex: /^([^·])+/,
       description: 'div.rllt__wrapped > span',
     };
@@ -619,10 +619,7 @@ export class GoogleSERP {
       const name = this.elementText(el, CONFIG.name);
       const rating = this.elementText(el, CONFIG.rating);
       const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
-      const expensiveness = utils
-        .getFirstMatch($(el).find(CONFIG.expensiveness).text(), CONFIG.expensivenessRegex)
-        .slice(1, -1)
-        .trim().length;
+      const expensiveness = this.elementText(el, CONFIG.expensiveness).trim().length;
       const type = utils.getFirstMatch($(el).find(CONFIG.type).text(), CONFIG.typeRegex);
       const distance = utils.getFirstMatch($(el).find(CONFIG.distance).text(), CONFIG.distanceRegex).trim();
       const address = utils.getFirstMatch($(el).find(CONFIG.address).text(), CONFIG.addressRegex).trim();
@@ -637,8 +634,8 @@ export class GoogleSERP {
     const serp = this.serp;
     const CONFIG = {
       published: '.S1FAPd',
-      publisher: '.CEMjEf',
-      title: '.mCBkyc.oz3cqf.p5AXld.nDgy9d',
+      publisher: '.CEMjEf span',
+      title: '[role="heading"]',
       topStoriesFeature: '.F8yfEe',
       topStory: '.WlydOe',
     };
@@ -676,7 +673,7 @@ export class GoogleSERP {
       shopOffer: '.pla-unit:not(.view-all-unit)',
       shoppingSite: '.LbUacb',
       // specialOffer: '.gyXcee',
-      title: 'a > .pymv4e',
+      title: 'a > .hCK2Zc',
       votes: '.nbd1Bd .QhqGkb.RnJeZd',
     };
     const shopFeature = $(CONFIG.shopFeature);
