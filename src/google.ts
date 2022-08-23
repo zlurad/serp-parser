@@ -114,7 +114,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       results:
-        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a, #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a',
+        '#search #rso div.MjjYud div.g div.EfDVh div.yuRUbf > a,#search #rso div.MjjYud > div.g div.yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
