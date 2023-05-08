@@ -114,7 +114,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       results:
-        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a, #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a',
+        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a, #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a, .yuRUbf > a',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -141,7 +141,7 @@ export class GoogleSERP {
   private getFeatured() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search #rso>.ULSxyf>.g.mnr-c .c2xzTb div .yuRUbf > a',
+      results: '#Odp5De block-component div.yuRUbf > a',
     };
     $(CONFIG.results).each((index, element) => {
       const position = this.serp.organic.length + 1;
@@ -337,13 +337,13 @@ export class GoogleSERP {
 
   private getHotels() {
     const $ = this.$;
-    const hotelsFeature = $('.zd2Jbb');
+    const hotelsFeature = $('.MaKSie');
     if (!hotelsFeature.length) {
       return;
     }
     const CONFIG = {
       moreHotelsRegex: /(\d+,?)+/,
-      moreHotelsText: '.wUrVib',
+      moreHotelsText: '.Z4Cazf.OSrXXb',
     };
     // FILTERS
     const searchFilters: HotelsSearchFilters = this.getHotelSearchFilters(hotelsFeature);
@@ -361,6 +361,7 @@ export class GoogleSERP {
       hotels,
       moreHotels,
       searchFilters,
+      // searchTitle
     };
   }
 
@@ -370,10 +371,11 @@ export class GoogleSERP {
       activeFilter: '.CWGqFd',
       checkInString: '.vpggTd.ed5F6c span',
       checkOutString: '.vpggTd:not(.ed5F6c) span',
-      filterGroupsTitles: '.d2IDkc',
+      filterGroupsTitles: '.niO4u.VDgVie.SlP8xc.IeFz4e',
       guests: '.viupMc',
-      hotelFiltersSection: '.x3UtIe',
-      searchTitle: '.gsmmde',
+      hotelFiltersSection: '.uR9mR',
+      // searchTitle is not part of hotel filters section anymore, it is a separate property
+      searchTitle: '.CKe2Rd[role="heading"]'
     };
     const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
     const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
@@ -410,19 +412,19 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       amenities: '.I9B2He',
-      currency: '.dv1Q3e',
+      currency: '.YwF3uc.gwcnTb',
       currencyRegex: /\D+/,
-      dealDetails: '.kOTJue.jj25pf',
-      dealType: '.NNPnSe',
-      hotelCards: '.ntKMYc .hmHBZd',
+      dealDetails: '.dLtZ8b.YqpfKf',
+      dealType: '.ZIFkhf.ApHyTb',
+      hotelCards: '.NANqI.czz9sc',
       name: '.BTPx6e',
       originalPrice: '.AfCRQd',
       originalPriceRegex: /\d+/,
-      price: '.dv1Q3e',
+      price: '.YwF3uc.gwcnTb',
       priceRegex: /\d+/,
-      rating: '.YDIN4c.YrbPuc',
+      rating: '.yi40Hd.YrbPuc',
       ratingRegex: /\d\.\d/,
-      votes: '.HypWnf.YrbPuc',
+      votes: '.RDApEe.YrbPuc',
     };
     const hotels: Hotel[] = [];
     const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
@@ -436,9 +438,7 @@ export class GoogleSERP {
       const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
       const ratingString = $(el).find(CONFIG.rating).text();
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
-      const votes = parseInt(this.elementText(el, CONFIG.votes).slice(1, -1).replace(',', ''), 10); // Getting rid of parentheses with slice()
-      // Make this better, maybe something instead of slice ?
-
+      const votes = utils.convertToNumberFormat(this.elementText(el, CONFIG.votes));
       const dealType = this.elementText(el, CONFIG.dealType);
       const dealDetails = this.elementText(el, CONFIG.dealDetails);
       const amenities = this.elementText(el, CONFIG.amenities);
@@ -633,10 +633,10 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      published: '.S1FAPd',
+      published: '.OSrXXb',
       publisher: '.CEMjEf span',
       title: '[role="heading"]',
-      topStoriesFeature: '.F8yfEe',
+      topStoriesFeature: '.yG4QQe.TBC9ub',
       topStory: '.WlydOe',
     };
     const topStoriesFeature = $(CONFIG.topStoriesFeature);

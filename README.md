@@ -187,3 +187,54 @@ In this example only organic feature will be parsed
 We are working on enriching parsed data to grab all existing and new SERP features from Google search page results, as well as knowlege graph, ads, and any related info. Also we will add more Search engines along the way.
 
 Anyone willing to help - please submit issues, feature requests, fork away and send PR's
+
+## SERP Features Docs
+
+### More Results Button
+
+**SERP.moreResults**
+
+Gives back the reference to the more results button which sometimes is shown instead of the regular google pagination
+
+[More Results Button](/examples/MoreResultsButton.PNG)
+
+### Card sitelinks
+
+**SERP.sitelinks**
+
+Gives back the reference to the links that are shown at the bottom of a search result card
+
+[Card Sitelinks](/examples/Sitelinks.PNG)
+
+### Top Stories
+
+**SERP.topStoriesFeature**
+
+Gives back the reference to the top stories
+
+[Top Stories](/examples/TopStories.PNG)
+
+### Featured Snippet
+
+**SERP.snippet**
+
+Gives back the reference to the featured snippet boxes
+
+[Featured Snippet](/examples/FeaturedSnippet.PNG)
+
+### Videos
+
+**SERP.videos**
+
+Gives back the reference to the videos related to the searched keyword
+
+[Videos](/examples/Videos.PNG)
+
+### Trailers And Clips
+
+**SERP.trailersAndClips**
+
+Gives back the reference to the trailers and clips related to the searched keyword - usually associated with movies
+
+[Trailers And Clips](/examples/TrailersAndClips.PNG)
+
