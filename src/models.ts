@@ -8,6 +8,7 @@ export interface Serp {
   thumbnailGroups?: ThumbnailGroup[];
   relatedKeywords: RelatedKeyword[];
   videos?: VideoCard[];
+  trailersAndClips?: TrailersAndClipsItem[];
   hotels?: Hotels;
   adwords?: { adwordsTop?: Ad[]; adwordsBottom?: Ad[] };
   availableOn?: AvailableOn[];
@@ -65,6 +66,15 @@ export interface VideoCard {
   videoDuration: string;
 }
 
+export interface TrailersAndClipsItem {
+  title: string;
+  sitelink: string;
+  date: Date;
+  source: string;
+  channel: string;
+  videoDuration: string;
+}
+
 export interface RelatedKeyword {
   keyword: string;
   path: string;
@@ -81,11 +91,11 @@ export interface Thumbnail {
 
 export interface Hotels {
   searchFilters?: HotelsSearchFilters;
+  searchTitle?: string;
   hotels: Hotel[];
   moreHotels: number | string;
 }
 export interface HotelsSearchFilters {
-  searchTitle: string;
   checkIn: Date;
   checkOut: Date;
   guests: number;

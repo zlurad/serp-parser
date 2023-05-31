@@ -16,6 +16,7 @@ import {
   TopStory,
   VideoCard,
   Local,
+  TrailersAndClipsItem,
 } from './models';
 import * as utils from './utils';
 
@@ -37,6 +38,7 @@ export class GoogleSERP {
     ads: true,
     hotels: true,
     videos: true,
+    trailersAndClips: true,
     thumbnails: true,
     shop: true,
     stories: true,
@@ -58,7 +60,7 @@ export class GoogleSERP {
     const options = opt ? opt : this.#DEF_OPTIONS;
     const CONFIG = {
       currentPage: 'table.AaVjTc td.YyVfkd',
-      keyword: 'input[aria-label="Search"]',
+      keyword: 'textarea[aria-label="Search"]',
       noResults: "#topstuff .card-section p:contains(' - did not match any documents.')",
       resultText: '#result-stats',
     };
@@ -93,6 +95,9 @@ export class GoogleSERP {
       if (options.videos) {
         this.getVideos();
       }
+      if (options.trailersAndClips) {
+        this.getTrailersAndClips();
+      }
       // if (options.thumbnails) {
       //   this.getThumbnails();
       // }
@@ -114,34 +119,44 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       results:
-        '#search #rso > .g div .yuRUbf > a, #search #rso > .g.tF2Cxc .yuRUbf > a, #search #rso > .hlcw0c div .yuRUbf > a, #search #rso .kp-wholepage .g div .yuRUbf > a, #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a',
+        `#search #rso > .g div .yuRUbf > a,
+         #search #rso > .g.tF2Cxc .yuRUbf > a,
+         #search #rso > .hlcw0c div .yuRUbf > a,
+         #search #rso .kp-wholepage .g div .yuRUbf > a,
+         #search #rso > div .g.jNVrwc.Y4pkMc div .yuRUbf > a,
+         .yuRUbf > a`,
     };
 
     $(CONFIG.results).each((index, element) => {
-      const position = this.serp.organic.length + 1;
-      const url = $(element).prop('href');
-      const domain = utils.getDomain(url);
-      const title = this.elementText(element, 'h3');
-      const snippet = this.getSnippet(element);
-      const linkType = utils.getLinkType(url);
-      const result: Result = {
-        domain,
-        linkType,
-        position,
-        snippet,
-        title,
-        url,
-      };
-      this.parseSitelinks(element, result);
-      this.parseCachedAndSimilarUrls(element, result);
-      this.serp.organic.push(result);
+      const featuredResultId = '#Odp5De';
+      const featuredResultElement = $(element).closest(featuredResultId);
+      // only get organic results that are not featured
+      if (featuredResultElement.length === 0) {
+        const position = this.serp.organic.length + 1;
+        const url = $(element).prop('href');
+        const domain = utils.getDomain(url);
+        const title = this.elementText(element, 'h3');
+        const snippet = this.getSnippet(element);
+        const linkType = utils.getLinkType(url);
+        const result: Result = {
+          domain,
+          linkType,
+          position,
+          snippet,
+          title,
+          url,
+        };
+        this.parseSitelinks(element, result);
+        this.parseCachedAndSimilarUrls(element, result);
+        this.serp.organic.push(result);
+      }
     });
   }
 
   private getFeatured() {
     const $ = this.$;
     const CONFIG = {
-      results: '#search #rso>.ULSxyf>.g.mnr-c .c2xzTb div .yuRUbf > a',
+      results: '#Odp5De block-component div.yuRUbf > a',
     };
     $(CONFIG.results).each((index, element) => {
       const position = this.serp.organic.length + 1;
@@ -166,7 +181,7 @@ export class GoogleSERP {
   }
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
-    const text = this.$(element).parent().next().text();
+    const text = this.$(element).parent().parent().next().text();
     return text;
   }
 
@@ -251,16 +266,50 @@ export class GoogleSERP {
     };
 
     const pagination = $(CONFIG.pagination);
-    serp.pagination.push({
-      page: serp.currentPage || 1,
-      path: '',
-    });
-    pagination.find(CONFIG.pages).each((index, element) => {
+    if (pagination.length !== 0) {
       serp.pagination.push({
-        page: parseInt($(element).text(), 10),
-        path: $(element).prop('href'),
+        page: serp.currentPage || 1,
+        path: '',
       });
+      pagination.find(CONFIG.pages).each((index, element) => {
+        serp.pagination.push({
+          page: parseInt($(element).text(), 10),
+          path: $(element).prop('href'),
+        });
+      });
+    }
+  }
+
+  private getTrailersAndClips() {
+    const $ = this.$;
+    const serp = this.serp;
+    const CONFIG = {
+      channel: '.pcJO7e span:not([aria-hidden="true"])',
+      date: '.hMJ0yc span',
+      sitelink: 'a',
+      source: '.pcJO7e cite',
+      title: '.cHaqb',
+      videoDuration: '.J1mWY',
+      trailersAndClipsItem: '.RzdJxc',
+    };
+
+    const trailersAndClipsItems = $(CONFIG.trailersAndClipsItem);
+    if (trailersAndClipsItems.length === 0) {
+      return;
+    }
+    const trailersAndClips: TrailersAndClipsItem[] = [];
+    trailersAndClipsItems.each((index, element) => {
+      const trailersAndClipsItem = {
+        channel: this.elementText(element, CONFIG.channel).substr(3),
+        date: new Date(this.elementText(element, CONFIG.date)),
+        sitelink: this.elementHref(element, CONFIG.sitelink),
+        source: this.elementText(element, CONFIG.source),
+        title: this.elementText(element, CONFIG.title),
+        videoDuration: this.elementText(element, CONFIG.videoDuration),
+      };
+      trailersAndClips.push(trailersAndClipsItem);
     });
+    serp.trailersAndClips = trailersAndClips;
   }
 
   private getVideos() {
@@ -337,16 +386,19 @@ export class GoogleSERP {
 
   private getHotels() {
     const $ = this.$;
-    const hotelsFeature = $('.zd2Jbb');
+    const hotelsFeature = $('.MaKSie');
     if (!hotelsFeature.length) {
       return;
     }
     const CONFIG = {
       moreHotelsRegex: /(\d+,?)+/,
-      moreHotelsText: '.wUrVib',
+      moreHotelsText: '.Z4Cazf.OSrXXb',
     };
     // FILTERS
     const searchFilters: HotelsSearchFilters = this.getHotelSearchFilters(hotelsFeature);
+
+    // SEARCH TITLE
+    const searchTitle: string = this.getSearchTitle(hotelsFeature);
 
     // HOTELS (HOTEL CARDS)
     const hotels: Hotel[] = this.getHotelOffers(hotelsFeature);
@@ -361,22 +413,28 @@ export class GoogleSERP {
       hotels,
       moreHotels,
       searchFilters,
+      searchTitle
     };
+  }
+
+  private getSearchTitle(hotelsFeature: cheerio.Cheerio<cheerio.Element>): string {
+    const $ = this.$;
+    const searchTitleSelector = '.CKe2Rd';
+    const searchTitleText = hotelsFeature.find(searchTitleSelector).text();
+    return searchTitleText;
   }
 
   private getHotelSearchFilters(hotelsFeature: cheerio.Cheerio<cheerio.Element>): HotelsSearchFilters {
     const $ = this.$;
     const CONFIG = {
-      activeFilter: '.CWGqFd',
+      activeFilter: '[aria-pressed="true"]',
       checkInString: '.vpggTd.ed5F6c span',
       checkOutString: '.vpggTd:not(.ed5F6c) span',
-      filterGroupsTitles: '.d2IDkc',
+      filterGroupsTitles: '.niO4u.VDgVie.SlP8xc.IeFz4e',
       guests: '.viupMc',
-      hotelFiltersSection: '.x3UtIe',
-      searchTitle: '.gsmmde',
+      hotelFiltersSection: '.uR9mR',
     };
     const hotelFiltersSection = hotelsFeature.find(CONFIG.hotelFiltersSection);
-    const searchTitle = hotelFiltersSection.find(CONFIG.searchTitle).text();
     const checkInString = `${hotelFiltersSection.find(CONFIG.checkInString).text()} ${new Date().getFullYear()}`;
     const checkIn = new Date(checkInString);
     const checkOutString = `${hotelFiltersSection.find(CONFIG.checkOutString).text()} ${new Date().getFullYear()}`;
@@ -402,7 +460,6 @@ export class GoogleSERP {
       checkOut,
       filters,
       guests,
-      searchTitle,
     };
   }
 
@@ -410,19 +467,19 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       amenities: '.I9B2He',
-      currency: '.dv1Q3e',
+      currency: '.YwF3uc.gwcnTb',
       currencyRegex: /\D+/,
-      dealDetails: '.kOTJue.jj25pf',
-      dealType: '.NNPnSe',
-      hotelCards: '.ntKMYc .hmHBZd',
+      dealDetails: '.dLtZ8b.YqpfKf',
+      dealType: '.ZIFkhf.ApHyTb',
+      hotelCards: '.NANqI.czz9sc',
       name: '.BTPx6e',
       originalPrice: '.AfCRQd',
       originalPriceRegex: /\d+/,
-      price: '.dv1Q3e',
+      price: '.YwF3uc.gwcnTb',
       priceRegex: /\d+/,
-      rating: '.YDIN4c.YrbPuc',
+      rating: '.yi40Hd.YrbPuc',
       ratingRegex: /\d\.\d/,
-      votes: '.HypWnf.YrbPuc',
+      votes: '.RDApEe.YrbPuc',
     };
     const hotels: Hotel[] = [];
     const hotelCards = hotelsFeature.find(CONFIG.hotelCards);
@@ -436,9 +493,7 @@ export class GoogleSERP {
       const currency = utils.getFirstMatch(this.elementText(el, CONFIG.currency), CONFIG.currencyRegex);
       const ratingString = $(el).find(CONFIG.rating).text();
       const rating = parseFloat(utils.getFirstMatch(ratingString, CONFIG.ratingRegex));
-      const votes = parseInt(this.elementText(el, CONFIG.votes).slice(1, -1).replace(',', ''), 10); // Getting rid of parentheses with slice()
-      // Make this better, maybe something instead of slice ?
-
+      const votes = utils.convertToNumberFormat(this.elementText(el, CONFIG.votes));
       const dealType = this.elementText(el, CONFIG.dealType);
       const dealDetails = this.elementText(el, CONFIG.dealDetails);
       const amenities = this.elementText(el, CONFIG.amenities);
@@ -501,7 +556,7 @@ export class GoogleSERP {
     const $ = this.$;
     const CONFIG = {
       ads: '.uEierd',
-      snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc)',
+      snippet: '.MUxGbd.yDYNvb.lyLwlc:not(.fCBnFe .MUxGbd.yDYNvb.lyLwlc):not(.qjtaSd.MUxGbd.yDYNvb.lyLwlc):not(.aLF0Z.OSrXXb)',
       title: '[role="heading"]',
       url: 'a.sVXRqc',
     };
@@ -554,7 +609,7 @@ export class GoogleSERP {
     const inlineSiteLinks = $(ad).find(CONFIG.inline);
     inlineSiteLinks.each((i, e) => {
       const sitelink: Sitelink = {
-        href: $(e).attr('href') as string,
+        href: this.elementHref(e),
         title: $(e).text(),
         type: SitelinkType.inline,
       };
@@ -591,31 +646,30 @@ export class GoogleSERP {
     const serp = this.serp;
     const CONFIG = {
       name: '.dbg0pd',
-      rating: '.YDIN4c.YrbPuc',
-      reviews: '.HypWnf.YrbPuc',
+      rating: '.yi40Hd.YrbPuc',
+      reviews: '.RDApEe.YrbPuc',
       reviewsRegex: /[0-9]+/,
-      expensiveness: '[role="img"]',
+      expensiveness: '[role="img"]:not(.z3HNkc)',
       expensivenessRegex: /·([^]+)·/,
-      type: '.rllt__details div:nth-child(1)',
+      type: '.rllt__details div:nth-child(2)',
       typeRegex: /\w+\s\w+/,
-      address: '.rllt__details div:nth-child(2)',
+      address: '.rllt__details div:nth-child(3)',
       addressRegex: /[^·]*$/,
-      localsFeature: '[data-hveid="CBYQAQ"]',
+      localsFeature: '.vwVdIc.wzN8Ac',
       local: '.C8TUKc',
       distance: '.rllt__details div:nth-child(2)',
       distanceRegex: /^([^·])+/,
       description: 'div.rllt__wrapped > span',
     };
 
-    const localsFeature = $(CONFIG.localsFeature);
+    const localsFeatureList = $(CONFIG.localsFeature);
 
-    if (!localsFeature.length) {
+    if (!localsFeatureList.length) {
       return;
     }
 
     const locals: Local[] = [];
-    const local = localsFeature.find(CONFIG.local);
-    local.each((ind, el) => {
+    localsFeatureList.each((ind, el) => {
       const name = this.elementText(el, CONFIG.name);
       const rating = this.elementText(el, CONFIG.rating);
       const reviews = utils.getFirstMatch($(el).find(CONFIG.reviews).text(), CONFIG.reviewsRegex);
@@ -633,10 +687,10 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      published: '.S1FAPd',
+      published: '.OSrXXb',
       publisher: '.CEMjEf span',
       title: '[role="heading"]',
-      topStoriesFeature: '.F8yfEe',
+      topStoriesFeature: '.yG4QQe.TBC9ub',
       topStory: '.WlydOe',
     };
     const topStoriesFeature = $(CONFIG.topStoriesFeature);
@@ -661,20 +715,20 @@ export class GoogleSERP {
     const $ = this.$;
     const serp = this.serp;
     const CONFIG = {
-      commodity: '.cYBBsb',
+      commodity: '.pla-extensions-container .shq1Oc',
       currency: '.e10twf',
       currencyRegex: /\D+/,
       imgLink: 'a.pla-unit-img-container-link',
       price: '.e10twf',
       priceRegex: /[\d,.]+/,
       ratingRegex: /\d\.\d/,
-      ratingString: 'a > span > g-review-stars > span',
-      shopFeature: '.top-pla-group-inner',
-      shopOffer: '.pla-unit:not(.view-all-unit)',
+      ratingString: '.pla-extensions-container .z3HNkc',
+      shopFeature: '.pla-crsl.YEJkkb.pla-carousel',
+      shopOffer: '.mnr-c.pla-unit',
       shoppingSite: '.LbUacb',
       // specialOffer: '.gyXcee',
-      title: 'a > .hCK2Zc',
-      votes: '.nbd1Bd .QhqGkb.RnJeZd',
+      title: 'a > .pymv4e',
+      votes: '.pla-extensions-container .fl.pbAs0b',
     };
     const shopFeature = $(CONFIG.shopFeature);
     if (shopFeature.length) {
@@ -724,7 +778,10 @@ export class GoogleSERP {
     return this.$(el).find(query).text() as string;
   }
 
-  private elementHref(el: cheerio.Element | cheerio.Node, query: string) {
-    return this.$(el).find(query).attr('href') as string;
+  private elementHref(el: cheerio.Element | cheerio.Node, query?: string) {
+    if (query) {
+      return this.$(el).find(query).attr('href') as string;
+    }
+    return this.$(el).attr('href') as string;
   }
 }

@@ -33,3 +33,19 @@ export const getTimeTaken = (text: string): number | undefined => {
   const timeMatched: string = getFirstMatch(text, timeRegex);
   return timeMatched !== '' ? parseFloat(timeMatched) : undefined;
 };
+
+export const convertToNumberFormat = (text: string): number => {
+  const thousands = new RegExp('K', 'gi')
+  const hasThousands = thousands.test(text);
+  // Getting rid of parentheses with slice() and removing thousands separators
+  let digits;
+  let numberFormat;
+  if (hasThousands) {
+    digits = text.slice(1, -1);
+    numberFormat = parseFloat(digits) * 1000;
+  } else {
+    digits = text.slice(1, -1);
+    numberFormat = parseInt(digits, 10);
+  }
+  return numberFormat;
+}
