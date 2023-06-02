@@ -452,60 +452,60 @@ describe('Parsing .com-domains page', () => {
     expect(serp.adwords?.adwordsBottom).toBeDefined();
   });
 
-  test('There should be 1 ad on the top of the page', () => {
-    expect(serp.adwords?.adwordsTop).toHaveLength(4);
+  test('There should be 3 ads on the top of the page', () => {
+    expect(serp.adwords?.adwordsTop).toHaveLength(3);
   });
 
   test('Testing first ad', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'position'], 1);
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsTop', 0, 'title'],
-      `Domains From Only $1/Year - .com, .org & more for $1/Year`,
+      `.com Domain Names - Buy Now At A Great Price`,
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.ionos.com/domains/domain-names');
-    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.ionos.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'url'], 'https://www.godaddy.com/offers/domain?isc=GDD2dom');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'domain'], 'www.godaddy.com');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsTop', 0, 'snippet'],
-      `Free email address, wildcard ssl certificate, domain lock, 10,000 subdomains & many more! Need a perfect domain? Includes email, privacy, SSL & 24/7 support. Score a deal...`,
+      `Save On .com Domain Names & Get Free Award Winning 24/7 Support. Register Yours Now!`,
     );
     expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'linkType'], 'LANDING');
   });
 
   test('Testing first ad sitelink', () => {
     expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], '.com Domain From $1/Year');
+    expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'title'], 'Domain Name Generator');
     expect(serp).toHaveProperty(
       ['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'href'],
-      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABAKGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_2t0zioT87_jgUqhmcUAKu6sGWwIw&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQwgUoAHoECAUQDQ&adurl=https://www.ionos.com/domains/com-domain%3Fac%3DOM.US.USo42K356154T7073a%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAAYASABEgII1_D_BwE',
+      'https://www.godaddy.com/offers/domains/domain-generator?isc=usdomgon1&currencyType=USD&countryview=1&sa=X&ved=2ahUKEwjf8-7x4Lv-AhVHLTQIHc9rBzwQqyQoAHoECAUQCg',
     );
     expect(serp).not.toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'snippet']);
     expect(serp).toHaveProperty(['adwords', 'adwordsTop', 0, 'sitelinks', 0, 'type'], 'INLINE');
   });
 
   test('There should be 1 ad on the bottom of the page', () => {
-    expect(serp.adwords?.adwordsBottom).toHaveLength(3);
+    expect(serp.adwords?.adwordsBottom).toHaveLength(1);
   });
 
   test('First bottom ad tests', () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'position'], 2);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'url'], 'https://www.hostgator.com/web-hosting');
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'domain'], 'www.hostgator.com');
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'linkType'], 'LANDING');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'position'], 1);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'url'], 'https://www.top10.com/hosting/domainhosting-comparison');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'domain'], 'www.top10.com');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'linkType'], 'LANDING');
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 1, 'snippet'],
-      `HostGator® Is The Perfect Solution For You. We Are With You Every Step Of The Way. Powerful Web Hosting Made Easy and Affordable. Great Bundle with Every Plan! Free SSL. Free Website Templates. Unmetered Disk Space.`,
+      ['adwords', 'adwordsBottom', 0, 'snippet'],
+      `Free Domain 2023 | Compare & Choose The Plan That Best Meets Your Needs. Find a Domain and Host Your Website with One of These Great Web Hosting Choices for 2023! Trusted By Millions.`,
     );
   });
 
   test(`Testing bottom ad sitelinks`, () => {
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1]);
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'title'], 'App Hosting');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1]);
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'title'], '10 Best Domain Hosting');
     expect(serp).toHaveProperty(
-      ['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'href'],
-      'https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwiMqLj_pvvwAhVyH60GHTfpAkwYABALGgJwdg&ae=1&ohost=www.google.com&cid=CAASEuRoixU4cSaOKjQNjhc3ZYIvjQ&sig=AOD64_1mq-gMpp58rz745u0yej7PlvoKTQ&q=&ved=2ahUKEwiW5bH_pvvwAhXcFTQIHexeDioQvrcBegQIAxAN&adurl=https://www.hostgator.com/apps%3Futm_source%3Dgoogle%26utm_medium%3Dgenericsearch%26gclsrc%3Daw.ds%26gclid%3DEAIaIQobChMIjKi4_6b78AIVch-tBh036QJMEAMYAiACEgIhx_D_BwE',
+      ['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'href'],
+      'https://www.google.com/aclk?sa=l&ai=DChcSEwjah_bx4Lv-AhV0LK0GHaQmBzYYABAHGgJwdg&ae=2&sig=AOD64_10wPoR5s1-6V8H79qqHDuOy5m9-A&q=&ved=2ahUKEwjf8-7x4Lv-AhVHLTQIHc9rBzwQvrcBKAF6BAgHEAw&adurl=',
     );
-    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 1, 'sitelinks', 1, 'type'], 'INLINE');
+    expect(serp).toHaveProperty(['adwords', 'adwordsBottom', 0, 'sitelinks', 1, 'type'], 'INLINE');
   });
 });
 
