@@ -55,7 +55,7 @@ export class GoogleMobileSERP {
     const serp = this.serp;
     const options = opt ? opt : this.#DEF_OPTIONS;
     const CONFIG = {
-      keyword: 'input[aria-label="Search"]',
+      keyword: 'input.gLFyf',
       noResults: '#topstuff .card-section p:contains(" - did not match any documents.")',
     };
     if ($(CONFIG.noResults).length === 1) {
@@ -102,7 +102,7 @@ export class GoogleMobileSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '.mnr-c.xpd a.C8nzq',
+      results: 'a.cz3goc.BmP5tf',
     };
 
     $(CONFIG.results).each((index, element) => {
@@ -153,15 +153,15 @@ export class GoogleMobileSERP {
   }
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
-    const text = this.$(element).closest('.mnr-c').find('div.MUxGbd.yDYNvb').text().replace(/\s+/g, ' ').trim();
+    const text = this.$(element).closest('.kvH3mc').find('div.VwiC3b').text().replace(/\s+/g, ' ').trim();
     return text;
   }
 
   private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
     const $ = this.$;
     const CONFIG = {
-      closestInline: '.mnr-c.xpd',
-      inline: '[jsname="m7irxf"] a',
+      closestInline: '.Ww4FFb.vt6azd',
+      inline: '.GqbEwc.unhzXb',
     };
     const sitelinks: Sitelink[] = [];
 
@@ -439,7 +439,7 @@ export class GoogleMobileSERP {
       ads: '.uEierd',
       snippet: '.MUxGbd.yDYNvb.lEBKkf',
       title: '[role="heading"]',
-      url: 'a.C8nzq.d5oMvf.BmP5tf',
+      url: 'a.cz3goc.v5yQqb.BmP5tf',
     };
 
     $(search)
@@ -468,14 +468,14 @@ export class GoogleMobileSERP {
   private getAdSitelinks(ad: cheerio.Element) {
     const $ = this.$;
     const CONFIG = {
-      inline: '.MUxGbd.v0nnCb.lyLwlc a,.Uq7H1 a',
+      inline: '.MUxGbd.v0nnCb.lyLwlc a,.Uq7H1 a, .unhzXb.X5eyzb',
     };
     const sitelinks: Sitelink[] = [];
     const inlineSiteLinks = $(ad).find(CONFIG.inline);
     inlineSiteLinks.each((i, e) => {
       const sitelink: Sitelink = {
         href: $(e).attr('href') as string,
-        title: $(e).text(),
+        title: $(e).find('.lKeYrd.O45XLd, .MUxGbd').text(),
         type: SitelinkType.inline,
       };
       sitelinks.push(sitelink);
