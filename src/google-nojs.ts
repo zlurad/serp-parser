@@ -40,7 +40,7 @@ export class GoogleNojsSERP {
       return;
     }
 
-    if ($('body').attr('jsmodel') === 'TvHxbe') {
+    if ($('body').attr('jsmodel') === 'hspDDf') {
       this.parseGoogle(opt);
     } else {
       this.serp.error = 'Not Google nojs page';
@@ -75,21 +75,21 @@ export class GoogleNojsSERP {
   private getOrganic() {
     const $ = this.$;
     const CONFIG = {
-      results: '#main > div > div.ZINbbc.xpd.O9g5cc.uUPGi > div.kCrYT:first-child > a',
+      results: '#main > div > div.Gx5Zad.fP1Qef.xpd.EtOod.pkphOe > div.egMi0.kCrYT > a',
     };
 
     $(CONFIG.results).each((index, element) => {
       const position = index + 1;
       const url = utils.getUrlFromQuery($(element).prop('href'));
       const domain = utils.getDomain(url);
-      const title = $(element).children('h3').text();
+      const title = $(element).find('.zBAuLc.l97dzf').text();
       const snippet = this.getSnippet(element);
       const linkType = utils.getLinkType(url);
       const result: Result = {
         domain,
         linkType,
         position,
-        snippet,
+        snippet, 
         title,
         url,
       };
@@ -100,11 +100,8 @@ export class GoogleNojsSERP {
 
   private getSnippet(element: cheerio.Element | cheerio.Node): string {
     let text;
-
-    if (this.$(element).parent('.kCrYT').nextAll('.kCrYT').find('.Ap5OSd').length === 0) {
-      text = this.$(element).parent('.kCrYT').nextAll('.kCrYT').text();
-    } else text = this.$(element).parent('.kCrYT').nextAll('.kCrYT').find('.Ap5OSd').text();
-    return text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '');
+    text = this.$(element).closest('.Gx5Zad.fP1Qef.xpd.EtOod.pkphOe').find('.BNeawe.s3v9rd.AP7Wnd:not(:has(*))').text();
+    return text.replace(/(&nbsp;)/g, ' ').replace(/ +(?= )/g, '').replace(/\s+/g, ' ');
   }
 
   private parseSitelinks(element: cheerio.Element | cheerio.Node, result: Result) {
@@ -134,7 +131,7 @@ export class GoogleNojsSERP {
 
   private getRelatedKeywords() {
     const relatedKeywords: RelatedKeyword[] = [];
-    const query = '.Sljvkf.iIWm4b a';
+    const query = '.gGQDvd.iIWm4b a';
     this.$(query).each((i, elem) => {
       relatedKeywords.push({
         keyword: this.$(elem).text(),
@@ -147,7 +144,7 @@ export class GoogleNojsSERP {
   private getHotels() {
     const $ = this.$;
 
-    if (!$('#main > div:not(.xpd) h2.zBAuLc').text().startsWith('Hotels')) {
+    if (!$('#main > div:not(.xpd) h2.zBAuLc').text().startsWith('Places')) {
       return;
     }
 
@@ -161,8 +158,8 @@ export class GoogleNojsSERP {
       hotelStarsRegex: /\d(?=-star)/,
       moreInfoLink: 'a.tHmfQe',
       name: 'h3',
-      rating: '.Eq0J8:first-child',
-      votes: '.Eq0J8:last-child',
+      rating: '.oqSTJd',
+      votes: '.r0bn4c.rQMQod.tP9Zud > span:last-child',
       votesRegex: /\((\d+,?)+\)/,
     };
     const moreHotelsLink = hotelsFeature.children().last().find('a').attr('href') as string;
@@ -221,9 +218,9 @@ export class GoogleNojsSERP {
     const $ = this.$;
     const CONFIG = {
       ads: '.uEierd',
-      snippet: 'div.BmP5tf span',
+      snippet: '.MUxGbd.yDYNvb.lyLwlc.aLF0Z.OSrXXb',
       title: 'div[role="heading"]',
-      url: 'a.C8nzq',
+      url: 'a.cz3goc.BmP5tf',
     };
 
     $(CONFIG.ads).each((i, e) => {

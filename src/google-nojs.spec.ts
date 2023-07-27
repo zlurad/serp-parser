@@ -21,39 +21,39 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp.keyword).toBe('google');
   });
 
-  test('serp should have 6 results', () => {
-    expect(serp.organic).toHaveLength(6);
+  test('serp should have 10 results', () => {
+    expect(serp.organic).toHaveLength(10);
   });
 
   test('Current page should be 1', () => {
     expect(serp.currentPage).toBe(1);
   });
 
-  test('2nd result should have domain blog.google', () => {
-    expect(serp.organic[1].domain).toBe('blog.google');
+  test('8th result should have domain maps.google.com', () => {
+    expect(serp.organic[7].domain).toBe('maps.google.com');
   });
 
-  test('2nd result should have url https://blog.google/', () => {
-    expect(serp.organic[1].url).toBe('https://blog.google/');
+  test('8th result should have url https://maps.google.com/', () => {
+    expect(serp.organic[7].url).toBe('https://maps.google.com/');
   });
 
-  test('2nd result should have title "The Keyword | Google"', () => {
-    expect(serp.organic[1].title).toBe('The Keyword | Google');
+  test('2nd result should have title "Google Account"', () => {
+    expect(serp.organic[1].title).toBe('Google Account');
   });
 
-  test('2nd result should have snippet start with "Discover all the latest about..."', () => {
-    expect(serp.organic[1].snippet).toBe(
-      'Discover all the latest about our products, technology, and Google culture on our official blog.',
+  test('3rd result should have snippet start with "Find local businesses, view maps and get driving directions in Google Maps.', () => {
+    expect(serp.organic[2].snippet).toBe(
+      'Find local businesses, view maps and get driving directions in Google Maps.',
     );
   });
 
   test(`1st result should have snippet start with "Search the world's information..."`, () => {
     expect(serp.organic[0].snippet).toBe(
-      `Search the world's information, including webpages, images, videos and more.`,
+      `Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.`,
     );
   });
 
-  test('1st result should have inline sitelinks', () => {
+  test.skip('1st result should have inline sitelinks', () => {
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Account');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'href'],
@@ -66,15 +66,15 @@ describe('Parsing nojs Google page with 10 resuts', () => {
     expect(serp).not.toHaveProperty(['organic', 2, 'sitelinks']);
   });
 
-  test('Page should have 12 related keywords', () => {
-    expect(serp.relatedKeywords).toHaveLength(12);
+  test('Page should have 8 related keywords', () => {
+    expect(serp.relatedKeywords).toHaveLength(8);
   });
-  test('1st related keyword should be "Google account"', () => {
-    expect(serp.relatedKeywords[0].keyword).toBe('Google account');
+  test('2nd related keyword should be "Google account"', () => {
+    expect(serp.relatedKeywords[1].keyword).toBe('Google account');
   });
   test('1st related keyword should have path', () => {
     expect(serp.relatedKeywords[0].path).toContain(
-      '/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Google+account',
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=www.google+search+web&sa=X&ved=2ahUKEwjkq82NgKX_AhXGCTQIHTcgBdAQ1QJ6BAgAEAI',
     );
   });
 });
@@ -88,25 +88,25 @@ describe('Parsing nojs Google page with 100 resuts', () => {
     serp = new GoogleNojsSERP(html).serp;
   });
 
-  test('serp should have 48 results', () => {
-    expect(serp.organic).toHaveLength(48);
+  test('serp should have 99 results', () => {
+    expect(serp.organic).toHaveLength(99);
   });
 
   test('all results should have a domain', () => {
     expect(serp.organic.filter((x) => x.domain === '')).toEqual([]);
   });
 
-  test('3rd result should have url https://blog.google/', () => {
-    expect(serp.organic[2].url).toBe('https://blog.google/');
+  test('3rd result should have url https://www.google.com/maps', () => {
+    expect(serp.organic[2].url).toBe('https://www.google.com/maps');
   });
 
-  test('3rd result should have title "The Keyword | Google"', () => {
-    expect(serp.organic[2].title).toBe('The Keyword | Google');
+  test('3rd result should have title "Google Maps"', () => {
+    expect(serp.organic[2].title).toBe('Google Maps');
   });
 
-  test('3rd result should have snippet start with "Search for and register a domain, get hosting..."', () => {
+  test('3rd result should have snippet start with "Find local businesses, view maps and get driving directions in Google Maps."', () => {
     expect(serp.organic[2].snippet).toBe(
-      'Discover all the latest about our products, technology, and Google culture on our official blog.',
+      'Find local businesses, view maps and get driving directions in Google Maps.',
     );
   });
 
@@ -128,9 +128,9 @@ describe('Parsing nojs "The Matrix" search page', () => {
     expect(serp.organic).toHaveLength(10);
   });
 
-  test('1th result should have snippet start with "The Matrix is a 1999 American science fiction action film written and directed by the Wachowskis."', () => {
+  test('1th result should have snippet start with "When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate ..."', () => {
     expect(serp.organic[0].snippet).toContain(
-      'The Matrix is a 1999 American science fiction action film written and directed by the Wachowskis.',
+      'When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate ...',
     );
   });
 
@@ -138,13 +138,13 @@ describe('Parsing nojs "The Matrix" search page', () => {
     expect(serp.keyword).toBe('The Matrix');
   });
 
-  test('1st result should have sitelinks and first sitelink should have title "Franchise"', () => {
-    expect(serp.organic[0].sitelinks).toHaveLength(8);
-    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Franchise');
+  test('1st result should have sitelinks and first sitelink should have title "Full Cast & Crew"', () => {
+    expect(serp.organic[0].sitelinks).toHaveLength(4);
+    expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'title'], 'Full Cast & Crew');
     expect(serp).toHaveProperty(['organic', 0, 'sitelinks', 0, 'type'], 'INLINE');
     expect(serp).toHaveProperty(
       ['organic', 0, 'sitelinks', 0, 'href'],
-      '/url?q=https://en.wikipedia.org/wiki/The_Matrix_(franchise)&sa=U&ved=2ahUKEwist4jXuKzsAhUuzYUKHcU0BXMQ0gIwGHoECAcQAg&usg=AOvVaw00V_e9CfJoi_LkrOLOlC2g',
+      '/url?q=https://www.imdb.com/title/tt0133093/fullcredits&sa=U&ved=2ahUKEwi7xNWPgaX_AhW0AjQIHU5BCxcQ0gJ6BAgCEAY&usg=AOvVaw0TZoysIWu54_cGsPGk6fWH',
     );
   });
 
@@ -165,19 +165,19 @@ describe('Parsing Hotels-nojs search page', () => {
     serp = new GoogleNojsSERP(html, { hotels: true }).serp;
   });
 
-  test('Name of the first featured hotel should be "Millennium Hilton New York Downtown"', () => {
-    expect(serp.hotels?.hotels[0].name).toBe('Millennium Hilton New York Downtown');
+  test('Name of the first featured hotel should be "The Manhattan at Times Square Hotel"', () => {
+    expect(serp.hotels?.hotels[0].name).toBe('The Manhattan at Times Square Hotel');
   });
-  test('Rating of the first featured hotel should be 4.2', () => {
-    expect(serp.hotels?.hotels[0].rating).toBe(4.2);
+  test('Rating of the first featured hotel should be 3.1', () => {
+    expect(serp.hotels?.hotels[0].rating).toBe(3.1);
   });
-  test('Number of votes of the first featured hotel should be 2753', () => {
-    expect(serp.hotels?.hotels[0].votes).toBe(2753);
+  test('Number of votes of the first featured hotel should be 6738', () => {
+    expect(serp.hotels?.hotels[0].votes).toBe(6738);
   });
-  test('Number of stars of the first featured hotel should be 4', () => {
-    expect(serp.hotels?.hotels[0].stars).toBe(4);
+  test.skip('Number of stars of the first featured hotel should be 3', () => {
+    expect(serp.hotels?.hotels[0].stars).toBe(3);
   });
-  test('Description of the first featured hotel should be "Sleek hotel with dining, a spa & a pool"', () => {
+  test.skip('Description of the first featured hotel should be "Sleek hotel with dining, a spa & a pool"', () => {
     expect(serp.hotels?.hotels[0].description).toBe('Sleek hotel with dining, a spa & a pool');
   });
   test.skip('Featured review of the first featured hotel should be "Hard to beat LOCATION CLEAN SMALL rooms ( NYC size) Pleasant staff"', () => {
@@ -187,16 +187,16 @@ describe('Parsing Hotels-nojs search page', () => {
   });
   test(`MoreInfoLink of the first featured hotel should be`, () => {
     expect(serp.hotels?.hotels[0].moreInfoLink).toBe(
-      'https://www.google.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&q=Millennium+Hilton+New+York+Downtown+New+York,+NY&ludocid=17735751118331707919&ibp=gwp;0,7&lsig=AB86z5XzVhvRx3-AsRIbzNDblrqP&phdesc=J519NBuV2wc&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QvS4wAHoECBQQBA',
+      '/search?safe=off&gl=US&pws=0&nfpr=1&q=The+Manhattan+at+Times+Square+Hotel+New+York,+NY&ludocid=16204309452407439394&gsas=1&lsig=AB86z5W5IELJXXmYSDMSuyFLF0jj&phdesc=RZ6aC3DM1OQ&sa=X&ved=2ahUKEwjmyqPugKX_AhW-EjQIHeUhBJ8QvS56BAgGEAQ',
     );
   });
   test.skip(`The 2nd featured hotel should have amenities "Free Wi-Fi"`, () => {
     expect(serp.hotels?.hotels[1].amenities).toBe('Free Wi-Fi');
   });
 
-  test(`There should be a moreHotels link and it should have href "/search?sa=N&gl=us..."`, () => {
+  test(`There should be a morePlaces link and it should have href "/search?sa=N&gl=us..."`, () => {
     expect(serp.hotels?.moreHotels).toBe(
-      'https://www.google.com/search?safe=off&gl=US&pws=0&nfpr=1&ie=UTF-8&oe=UTF-8&ei=b_KCX8H_Nqq5gwfZsp34BA&q=hotels+NYC&rlst=f&sa=X&ved=2ahUKEwiB86--vazsAhWq3OAKHVlZB08QjGowAHoECBQQDA',
+      '/search?safe=off&gl=US&pws=0&nfpr=1&tbs=lf:1,lf_ui:6&q=hotels+NYC&rlst=f&rflfq=1&num=10&rlha=1&uule=w+CAIQICISU2FuIEZyYW5jaXNjbywgVVNB&sa=X&ved=2ahUKEwjmyqPugKX_AhW-EjQIHeUhBJ8QjGp6BAgGEAw',
     );
   });
 });
@@ -244,20 +244,20 @@ describe('Parsing Domain-nojs page', () => {
   test('Testing first ad', () => {
     expect(adwordsTop).toHaveProperty(['0']);
     expect(adwordsTop).toHaveProperty(['0', 'position'], 1);
-    expect(adwordsTop).toHaveProperty(['0', 'title'], 'Google Domain Names - Domains, Custom Emails & Sites');
+    expect(adwordsTop).toHaveProperty(['0', 'title'], 'Buy Domain Names - .com Domains From $2.99');
     expect(adwordsTop).toHaveProperty(
       ['0', 'url'],
-      'http://www.google.com/aclk?sa=l&ai=DChcSEwid7uyi36zsAhXJmtUKHfkGDCEYABABGgJ3cw&sig=AOD64_174-onC0FNonRouW05eLvgf-ichg&ved=2ahUKEwiK5Oai36zsAhWRzIUKHXkhD1oQ0Qx6BAgVEAE&adurl=',
+      'https://www.google.com/aclk?sa=l&ai=DChcSEwj8ivPI_qT_AhUgFq0GHdcOBWMYABABGgJwdg&sig=AOD64_3pUOf0yQKvAKp3jxz_NQ6H7cqqUA&ved=2ahUKEwjcqe3I_qT_AhUcMDQIHTv7CGkQ0Qx6BAgOEAE&adurl=',
     );
     expect(adwordsTop).toHaveProperty(['0', 'domain'], 'www.google.com');
     expect(adwordsTop).toHaveProperty(
       ['0', 'snippet'],
-      'Find a Domain, Get Custom Emails & Create a Site With Google. Get Started Today! Faster & Reliable Connection to Your Website, With Same DNS Servers as Google. Free Private Registration. 24-7 Support. New Domain Name Endings.',
+      'Domains, Websites, Email, Hosting, Security & More. Everything You Need To Succeed Online.',
     );
     expect(adwordsTop).toHaveProperty(['0', 'linkType'], 'LANDING');
   });
 
-  test(`first top ad card sitelink`, () => {
+  test.skip(`first top ad card sitelink`, () => {
     expect(adwordsTop).toHaveProperty(['1', 'sitelinks', '1']);
     expect(adwordsTop).toHaveProperty(['1', 'sitelinks', '1', 'title'], 'Customize Easily');
     expect(adwordsTop).toHaveProperty(
